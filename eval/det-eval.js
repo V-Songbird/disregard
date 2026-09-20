@@ -13,10 +13,6 @@
 const { scoreF1, scoreF7 } = require("../lib/scorer.js");
 const { LABELLED, HELDOUT, HELDOUT2 } = require("./det-set.js");
 
-// The two predicates lib/analyze.js uses to decide whether a finding fires.
-const firesHedge = (text) => scoreF1(text).hedged === true;
-const firesNoAnchor = (text) => scoreF7(text).concrete.length === 0;
-
 function run(name, set) {
   const rows = set.map((c) => {
     const f1 = scoreF1(c.text);
@@ -72,4 +68,3 @@ console.log("\nSUMMARY  " + line("HELD-OUT 2", o2, HELDOUT2.length) +
   "  |  " + line("first held-out", o, HELDOUT.length) +
   "  |  " + line("working", l, LABELLED.length));
 
-module.exports = { firesHedge, firesNoAnchor };
