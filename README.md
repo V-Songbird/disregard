@@ -1,12 +1,12 @@
-# Readback
+# Disregard
 
-Readback scores one rule from an agent instruction file, such as a line of a
+Disregard scores one rule from an agent instruction file, such as a line of a
 `CLAUDE.md` or an `AGENTS.md`, and reports how that line reads to the agent that
 has to follow it. It answers what a local linter cannot: whether the line is a
 rule at all, and whether it should stop being prose and become a hook, a skill
 or a subagent.
 
-Try it on [the live service](https://readback-score.victor-villegas.workers.dev/).
+Try it on [the live service](https://disregard-score.victor-villegas.workers.dev/).
 
 **It scores one line, not a file, and English only.** Anything over 2000
 characters is rejected, and another language is handed back unscored, because
@@ -26,7 +26,7 @@ nothing here was measured outside English. To review a whole instruction file,
 Score a rule against the running service. Nothing to install, no key needed.
 
 ```bash
-curl -s -X POST https://readback-score.victor-villegas.workers.dev/api/score \
+curl -s -X POST https://disregard-score.victor-villegas.workers.dev/api/score \
   -H "Content-Type: application/json" \
   -d '{"rule":"Always try to keep functions small."}'
 ```

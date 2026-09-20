@@ -179,7 +179,7 @@ That was wrong: they are not risks to this app, because they are not in it.
 
 Both take a **file**. F4 reads `file.globs`, `file.alwaysLoaded` and
 `file.globMatchCount` to ask whether a rule's stated scope matches the paths the
-file governs; F5 measures a line offset against the file's length. Readback's
+file governs; F5 measures a line offset against the file's length. Disregard's
 input is one rule pasted into a box. There is no file, so F5 is undefined and F4
 has nothing to align against — which is why the port took F1, F2 and F7 and left
 those two behind.

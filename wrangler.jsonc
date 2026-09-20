@@ -2,7 +2,7 @@
   // The scoring endpoint. Free plan: 100,000 requests a day, which at the
   // measured ~2,380 tokens a rule would cost about $10 a day in Jev calls long
   // before the Worker itself cost anything.
-  "name": "readback-score",
+  "name": "disregard-score",
   "main": "worker.js",
   "compatibility_date": "2026-09-20",
 

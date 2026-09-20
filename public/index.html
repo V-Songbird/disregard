@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Readback</title>
-<meta name="description" content="Paste one rule from an agent instruction file. Readback says which lines are not rules and which ones should be hooks.">
+<title>Disregard</title>
+<meta name="description" content="Paste one rule from an agent instruction file. Disregard says which lines are not rules and which ones should be hooks.">
 <link rel="stylesheet" href="/style.css">
 <script src="/i18n.js"></script>
 </head>
 <body>
 <main>
   <div class="topbar">
-    <h1 data-i18n="title">Readback</h1>
+    <h1 data-i18n="title">Disregard</h1>
     <p class="picker">
       <label for="ui-lang" data-i18n="uiLang">Interface language</label>
       <select id="ui-lang"></select>
@@ -70,7 +70,7 @@
   // wins, because someone who picked once meant it.
   function initialLocale() {
     try {
-      const saved = localStorage.getItem("readback.lang");
+      const saved = localStorage.getItem("disregard.lang");
       if (saved && window.STRINGS[saved]) return saved;
     } catch { /* private mode, or storage blocked */ }
     for (const tag of navigator.languages || [navigator.language || "en"]) {
@@ -103,7 +103,7 @@
     promise.replaceChildren(document.createTextNode(t.promiseA), link, document.createTextNode(t.promiseB));
     updateCount();
     if (last) render(last);
-    try { localStorage.setItem("readback.lang", code); } catch { /* nothing to do */ }
+    try { localStorage.setItem("disregard.lang", code); } catch { /* nothing to do */ }
   }
 
   function updateCount() {

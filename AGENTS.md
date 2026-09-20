@@ -1,4 +1,4 @@
-# Readback
+# Disregard
 
 Scores one rule from an agent instruction file and reports how that line reads
 to the agent that has to follow it. One line at a time, English only, 2000

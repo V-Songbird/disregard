@@ -193,7 +193,7 @@ wrangler secret put TYPESAFE_API_KEY
 ```
 
 **Live since 2026-09-20** at
-[readback-score.victor-villegas.workers.dev](https://readback-score.victor-villegas.workers.dev/),
+[disregard-score.victor-villegas.workers.dev](https://disregard-score.victor-villegas.workers.dev/),
 52.50 KiB across five assets, 15.79 KiB gzipped, with the key set as a Worker
 secret. It was verified on workerd first, and the deployed Worker answers the
 same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
@@ -212,11 +212,11 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 
 ## Where things live
 
-This project moved out of `Slag` on 2026-09-20 and is now **Readback**, at
-`D:\Projects\Songbird\Readback`. Only `docs/` and `eval/` came across;
+This project moved out of `Slag` on 2026-09-20 and is now **Disregard**, at
+`D:\Projects\Songbird\Disregard`. Only `docs/` and `eval/` came across;
 `Slag/docs/collet-plugin.md` stayed behind because it belongs to that repo.
 
-**Readback is a git repository as of 2026-09-20**, on `main`, first commit
+**Disregard is a git repository as of 2026-09-20**, on `main`, first commit
 `db63860`. Identity is set per-repository, not globally.
 
 **The deterministic half is here.** `lib/scorer.js` carries F1, F2 and F7 ported
@@ -237,16 +237,18 @@ One thing still lives outside this folder and is needed:
 
 ## Naming
 
-**Readback.** In air traffic control, a readback is the receiver repeating an
-instruction so the sender can hear whether it landed the way it was meant. That
-is exactly the transaction here: you paste a rule, and the tool tells you how it
-reads to the thing that has to follow it.
+**Disregard**, renamed from *Readback* on 2026-09-20 for being too generic. In
+air traffic control, *disregard* is the call that cancels an instruction: the
+receiver drops it rather than acting on it. That is the verdict this tool
+returns. You paste a rule, and it tells you which lines an agent has nothing to
+do with.
 
-The name also encodes the boundary this project refuses to cross. A readback
-confirms that an instruction was *understood*, never that it will be *obeyed* —
-which is the same line the research draws on every page: *"No static check can
-tell you an agent will comply, and this one does not try."* A name that promised
-compliance would be lying; this one does not.
+The earlier name carried a boundary this one does not, so the copy has to carry
+it instead. *Readback* confirmed that an instruction was *understood*, never
+that it would be *obeyed*. *Disregard* names what a weak line deserves, and a
+reader could hear that as a prediction of what a model will do. It is not one:
+*"No static check can tell you an agent will comply, and this one does not
+try."* Every page has to keep saying so in its own words.
 
 Deliberately unrelated to the foundry vocabulary of `Slag` and its plugins
 (`assay`, `collet`, `anneal`, `jig`). This is a separate product and reads as
