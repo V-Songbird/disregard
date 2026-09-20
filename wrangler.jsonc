@@ -1,0 +1,12 @@
+{
+  // The scoring endpoint. Free plan: 100,000 requests a day, which at the
+  // measured ~2,380 tokens a rule would cost about $10 a day in Jev calls long
+  // before the Worker itself cost anything.
+  "name": "readback-score",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-20",
+
+  // TYPESAFE_API_KEY is a secret, not a var: it must never be in this file.
+  //   wrangler secret put TYPESAFE_API_KEY
+  "observability": { "enabled": true }
+}

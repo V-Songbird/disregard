@@ -84,6 +84,27 @@ test("a hedge is reported even inside a firm-sounding rule", async () => {
   assert.equal(r.factors.F1, 0.2);
 });
 
+test("a Spanish rule gets the Jev half and says the other half is missing", async () => {
+  const r = await analyze("Nunca subas secretos al repositorio; usa el gestor de secretos.", jev({
+    enforceability: { score: 0.4, confidence: 0.8 },
+    best_primitive: { choice: "hook", confidence: 0.85 },
+  }));
+  assert.equal(r.status, "partial");
+  assert.deepEqual(r.language, { code: "es", name: "Spanish", supported: true, deterministic: "withheld" });
+  assert.ok(ids(r).includes("should_be_a_hook"), "Jev still judges it");
+  assert.deepEqual(ids(r).filter((id) => ["stall_risk", "hedge_dominance", "no_concrete_anchor"].includes(id)), [],
+    "an English word list must not answer about Spanish");
+  for (const f of ["F1", "F2", "F7"]) assert.equal(r.factors[f], undefined, f + " is withheld, not zero");
+  assert.equal(r.factors.F8, 0.4);
+});
+
+test("an English rule says the deterministic half applied", async () => {
+  const r = await analyze("Never use `any`.", jev());
+  assert.equal(r.status, "ok");
+  assert.equal(r.language.code, "en");
+  assert.equal(r.language.deterministic, "applied");
+});
+
 test("the input is bounded before anything is spent", async () => {
   const calls = [];
   const opts = { apiKey: "k", fetchImpl: async () => { calls.push(1); throw new Error("should not run"); } };

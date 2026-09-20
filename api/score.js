@@ -3,12 +3,25 @@
 // The one server-side piece. It exists because the API key cannot go in a page:
 // everything else about this app is static.
 //
-// Written against the Web standard `Request -> Response`, which Vercel, Netlify
-// Functions v2, Cloudflare Workers, Deno and Node 22 all accept, so no host is
-// picked here. A host wanting `export default` gets it from the CommonJS
-// default export.
+// Written against the Web standard `Request -> Response`. Cloudflare Workers is
+// the host — see wrangler.jsonc and worker.js — and the same handler still runs
+// unchanged on Netlify v2, Vercel, Deno or Node 22, because nothing here
+// touches a Node built-in.
+//
+// The key arrives as a Workers secret, which is the `env` argument, and falls
+// back to `process.env` for a local run:
+//
+//   wrangler secret put TYPESAFE_API_KEY
 
 const { analyze, AnalyzeError, MAX_RULE_CHARS } = require("../lib/analyze.js");
+
+function apiKey(env) {
+  if (env && env.TYPESAFE_API_KEY) return env.TYPESAFE_API_KEY;
+  // `process` does not exist in a Worker unless nodejs_compat is on, and this
+  // code has no reason to ask for it.
+  if (typeof process !== "undefined" && process.env) return process.env.TYPESAFE_API_KEY;
+  return undefined;
+}
 
 const JSON_HEADERS = { "Content-Type": "application/json", "Cache-Control": "no-store" };
 
@@ -16,7 +29,7 @@ function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
 }
 
-async function handler(request) {
+async function handler(request, env) {
   if (request.method !== "POST") {
     return json({ error: "use POST" }, 405);
   }
@@ -32,7 +45,7 @@ async function handler(request) {
   }
 
   try {
-    const result = await analyze(payload.rule, { apiKey: process.env.TYPESAFE_API_KEY });
+    const result = await analyze(payload.rule, { apiKey: apiKey(env) });
     return json(result);
   } catch (err) {
     if (err instanceof AnalyzeError) return json({ error: err.message }, err.status);

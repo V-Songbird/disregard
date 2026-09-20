@@ -1,0 +1,8 @@
+# Wrangler's local state, and the file it reads local secrets from.
+# .dev.vars holds TYPESAFE_API_KEY on a developer machine and must never land
+# in history.
+.dev.vars
+.dev.vars.*
+.wrangler/
+
+node_modules/

@@ -89,8 +89,34 @@ first time `is_rule` has been shown a non-rule, and it was right.
   anecdote, not a measurement.
 - **The composition** — weighted mean, soft floor, grade letters — is inherited
   from assay and has no evidence of its own beyond the rule-lab weights.
-- **Spanish.** Jev judges it acceptably; the deterministic half (F1/F2/F7) is
-  English word lists and does not. No policy chosen yet.
+- **The language screen itself.** It is assay's, ported, and it was never
+  measured there either. Its thresholds encode a deliberate bias toward calling
+  things English — see `lib/language.js` — so the expected failure is a Spanish
+  rule scored as English, not the reverse.
+
+## Settled since
+
+**Language: the world's most spoken, and only English gets the word lists.**
+English, Chinese, Hindi, Spanish, Arabic and French are named and supported;
+fifth place is contested between French and Arabic depending on how Arabic
+varieties are counted, so both are in. English gets everything. Every other
+language gets the Jev half, `status: "partial"`, and
+`language.deterministic: "withheld"` — because F1, F2 and F7 are English word
+lists and `en vez de` will never match `instead`. Anything the screen does not
+recognise is treated the same way and marked `supported: false`.
+
+**Host: Cloudflare Workers**, on the existing free-plan account. `worker.js` is
+the entry point, `wrangler.jsonc` the config, and the key is a Worker secret:
+
+```bash
+wrangler secret put TYPESAFE_API_KEY
+```
+
+Verified locally on workerd: the Worker boots, bundles to 16 KiB gzipped, and
+answers 405, 400 and the unconfigured-key path correctly. It has **not** been
+deployed and has never run in Workers with a real key; the live Jev calls were
+made from Node. Nothing in the handler touches a Node built-in, so
+`nodejs_compat` is off.
 
 ## Open decisions
 
@@ -98,12 +124,7 @@ first time `is_rule` has been shown a non-rule, and it was right.
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **Language policy.** English-only and say so, or accept Spanish with the
-   deterministic half withheld and the verdict marked partial.
-3. **Where the app lives.** The function is written and host-agnostic; no host
-   is chosen and nothing is deployed. The API key must stay server-side, so it
-   is a static page plus this one serverless function.
-4. **Whether to measure F1/F4/F5/F7** before launch or ship them labelled as
+2. **Whether to measure F1/F4/F5/F7** before launch or ship them labelled as
    unmeasured.
 
 ## Where things live
@@ -160,15 +181,13 @@ by the ADR's honesty argument, so the inherited weighted mean was never wired an
 nothing here depends on it. `node --test` covers the bands and the composition
 with stubbed answers, 15/15.
 
-Three things are left before a page can sit in front of it:
+Two things are left before a page can sit in front of it:
 
-1. **Pick a host.** The handler is Web-standard `Request -> Response`, so Vercel,
-   Netlify v2, Cloudflare and Node 22 all take it, but nothing is deployed and
-   there is no `package.json`.
-2. **Decide the language policy** — open decision 2. F1/F2/F7 are English word
-   lists and will answer confidently in Spanish anyway. Nothing detects this yet.
-3. **Build the UI.** It leads with *"this should be a hook"* and *"these lines
-   are not rules"*, because those are the two things no competitor can say.
+1. **Deploy it.** `wrangler deploy`, then put the secret in. Nothing is live.
+2. **Build the UI.** It leads with *"this should be a hook"* and *"these lines
+   are not rules"*, because those are the two things no competitor can say, and
+   it has to render `status: "partial"` as an honest half-answer rather than
+   hiding the missing half.
 
 A whole file still needs splitting into rules before any of this scales past one
 paste, and that is a markdown pipeline, not a Jev question — see the ADR.
