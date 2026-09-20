@@ -212,12 +212,20 @@ repo was moved with the rename; anything outside it was not checked.
 
 1. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
    harness that lets strangers add model columns for ~$41 each. Its README calls
-   itself *"never published"*, so publishing reverses a standing decision. Audit
-   `results/` for machine-local transcripts first.
+   itself *"never published"*, so publishing reverses a standing decision.
+   **The audit is done.** The harness sits outside this repo at
+   `D:/Projects/Personal/SoftwareDevelopment/slag/docs/research/rule-lab`, its
+   2,020 cells carry no path, username, email or `localhost` reference, and
+   `node --test harness.test.js` passes 10 of 10. Nothing needs redacting.
+   Only the owner's reversal is left.
 2. **What to measure next.** Everything the app decides now has a labelled set
    behind it. What is left with none is the **six interface translations**, which
-   need a native speaker rather than a harness. After that, fresh held-out sets
-   for the four that are spent.
+   need a native speaker rather than a harness. **The owner has no way to reach
+   one**, stated 2026-09-20, so this cannot be measured as written. Two honest
+   ways out: say on the page that the translations are unreviewed, or serve the
+   interface in English only, which is the one language the scoring was measured
+   in anyway. Either is a decision, not a task.
+3. **Fresh held-out sets** for the four that are spent.
 
 ## Where things live
 

@@ -213,6 +213,19 @@ make; nothing here does it. Two things to settle first:
    0.5 — which `README.md:33` already states as the house rules for authoring an
    experiment. That section is the contribution guide, nearly as written.
 
+**The harness was located and audited on 2026-09-20.** It lives outside this
+repo at `D:/Projects/Personal/SoftwareDevelopment/slag/docs/research/rule-lab`,
+gitignored by `slag/.gitignore:15` through a blanket `/docs/*`. The corpus is
+exactly **2,020 cells** across 12 experiment specs, and `node --test
+harness.test.js` passes 10 of 10 with no API calls.
+
+Point 1 above came back **clean**. Every cell is a flat JSON record of 17 fields
+whose only free text is `responseTail`, and a scan of all 2,020 found no
+absolute filesystem path, no username, no email address and no home-directory or
+`localhost` reference. Nothing was found that needs redacting before the raw
+cells ship. The scan looked for those patterns only; it is not a review of what
+the response text says.
+
 ---
 
 ## The publishable angle
