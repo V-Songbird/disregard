@@ -6,6 +6,7 @@ related_files:
   - "docs/decisions/rule-scoring-product-viability.md"
   - "docs/knowledge/jev-commercial-licensing.md"
   - "docs/knowledge/f1-f7-deterministic-criteria.md"
+  - "docs/knowledge/is-rule-and-primitive-criteria.md"
   - "docs/knowledge/f3-trigger-distance-criteria.md"
   - "docs/knowledge/injection-screen-criteria.md"
   - "eval/"
@@ -44,10 +45,11 @@ same web report. Reasoning and the rest of the competitive picture:
 | Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
-## The six scorer defects, all fixed
+## Eight defects, found by measuring
 
-Each was found by measuring against labelled cases, and each is written up with
-its numbers and a "rules for changing this" section.
+Each was found against labelled cases, and each is written up with its numbers
+and a "rules for changing this" section. Six are fixed outright; the last two
+are improved, with what is left named and left alone on purpose.
 
 1. **F2 over-flagged bare prohibitions.** 10 of 37 bullets in a real
    `CLAUDE.md`, 9 of them wrong. Cause: the replacement usually sits in a
@@ -81,6 +83,19 @@ its numbers and a "rules for changing this" section.
    evidence sat in the held-out set. Fix: `consider` is a suggestion only before
    `whether`, `if`, or a gerund whose stem is a verb the file knows. A second
    held-out set of 20 went **16/20 → 20/20**, zero misses. Same document.
+7. **`is_rule` scored 15/16 and the count was hiding it.** The margin was
+   **−0.23**: a description reading *"…and never returns a grade"* came back
+   **0.79**, above a real rule at 0.56, so no threshold separated the classes.
+   Repair: the criteria now name who the sentence is about, the reader or the
+   system. Margin **−0.23 → +0.06**, same count, and no non-rule outranks a rule
+   any more.
+   [is-rule-and-primitive-criteria.md](../knowledge/is-rule-and-primitive-criteria.md)
+8. **`best_primitive` sent anything with a moment in it to `hook`.** Three of
+   four errors opened with a temporal clause, because the hook criterion led
+   with *"comes due at a nameable event"* and buried the test that distinguishes
+   it. Repair: the check leads and the disqualifier is explicit. **12/16 → 13/16**,
+   nothing unstable, and **every pick at confidence 0.80 or better was right, 10
+   for 10**. Same document.
 
 ## What is validated, and what is not
 
@@ -115,9 +130,14 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
   a structural defect, nowhere near enough to certify an accuracy. One residual
   is still open and named in the test: *"Consider logging disabled in
   production"*, where a gerund is used as a noun.
-- **`is_rule` and the `best_primitive` rubrics in `lib/questions.js`** are new
-  wording, not the probe's — that script is gone. One correct non-rule is an
-  anecdote, not a measurement.
+- **Both `jev-set.js` held-out halves are spent.** The repair was driven by
+  held-out cases. Three things stay open and are deliberately unfixed: a
+  fact-shaped directive sits on the fence at 0.43, a one-sentence body of
+  reference reads as a rule, and *"Never commit directly to `main`"* was demoted
+  from `hook` by the repair itself. All three sit below the confidence cut.
+- **`is_rule`'s margin is +0.06.** Positive, so the ordering is right, but thin.
+  Fourteen of sixteen cases separate 0.85-to-0.94 against 0.09-to-0.20; the two
+  that do not are the two built to be hard.
 - **The composition** — weighted mean, soft floor, grade letters — is inherited
   from assay and has no evidence of its own beyond the rule-lab weights.
 - **The language screen itself.** It is assay's, ported, and it was never
@@ -169,11 +189,11 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **What to measure next.** The deterministic half is done. What is left with
-   no labelled evidence at all is `is_rule` and the `best_primitive` rubric in
-   `lib/questions.js`, the language screen, and the six interface translations.
-   The first two are Jev questions, so a set costs real money; the third needs a
-   native speaker, not a harness.
+2. **What to measure next.** Every question the app asks now has a labelled set
+   behind it. What is left with none is the **language screen** — assay's, ported,
+   never measured there either — and the **six interface translations**, which
+   need a native speaker rather than a harness. After that, fresh held-out sets
+   for the three spent ones.
 
 ## Where things live
 

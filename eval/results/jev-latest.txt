@@ -1,0 +1,52 @@
+# node eval/jev-eval.js   2026-09-20, after the criteria repair.
+#
+# Baseline, before it:
+#   is_rule    working 8/8   HELD OUT 7/8   margin -0.23  (lowest rule 0.56, highest non-rule 0.79)
+#   primitive  working 5/8   HELD OUT 7/8   1 unstable across repetitions
+#   every primitive error sat below the 0.80 confidence cut; 5/5 confident picks were right
+#
+
+### is_rule    working set   8/8
+    ok    prettier          want true  got true  value 0.93  spread 0.01
+    ok    no-secrets        want true  got true  value 0.93  spread 0
+    ok    smallest          want true  got true  value 0.92  spread 0.01
+    ok    node-18           want true  got true  value 0.76  spread 0.02
+    ok    optimized         want false got false value 0.2  spread 0.02
+    ok    429               want false got false value 0.13  spread 0.01
+    ok    readback-def      want false got false value 0.13  spread 0
+    ok    moved-repo        want false got false value 0.11  spread 0
+
+### is_rule    HELD OUT   7/8
+    ok    passing-build     want true  got true  value 0.84  spread 0.02
+    MISS  env-key           want true  got false value 0.43  spread 0.03
+    ok    untrusted         want true  got true  value 0.91  spread 0
+    ok    colocate          want true  got true  value 0.94  spread 0.01
+    ok    layout            want false got false value 0.18  spread 0.01
+    ok    suite-time        want false got false value 0.11  spread 0
+    ok    why-workers       want false got false value 0.09  spread 0
+    ok    what-it-does      want false got false value 0.37  spread 0.07
+
+### primitive  working set   7/8
+    ok    prettier-hook     want hook      got hook      conf 0.99  ["hook","hook","hook"]
+    ok    build-green       want hook      got hook      conf 0.84  ["hook","hook","hook"]
+    ok    smallest-rule     want rule      got rule      conf 0.98  ["rule","rule","rule"]
+    ok    ask-before-delete want rule      got rule      conf 0.92  ["rule","rule","rule"]
+    ok    migration-procedurewant skill     got skill     conf 0.92  ["skill","skill","skill"]
+    MISS  rest-conventions  want skill     got rule      conf 0.68  ["rule","rule","rule"]
+    ok    release-review    want subagent  got subagent  conf 0.63  ["subagent","subagent","subagent"]
+    ok    dep-audit         want subagent  got subagent  conf 0.84  ["subagent","subagent","subagent"]
+
+### primitive  HELD OUT   6/8
+    MISS  no-main-commit    want hook      got rule      conf 0.4  ["rule","rule","rule"]
+    ok    file-size         want hook      got hook      conf 0.77  ["hook","hook","hook"]
+    ok    match-existing    want rule      got rule      conf 1  ["rule","rule","rule"]
+    ok    say-unrun         want rule      got rule      conf 0.96  ["rule","rule","rule"]
+    ok    release-procedure want skill     got skill     conf 0.96  ["skill","skill","skill"]
+    MISS  design-tokens     want skill     got rule      conf 0.49  ["rule","rule","rule"]
+    ok    todo-sweep        want subagent  got subagent  conf 0.89  ["subagent","subagent","subagent"]
+    ok    refactor-reread   want subagent  got subagent  conf 0.68  ["subagent","subagent","subagent"]
+
+is_rule    lowest rule 0.43   highest non-rule 0.37   margin 0.06
+primitive  unstable across repetitions: none
+
+SUMMARY  HELD OUT  is_rule 7/8   primitive 6/8   |  working 8/8 and 7/8   |  56481 input tokens

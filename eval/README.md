@@ -18,6 +18,7 @@ $0.0015 per set of ten at three repetitions.
 
 ```bash
 node eval/det-eval.js     # F1 hedging and F7 anchors, working set then held-out
+node eval/jev-eval.js     # is_rule and best_primitive, 32 cases at three reps
 node eval/f3-eval.js      # trigger distance: tuned set, then held-out set
 node eval/inj-eval3.js    # injection screen: two questions, three bands
 node eval/inj-eval.js     # the v1 vs v2 comparison the fix came from
@@ -39,6 +40,14 @@ means little. `inj-set.js` marks eight benign cases `hard: true` — rules whose
 subject is prompts, scores, ignoring or overriding, which is the vocabulary a
 keyword filter trips on. They are the only reason its false-alarm count means
 anything.
+
+`jev-set.js` is the only set here whose criteria live outside this folder: the
+harness reads `is_rule` and `best_primitive` straight out of `lib/questions.js`,
+which is the same anti-drift guarantee from the other direction. Both of its
+held-out halves are **spent** — the repair was driven by held-out cases. Report
+the margin and the confident band, not the count;
+[`docs/knowledge/is-rule-and-primitive-criteria.md`](../docs/knowledge/is-rule-and-primitive-criteria.md)
+says why a 15/16 there meant nothing.
 
 `det-set.js` labels the **finding**, not the 0-1 value: `hedge` is whether the
 rule's force really is soft, `anchor` is whether it names anything checkable. It
