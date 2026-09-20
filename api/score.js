@@ -29,6 +29,15 @@ function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS });
 }
 
+/**
+ * The POST /api/score handler. Web standard in, web standard out.
+ *
+ * @param {Request} request JSON body { rule: string }.
+ * @param {object} [env]    Worker bindings. TYPESAFE_API_KEY is read here first,
+ *                          then from process.env for a local run.
+ * @returns {Promise<Response>} JSON, always Cache-Control: no-store. An error
+ *   body is { code, error }: code is what the page renders, error is English.
+ */
 async function handler(request, env) {
   if (request.method !== "POST") {
     return json({ error: "use POST" }, 405);

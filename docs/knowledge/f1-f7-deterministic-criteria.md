@@ -5,7 +5,7 @@ related_files:
   - "lib/scorer.js"
   - "eval/det-set.js"
   - "eval/det-eval.js"
-  - "test/f1-f7-corpus.test.js"
+  - "lib/scorer.f1-f7-corpus.test.js"
 ---
 
 # F1 and F7, measured
@@ -149,7 +149,7 @@ HELD-OUT 2   hedge 20/20  false alarms 0  missed 0     anchor 20/20  false alarm
 **Missed zero in every run of all three sets, before and after every fix.**
 Every error this document reports was a false alarm, and every case labelled
 `hedge: true` anywhere still fires — asserted directly in
-[test/f1-f7-corpus.test.js](../../test/f1-f7-corpus.test.js). The suite went 24
+[lib/scorer.f1-f7-corpus.test.js](../../lib/scorer.f1-f7-corpus.test.js). The suite went 24
 to 36 tests, and the 28-case F2 corpus passes unchanged throughout.
 
 `HELDOUT2`'s anchor column never moved, which is the useful null result: the

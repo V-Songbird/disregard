@@ -17,8 +17,8 @@ nothing here was measured outside English. To review a whole instruction file,
 
 - **Node 18 or later**, for the tests and the offline harness. Checked on
   22.22.2.
-- **A TypeSafe API key**, to score a rule. The tests and the offline harness run
-  without one.
+- **A TypeSafe API key**, to score a rule. Scoring calls Jev, a TypeSafe model.
+  The tests and the offline harness run without one.
 - **A Cloudflare account**, only to deploy your own copy.
 
 ## Quick start
@@ -50,8 +50,8 @@ Expected output, pretty-printed from the single line the service returns:
 }
 ```
 
-Two findings fired. `hedge_dominance` reports that `try to` softens the whole
-sentence. `no_concrete_anchor` reports that nothing in the line is checkable.
+Two findings fired. `hedge_dominance` for the `try to`, and
+`no_concrete_anchor` because nothing in the line is checkable.
 
 Your numbers will differ slightly. Four of the values come back probability
 weighted, so they move a little between runs while the findings stay the same.
@@ -81,6 +81,16 @@ there says them.
 | `hedge_dominance` | One hedging verb sets the force of the whole sentence downward. |
 | `no_concrete_anchor` | No file, command, symbol or number, so two readers can disagree about what they did. |
 
+The `factors` block holds the numbers behind them.
+
+| Factor | What it scores | A low value means |
+| --- | --- | --- |
+| `F1` | How hard the leading verb pushes. | The verb is hedged. |
+| `F2` | Whether a ban names something to do instead. | It names nothing. |
+| `F3` | How close the occasion is that brings the rule due. | No occasion is named. |
+| `F7` | Whether anything in the line is checkable. | Nothing is. |
+| `F8` | Whether a deterministic tool beats prose here. | A tool settles it. |
+
 The `status` field says which of four answers you got.
 
 | `status` | When | Cost |
@@ -100,10 +110,11 @@ upstream body can carry the submitted rule back verbatim.
 There is no build step and no `package.json`. `npx` ships with Node and
 downloads wrangler on first use.
 
-1. Put your key in `.dev.vars`, replacing `<YOUR_KEY>`. The file is gitignored.
+1. Copy [.dev.vars.example](.dev.vars.example) to `.dev.vars` and fill in your
+   key. The copy is gitignored, the example is not.
 
    ```bash
-   echo "TYPESAFE_API_KEY=<YOUR_KEY>" > .dev.vars
+   cp .dev.vars.example .dev.vars
    ```
 
 2. Start the server. Wrangler prints the local address it is listening on.
@@ -130,16 +141,16 @@ the document that measured it.
 
 ## Deploy
 
-Requires a Cloudflare account and `wrangler login`. Run both, in this order,
-from the repository root.
+Requires a Cloudflare account and `wrangler login`. Run these two steps in this
+order, from the repository root.
 
-1. Publish the Worker and the page.
+1. Publish the Worker and the page. Wrangler prints the deployed URL.
 
    ```bash
    npx --yes wrangler deploy
    ```
 
-2. Set the key. The Worker must already exist.
+2. Set the key. Wrangler prompts for the value. The Worker must already exist.
 
    ```bash
    npx --yes wrangler secret put TYPESAFE_API_KEY
@@ -147,20 +158,23 @@ from the repository root.
 
 ## Development and tests
 
-The suite is local, needs no key, and costs nothing.
+The suite is local, needs no key, and costs nothing. Tests sit beside the code
+they cover, in `lib/`.
 
 ```bash
-node --test
+node --test --test-reporter=dot
 ```
 
-Expected output, last lines:
+Expected output, all of it: 47 dots and nothing else. A failed test prints its
+assertion instead.
 
 ```text
-# tests 47
-# suites 0
-# pass 47
-# fail 0
+....................
+....................
+.......
 ```
+
+Drop `--test-reporter=dot` to see every test name and the `# pass 47` summary.
 
 The labelled sets and their harnesses live in `eval/`. One of them is free and
 the rest spend real money per run. Read
@@ -218,11 +232,11 @@ touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
 
 ## Support and license
 
-This repository has no public issue tracker, no `CONTRIBUTING.md` and no
-`SECURITY.md`. The documents under `docs/` are the only route for questions
-about why a criteria string says what it says. Report anything security related
-privately to the repository owner rather than in a public channel.
+This repository has no public issue tracker and no `CONTRIBUTING.md`. The
+documents under `docs/` are the only route for questions about why a criteria
+string says what it says. Report anything security related to the address in
+[SECURITY.md](SECURITY.md), never in a public channel.
 
-**No license file has been chosen yet**, so no distribution terms are granted.
-The service's own terms and privacy notice are shipped with the page, at
-[terms](public/terms.html) and [privacy](public/privacy.html).
+**MIT**, in [LICENSE](LICENSE). The service's own terms and privacy notice are
+shipped with the page, at [terms](public/terms.html) and
+[privacy](public/privacy.html).

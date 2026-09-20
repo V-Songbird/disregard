@@ -14,7 +14,6 @@ related_files:
   - "lib/"
   - "api/"
   - "public/"
-  - "test/"
 ---
 
 # Rule-scoring app — groundwork, before any code
@@ -57,7 +56,7 @@ improved, with what is left named and left alone on purpose.
    neighbouring sentence sharing no words with the ban. Fix: a third state,
    `prohibition_alternative_unproven`, so the grade-capping verdict is kept only
    for a ban standing alone. **12/28 corpus errors → 0/28**, and 10 flags → 1.
-   Code and fixtures are here now: `lib/scorer.js`, `test/`.
+   Code and fixtures are here now: `lib/scorer.js`, and the tests beside it.
 2. **F3 compressed the top of its scale.** Cause: the Score levels were written
    comparatively, and the model evaluates each level without seeing its
    neighbours. Fix: standalone situations with signals. **4/10 → 9/10 exact** on
@@ -222,9 +221,8 @@ This project moved out of `Slag` on 2026-09-20 and is now **Readback**, at
 
 **The deterministic half is here.** `lib/scorer.js` carries F1, F2 and F7 ported
 verbatim out of `assay/scripts/assay.js`, with the F2 fix in place, and
-`test/f2-prohibition-corpus.test.js` carries the 28-case labelled corpus that
-proves it. The port was checked against the original
-on 43 texts across all three factors with zero mismatches, so the two
+`lib/scorer.f2-prohibition-corpus.test.js` carries the 28-case labelled corpus
+that proves it. The port was checked against the original on 43 texts across all three factors with zero mismatches, so the two
 implementations agree exactly at the moment of the copy. F4 and F5 did **not**
 come across: both need a whole file and a corpus, which this app does not have.
 The upstream copies stay uncommitted in `slag`, and assay is still being
