@@ -9,9 +9,16 @@
 // The server sends finding ids and numbers, never sentences. Every sentence a
 // reader sees is here.
 //
-// Placeholders: {n} {max} {lang} {verb} {choice} {confidence}. The example rule
-// in the input box stays English on purpose — it is a rule, and rules are
-// English.
+// Every finding has three parts: `h` what is wrong, `d` why it matters, `fix`
+// what to do about it. The fix line is the reason anyone is here.
+//
+// No finding quotes a factor name or a confidence. Those live behind the
+// "what was measured" disclosure, for the reader who goes looking. A number in
+// the body of a finding is a number the reader has to interpret, and asking
+// that is the tool's job, not theirs.
+//
+// Placeholders: {n} {max} {lang} {verb}. The example rule in the input box
+// stays English on purpose — it is a rule, and rules are English.
 
 window.STRINGS = {
   en: {
@@ -60,30 +67,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "This line asks for nothing.",
         d: "It reads as description rather than instruction. Text like this is carried, read and paid for on every turn without changing what the agent does.",
+        fix: "Cut it, or rewrite it as something the agent has to do.",
       },
       should_be_a_hook: {
-        h: "This should stop being a rule and become a hook.",
-        d: "Compliance here can be settled by a command, so prose is the weaker copy of a check that would never be forgotten.",
+        h: "A command could settle this, so a hook would do it better.",
+        d: "Compliance here is mechanical. Prose is the weaker copy of a check that would never be forgotten and never be skipped.",
+        fix: "Write it as a hook, then delete the line from the file.",
       },
       could_be_a_hook: {
-        h: "Could this be a hook instead?",
-        d: "A tool could carry most of this, but the routing is not confident enough to call it: {choice} at {confidence}.",
+        h: "A tool could check this for you.",
+        d: "Compliance here looks mechanical enough that something could enforce it, instead of asking an agent to remember.",
+        fix: "If a lint rule, a hook or a CI step can carry it, move it there.",
       },
       no_trigger: {
         h: "There is no moment when this comes due.",
         d: "Nothing names an occasion the reader could check themselves against, so it is read once and never fires.",
+        fix: "Name the moment: before committing, when a test fails, on every pull request.",
       },
       stall_risk: {
         h: "This ban names nothing to do instead.",
-        d: "An agent that needed the banned thing has nowhere to go, so a blocked task becomes a stopped one. Name the replacement in the same rule.",
+        d: "An agent that needed the banned thing has nowhere to go, so a blocked task becomes a stopped one.",
+        fix: "Name the replacement in the same sentence.",
       },
       hedge_dominance: {
         h: "One hedge governs the whole sentence downward.",
         d: "A hedge sets the force of everything around it, however firm the rest sounds. “{verb}” is doing that here.",
+        fix: "Cut “{verb}” if you mean the rule, or keep it and accept the rule is optional.",
       },
       no_concrete_anchor: {
         h: "Nothing in this rule is checkable.",
         d: "It names no file, command, symbol or number, so two readers can both follow it and disagree about what they did.",
+        fix: "Name a file, a command, a symbol or a number.",
       },
     },
     languages: {es: "Spanish", pt: "Portuguese", fr: "French", it: "Italian", de: "German", zh: "Chinese", hi: "Hindi", ar: "Arabic"},
@@ -147,30 +161,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "Esta línea no pide nada.",
         d: "Se lee como descripción, no como instrucción. Un texto así se carga, se lee y se paga en cada turno sin cambiar lo que hace el agente.",
+        fix: "Bórrala, o reescríbela como algo que el agente deba hacer.",
       },
       should_be_a_hook: {
-        h: "Esto debería dejar de ser una regla y pasar a ser un hook.",
-        d: "Aquí el cumplimiento lo resuelve un comando, así que la prosa es la copia débil de una comprobación que nunca se olvidaría.",
+        h: "Un comando puede resolver esto, y un hook lo haría mejor.",
+        d: "Aquí el cumplimiento es mecánico. La prosa es la copia débil de una comprobación que nunca se olvida ni se salta.",
+        fix: "Escríbelo como hook y borra la línea del archivo.",
       },
       could_be_a_hook: {
-        h: "¿Y si esto fuera un hook?",
-        d: "Una herramienta podría cargar con casi todo, pero el enrutado no tiene confianza suficiente para afirmarlo: {choice} con {confidence}.",
+        h: "Una herramienta podría comprobar esto por ti.",
+        d: "El cumplimiento aquí parece lo bastante mecánico como para que algo lo imponga, en vez de pedirle al agente que lo recuerde.",
+        fix: "Si una regla de lint, un hook o un paso de CI puede cargarlo, muévelo ahí.",
       },
       no_trigger: {
         h: "No hay un momento en que esto toque.",
         d: "Nada nombra una ocasión contra la que el lector pueda contrastarse, así que se lee una vez y nunca se dispara.",
+        fix: "Nombra el momento: antes de commitear, cuando falla un test, en cada pull request.",
       },
       stall_risk: {
         h: "Esta prohibición no nombra qué hacer en su lugar.",
-        d: "Un agente que necesitaba lo prohibido no tiene a dónde ir, y una tarea bloqueada se convierte en una tarea detenida. Nombra el reemplazo en la misma regla.",
+        d: "Un agente que necesitaba lo prohibido no tiene a dónde ir, y una tarea bloqueada se convierte en una tarea detenida.",
+        fix: "Nombra el reemplazo en la misma frase.",
       },
       hedge_dominance: {
         h: "Un matiz gobierna toda la frase hacia abajo.",
         d: "Un matiz marca la fuerza de todo lo que lo rodea, por firme que suene el resto. Aquí lo hace «{verb}».",
+        fix: "Quita «{verb}» si lo dices en serio, o déjalo y asume que la regla es opcional.",
       },
       no_concrete_anchor: {
         h: "Nada de esta regla se puede comprobar.",
         d: "No nombra archivo, comando, símbolo ni número, así que dos lectores pueden cumplirla y no estar de acuerdo en qué hicieron.",
+        fix: "Nombra un archivo, un comando, un símbolo o un número.",
       },
     },
     languages: {es: "español", pt: "portugués", fr: "francés", it: "italiano", de: "alemán", zh: "chino", hi: "hindi", ar: "árabe"},
@@ -234,30 +255,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "这一行没有提出任何要求。",
         d: "它读起来是描述，不是指令。这样的文字每一轮都要被载入、被读、被计费，却不改变代理的行为。",
+        fix: "删掉它，或者改写成代理必须做的事。",
       },
       should_be_a_hook: {
-        h: "这条不该再是规则，应当改成 hook。",
-        d: "这里的合规与否，一条命令就能判定。写成散文，只是一个永远不会被遗忘的检查的弱化版本。",
+        h: "一条命令就能判定，写成 hook 更好。",
+        d: "这里的合规是机械的。写成散文，只是一个永远不会被遗忘、也不会被跳过的检查的弱化版本。",
+        fix: "把它写成 hook，然后把这一行从文件里删掉。",
       },
       could_be_a_hook: {
-        h: "这条会不会更适合做 hook？",
-        d: "工具能承担其中大部分，但路由的把握还不够下定论：{choice}，{confidence}。",
+        h: "工具可以替你检查这一条。",
+        d: "这里的合规足够机械，可以交给程序去执行，而不是要代理记住。",
+        fix: "如果 lint 规则、hook 或 CI 步骤能承担，就搬过去。",
       },
       no_trigger: {
         h: "没有哪个时刻会让它生效。",
         d: "没有指明任何可供读者自我核对的时机，所以它被读过一次，就再也不会触发。",
+        fix: "写明时机：提交前、测试失败时、每个 pull request。",
       },
       stall_risk: {
         h: "这条禁令没有说该改做什么。",
-        d: "需要被禁之物的代理无处可去，一个受阻的任务就变成一个停住的任务。请在同一条规则里写明替代做法。",
+        d: "需要被禁之物的代理无处可去，一个受阻的任务就变成一个停住的任务。",
+        fix: "在同一句话里写明替代做法。",
       },
       hedge_dominance: {
         h: "一处模糊措辞把整句话的力度拉了下来。",
         d: "无论其余部分听起来多坚决，一处模糊措辞就决定了整句的力度。这里是「{verb}」在起作用。",
+        fix: "如果你是认真的，就删掉「{verb}」；留着就得接受这条规则是可选的。",
       },
       no_concrete_anchor: {
         h: "这条规则没有可核对之处。",
         d: "没有点名文件、命令、符号或数字，于是两个人都照做了，却对自己做了什么各执一词。",
+        fix: "点名一个文件、一条命令、一个符号或一个数字。",
       },
     },
     languages: {es: "西班牙文", pt: "葡萄牙文", fr: "法文", it: "意大利文", de: "德文", zh: "中文", hi: "印地文", ar: "阿拉伯文"},
@@ -321,30 +349,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "यह पंक्ति कुछ माँगती ही नहीं।",
         d: "यह निर्देश नहीं, विवरण की तरह पढ़ी जाती है। ऐसा पाठ हर बार लादा, पढ़ा और उसका खर्च उठाया जाता है, पर एजेंट का काम नहीं बदलता।",
+        fix: "इसे हटा दें, या ऐसा लिखें जो एजेंट को करना ही पड़े।",
       },
       should_be_a_hook: {
-        h: "इसे नियम रहना छोड़कर hook बन जाना चाहिए।",
-        d: "यहाँ पालन एक कमांड से तय हो सकता है, इसलिए गद्य उस जाँच की कमज़ोर नकल है जो कभी भूली नहीं जाती।",
+        h: "एक कमांड इसे तय कर सकती है, इसलिए hook बेहतर रहेगा।",
+        d: "यहाँ पालन यांत्रिक है। गद्य उस जाँच की कमज़ोर नकल है जो कभी भूली नहीं जाती और कभी छोड़ी नहीं जाती।",
+        fix: "इसे hook की तरह लिखें और यह पंक्ति फ़ाइल से हटा दें।",
       },
       could_be_a_hook: {
-        h: "क्या यह hook हो सकता है?",
-        d: "इसका अधिकांश हिस्सा कोई उपकरण संभाल सकता है, पर रूटिंग इतना भरोसा नहीं देती कि कहा जा सके: {choice}, {confidence}।",
+        h: "कोई उपकरण यह आपके लिए जाँच सकता है।",
+        d: "यहाँ पालन इतना यांत्रिक लगता है कि कोई प्रोग्राम इसे लागू कर सके, एजेंट की याददाश्त पर छोड़ने के बजाय।",
+        fix: "अगर कोई lint नियम, hook या CI चरण इसे उठा सकता है, तो वहीं ले जाएँ।",
       },
       no_trigger: {
         h: "ऐसा कोई क्षण नहीं जब यह लागू हो।",
         d: "कोई ऐसा मौका नहीं बताया गया जिस पर पढ़ने वाला खुद को परख सके, इसलिए यह एक बार पढ़ा जाता है और कभी चलता नहीं।",
+        fix: "क्षण बताएँ: कमिट से पहले, टेस्ट फेल होने पर, हर pull request पर।",
       },
       stall_risk: {
         h: "यह रोक बताती नहीं कि इसके बदले क्या करें।",
-        d: "जिस एजेंट को वही चीज़ चाहिए थी, उसके पास जाने को कुछ नहीं बचता, और रुका हुआ काम ठप काम बन जाता है। विकल्प इसी नियम में लिखें।",
+        d: "जिस एजेंट को वही चीज़ चाहिए थी, उसके पास जाने को कुछ नहीं बचता, और रुका हुआ काम ठप काम बन जाता है।",
+        fix: "विकल्प इसी वाक्य में नाम लेकर लिखें।",
       },
       hedge_dominance: {
         h: "एक ढीला शब्द पूरे वाक्य का ज़ोर गिरा देता है।",
         d: "बाकी हिस्सा चाहे कितना भी सख़्त लगे, एक ढीला शब्द पूरे वाक्य का ज़ोर तय कर देता है। यहाँ वह «{verb}» है।",
+        fix: "गंभीर हैं तो «{verb}» हटा दें, वरना मान लें कि नियम वैकल्पिक है।",
       },
       no_concrete_anchor: {
         h: "इस नियम में जाँचने लायक कुछ नहीं।",
         d: "इसमें कोई फ़ाइल, कमांड, नाम या संख्या नहीं है, इसलिए दो लोग इसे मान सकते हैं और फिर भी असहमत रहें कि उन्होंने क्या किया।",
+        fix: "कोई फ़ाइल, कमांड, नाम या संख्या लिखें।",
       },
     },
     languages: {es: "स्पेनिश", pt: "पुर्तगाली", fr: "फ़्रेंच", it: "इतालवी", de: "जर्मन", zh: "चीनी", hi: "हिन्दी", ar: "अरबी"},
@@ -408,30 +443,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "هذا السطر لا يطلب شيئًا.",
         d: "يُقرأ وصفًا لا تعليمة. نص كهذا يُحمَّل ويُقرأ ويُدفع ثمنه في كل دورة دون أن يغيّر ما يفعله الوكيل.",
+        fix: "احذفها، أو أعد صياغتها كشيء على الوكيل فعله.",
       },
       should_be_a_hook: {
-        h: "يجب أن تتوقف هذه عن كونها قاعدة وتصير hook.",
-        d: "الالتزام هنا يحسمه أمر واحد، فالنص نسخة أضعف من فحص لا يُنسى أبدًا.",
+        h: "أمر واحد يحسم هذه، و hook يؤديها أفضل.",
+        d: "الالتزام هنا آلي. النص نسخة أضعف من فحص لا يُنسى ولا يُتجاوز.",
+        fix: "اكتبها hook ثم احذف السطر من الملف.",
       },
       could_be_a_hook: {
-        h: "هل تصلح هذه أن تكون hook؟",
-        d: "تستطيع أداة أن تحمل معظمها، لكن التوجيه ليس واثقًا بما يكفي للجزم: {choice} بثقة {confidence}.",
+        h: "تستطيع أداة أن تتحقق من هذه عنك.",
+        d: "الالتزام هنا يبدو آليًا بما يكفي ليفرضه برنامج، بدل أن يُترك لذاكرة الوكيل.",
+        fix: "إن استطاع قيد lint أو hook أو خطوة CI حملها، فانقلها إلى هناك.",
       },
       no_trigger: {
         h: "لا توجد لحظة تحين فيها.",
         d: "لا شيء يسمّي مناسبة يقيس عليها القارئ نفسه، فتُقرأ مرة واحدة ولا تعمل أبدًا.",
+        fix: "سمِّ اللحظة: قبل الالتزام، عند فشل اختبار، في كل pull request.",
       },
       stall_risk: {
         h: "هذا المنع لا يسمّي بديلًا.",
-        d: "الوكيل الذي احتاج ما مُنع لا يجد إلى أين يذهب، فتتحول المهمة المعطَّلة إلى مهمة متوقفة. سمِّ البديل في القاعدة نفسها.",
+        d: "الوكيل الذي احتاج ما مُنع لا يجد إلى أين يذهب، فتتحول المهمة المعطَّلة إلى مهمة متوقفة.",
+        fix: "سمِّ البديل في الجملة نفسها.",
       },
       hedge_dominance: {
         h: "كلمة تحفُّظ واحدة تخفض قوة الجملة كلها.",
         d: "كلمة التحفظ تحدد قوة كل ما حولها مهما بدا الباقي حازمًا. هنا تفعلها «{verb}».",
+        fix: "احذف «{verb}» إن كنت جادًّا، أو أبقها واقبل أن القاعدة اختيارية.",
       },
       no_concrete_anchor: {
         h: "لا شيء في هذه القاعدة قابل للتحقق.",
         d: "لا تسمّي ملفًا ولا أمرًا ولا رمزًا ولا رقمًا، فيلتزم بها قارئان ويختلفان على ما فعلاه.",
+        fix: "سمِّ ملفًا أو أمرًا أو رمزًا أو رقمًا.",
       },
     },
     languages: {es: "الإسبانية", pt: "البرتغالية", fr: "الفرنسية", it: "الإيطالية", de: "الألمانية", zh: "الصينية", hi: "الهندية", ar: "العربية"},
@@ -495,30 +537,37 @@ window.STRINGS = {
       not_a_rule: {
         h: "Cette ligne ne demande rien.",
         d: "Elle se lit comme une description, pas comme une instruction. Un texte pareil est chargé, lu et payé à chaque tour sans changer ce que fait l'agent.",
+        fix: "Supprimez-la, ou réécrivez-la comme quelque chose que l'agent doit faire.",
       },
       should_be_a_hook: {
-        h: "Ceci devrait cesser d'être une règle et devenir un hook.",
-        d: "Ici, une commande tranche la conformité : la prose n'est que la copie faible d'une vérification qu'on n'oublierait jamais.",
+        h: "Une commande tranche ceci, un hook ferait mieux.",
+        d: "Ici la conformité est mécanique. La prose n'est que la copie faible d'une vérification qu'on n'oublie ni ne saute jamais.",
+        fix: "Écrivez-le en hook, puis supprimez la ligne du fichier.",
       },
       could_be_a_hook: {
-        h: "Et si c'était plutôt un hook ?",
-        d: "Un outil pourrait en porter l'essentiel, mais l'aiguillage n'est pas assez sûr pour trancher : {choice} à {confidence}.",
+        h: "Un outil pourrait vérifier ceci à votre place.",
+        d: "La conformité semble ici assez mécanique pour être imposée par un programme, plutôt que confiée à la mémoire de l'agent.",
+        fix: "Si une règle de lint, un hook ou une étape de CI peut le porter, déplacez-le là.",
       },
       no_trigger: {
         h: "Il n'y a aucun moment où elle s'applique.",
         d: "Rien ne nomme une occasion à laquelle le lecteur pourrait se mesurer : elle est lue une fois et ne se déclenche jamais.",
+        fix: "Nommez le moment : avant de commiter, quand un test échoue, à chaque pull request.",
       },
       stall_risk: {
         h: "Cette interdiction ne dit pas quoi faire à la place.",
-        d: "L'agent qui avait besoin de la chose interdite n'a nulle part où aller, et une tâche bloquée devient une tâche arrêtée. Nommez le remplacement dans la même règle.",
+        d: "L'agent qui avait besoin de la chose interdite n'a nulle part où aller, et une tâche bloquée devient une tâche arrêtée.",
+        fix: "Nommez le remplacement dans la même phrase.",
       },
       hedge_dominance: {
         h: "Une précaution fait baisser toute la phrase.",
         d: "Une précaution fixe la force de tout ce qui l'entoure, si ferme que sonne le reste. Ici, c'est « {verb} ».",
+        fix: "Coupez « {verb} » si vous tenez à la règle, ou gardez-le et acceptez qu'elle soit facultative.",
       },
       no_concrete_anchor: {
         h: "Rien n'est vérifiable dans cette règle.",
         d: "Elle ne nomme ni fichier, ni commande, ni symbole, ni nombre : deux lecteurs peuvent la suivre et ne pas être d'accord sur ce qu'ils ont fait.",
+        fix: "Nommez un fichier, une commande, un symbole ou un nombre.",
       },
     },
     languages: {es: "de l'espagnol", pt: "du portugais", fr: "du français", it: "de l'italien", de: "de l'allemand", zh: "du chinois", hi: "du hindi", ar: "de l'arabe"},

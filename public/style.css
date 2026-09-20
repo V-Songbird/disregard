@@ -70,10 +70,9 @@ li.finding {
 li.finding.lead { border-inline-start-color: var(--accent); }
 li.finding h2 { margin: 0 0 .35rem; font-size: 1.05rem; }
 li.finding p { margin: 0; color: var(--muted); }
-.tag {
-  display: inline-block; margin-top: .6rem; font-size: .8rem; color: var(--muted);
-  font-variant-numeric: tabular-nums; border: 1px solid var(--line);
-  border-radius: 1rem; padding: .1rem .6rem;
+li.finding p.fix {
+  margin-top: .7rem; padding-inline-start: .75rem; color: var(--ink);
+  border-inline-start: 2px solid var(--accent);
 }
 blockquote.echo {
   margin: .8rem 0 0; padding: .6rem .9rem; border-inline-start: 3px solid var(--line);

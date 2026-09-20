@@ -259,7 +259,26 @@ go in English and names the language it found, `review` and `refused` hand the
 text straight back unchanged, and a clean rule gets *"Nothing flagged"* followed
 by the reminder that this is not a prediction of compliance.
 
-`i18n.js` holds all six translations, about 45 strings each. Switching language
+**A finding has three parts: what is wrong, why it matters, and what to do.**
+The third one was added on 2026-09-20 after a reader asked what he was supposed
+to do with *"F8 0.8"*. It is the part anyone is actually there for, and it is
+written per finding in all six languages — the hedge fix names the hedging word
+out of the reader's own rule.
+
+**No finding shows a factor name or a confidence.** Both were leaking into the
+main flow: every card carried a bare `F8 0.8` tag, and the low-confidence hook
+finding read *"the routing is not confident enough to call it: a hook at 0.61"*
+— the model's own uncertainty, as a decimal, as the headline. A number in the
+body of a finding is a number the reader has to interpret, and that is the
+tool's job. They are all still there, one disclosure away.
+
+That finding was also rewritten around the signal that *is* confident. F8 says a
+command could settle the rule; the primitive choice is the uncertain part. So it
+now says **"A tool could check this for you"** and leaves the form — hook, lint
+rule, CI step — to the reader. `should_be_a_hook`, which only fires at
+confidence 0.8 or better, still names the hook outright.
+
+`i18n.js` holds all six translations, about 60 strings each. Switching language
 re-renders the answer already on screen rather than clearing it.
 
 `privacy.html` carries the five-fact notice the DPA requires, and `terms.html`
@@ -277,8 +296,13 @@ uses `border-inline-start`. Also checked at 375 px with no horizontal scroll, a
 both colour schemes. Every render path was exercised against a stub, including
 the 502.
 
-Not checked: a screen reader. The page talking to the Worker in Workers with a
-real key is checked now, on the deployed origin.
+Rechecked after the findings were rewritten: the page served locally against the
+live endpoint, *"All async functions MUST have timeout"* rendering the fix line
+and **no digit anywhere in the card**, at 375 px in all six languages, with the
+numbers disclosure both open and closed and no horizontal overflow in any of
+them. Arabic flips the fix line's accent border to the right.
+
+Not checked: a screen reader.
 
 A whole file still needs splitting into rules before any of this scales past one
 paste, and that is a markdown pipeline, not a Jev question — see the ADR.
