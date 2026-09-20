@@ -1,7 +1,7 @@
 ---
 type: task_summary
 status: active
-summary: "State of the Jev rule-scoring app before implementation starts: what was researched, the three scorer defects that were found and fixed, what is validated and what is not, and the decisions still open."
+summary: "State of the Jev rule-scoring app now that it is built and live on Cloudflare: what was researched, the three scorer defects that were found and fixed, what is validated and what is not, and the decisions still open."
 related_files:
   - "docs/decisions/rule-scoring-product-viability.md"
   - "docs/knowledge/jev-commercial-licensing.md"
@@ -126,10 +126,11 @@ the entry point, `wrangler.jsonc` the config, and the key is a Worker secret:
 wrangler secret put TYPESAFE_API_KEY
 ```
 
-Verified locally on workerd: the Worker boots, bundles to 16 KiB gzipped, and
-answers 405, 400 and the unconfigured-key path correctly. It has **not** been
-deployed and has never run in Workers with a real key; the live Jev calls were
-made from Node. Nothing in the handler touches a Node built-in, so
+**Live since 2026-09-20** at
+[readback-score.victor-villegas.workers.dev](https://readback-score.victor-villegas.workers.dev/),
+52.50 KiB across five assets, 15.79 KiB gzipped, with the key set as a Worker
+secret. It was verified on workerd first, and the deployed Worker answers the
+same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 `nodejs_compat` is off.
 
 ## Open decisions
@@ -189,14 +190,24 @@ already owns it) and *Ruleproof* (accurate, flat).
 
 ## Next step
 
-The function is built. `api/score.js` takes `{ rule }`, `lib/analyze.js` sends
+The function is built and deployed. `api/score.js` takes `{ rule }`, `lib/analyze.js` sends
 one Jev request carrying all five questions and composes findings — **no grade**,
 by the ADR's honesty argument, so the inherited weighted mean was never wired and
 nothing here depends on it. `node --test` covers the bands and the composition
 with stubbed answers, 24/24.
 
-**Deploy it.** `wrangler deploy`, then `wrangler secret put TYPESAFE_API_KEY`.
-Nothing is live. That is the only step left.
+**It is live, and it was checked there.** Against the deployed Worker on
+2026-09-20: every static path plus `/privacy` and `/terms` returned 200,
+`/api/score` answered 405 on GET and 400 on an empty rule, an unknown path 404ed,
+a Spanish rule came back `not_english` without spending a request, and *"Run
+prettier on modified files before committing."* came back in 0.55 s with F3 2.00,
+F8 0.01, `is_rule` 0.98, `hook` at confidence **1.00** and 2,380 tokens — the
+numbers this document already recorded from Node, now reproduced in Workers with
+the real key. The page was driven in a browser on the live origin and rendered
+both findings; the Arabic locale flipped to `dir="rtl"` with the accent border on
+the right.
+
+What is left is no longer shipping. It is measuring — see the open decisions.
 
 ## The page
 
@@ -231,8 +242,8 @@ uses `border-inline-start`. Also checked at 375 px with no horizontal scroll, a
 both colour schemes. Every render path was exercised against a stub, including
 the 502.
 
-Not checked: a screen reader, and the page talking to the Worker in Workers with
-a real key — the live calls went through Node.
+Not checked: a screen reader. The page talking to the Worker in Workers with a
+real key is checked now, on the deployed origin.
 
 A whole file still needs splitting into rules before any of this scales past one
 paste, and that is a markdown pipeline, not a Jev question — see the ADR.
