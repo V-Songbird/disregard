@@ -192,17 +192,11 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 
 ## Open decisions
 
-1. **The page cannot say "skill" or "subagent".** `jevFindings` emits
-   `should_be_a_hook` only when the choice is `hook` and confident, and
-   `could_be_a_hook` for everything else under the F8 cut — so a confident
-   `skill` at 0.92 renders as *"a tool could check this for you"* and the answer
-   is thrown away. The measurement is what exposed it: the routing is now right
-   about skills and subagents often enough to be worth showing.
-2. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
+1. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-3. **What to measure next.** Every question the app asks now has a labelled set
+2. **What to measure next.** Every question the app asks now has a labelled set
    behind it. What is left with none is the **language screen** — assay's, ported,
    never measured there either — and the **six interface translations**, which
    need a native speaker rather than a harness. After that, fresh held-out sets
@@ -289,6 +283,20 @@ Every state says what it is rather than hiding a gap: `not_english` says rules
 go in English and names the language it found, `review` and `refused` hand the
 text straight back unchanged, and a clean rule gets *"Nothing flagged"* followed
 by the reminder that this is not a prediction of compliance.
+
+**The page names all four primitives.** `jevFindings` used to emit
+`should_be_a_hook` only for a confident `hook` and `could_be_a_hook` for
+everything else under the F8 cut, so a confident `skill` at 0.92 rendered as
+*"a tool could check this for you"* and the answer was thrown away. Above the
+confidence cut the primitive is now named — `should_be_a_hook`,
+`belongs_as_a_skill`, `belongs_as_a_subagent` — and below it `could_be_a_hook`
+still names none. A confident `rule` emits nothing, because telling a reader to
+leave a rule where it already is says nothing.
+
+That branch has **no F8 gate**, which is the other half of the fix. F8 asks
+whether a deterministic tool beats prose; a review pass fails that and still
+belongs in a subagent, which is why *"Before each release, review every public
+API change"* used to produce no routing finding at all.
 
 **A finding has three parts: what is wrong, why it matters, and what to do.**
 The third one was added on 2026-09-20 after a reader asked what he was supposed

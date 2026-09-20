@@ -79,6 +79,16 @@ window.STRINGS = {
         d: "Compliance here looks mechanical enough that something could enforce it, instead of asking an agent to remember.",
         fix: "If a lint rule, a hook or a CI step can carry it, move it there.",
       },
+      belongs_as_a_skill: {
+        h: "This belongs in a skill, not the always-on file.",
+        d: "It is a procedure, or a body of reference, that only matters while one kind of work is under way. In the instruction file it is carried, read and paid for on every turn that has nothing to do with it.",
+        fix: "Move it to a skill the agent loads when that work starts.",
+      },
+      belongs_as_a_subagent: {
+        h: "This asks for a pass of its own.",
+        d: "It reads more material than the task at hand holds — a sweep, an audit, a review — and what it produces is a report rather than a pass or a fail.",
+        fix: "Give it a subagent with its own context, and call it when you want the report.",
+      },
       no_trigger: {
         h: "There is no moment when this comes due.",
         d: "Nothing names an occasion the reader could check themselves against, so it is read once and never fires.",
@@ -172,6 +182,16 @@ window.STRINGS = {
         h: "Una herramienta podría comprobar esto por ti.",
         d: "El cumplimiento aquí parece lo bastante mecánico como para que algo lo imponga, en vez de pedirle al agente que lo recuerde.",
         fix: "Si una regla de lint, un hook o un paso de CI puede cargarlo, muévelo ahí.",
+      },
+      belongs_as_a_skill: {
+        h: "Esto va en una skill, no en el archivo que siempre se carga.",
+        d: "Es un procedimiento, o un cuerpo de referencia, que solo importa mientras se hace cierto tipo de trabajo. En el archivo de instrucciones se carga, se lee y se paga en cada turno que no tiene nada que ver.",
+        fix: "Muévelo a una skill que el agente cargue cuando empiece ese trabajo.",
+      },
+      belongs_as_a_subagent: {
+        h: "Esto pide una pasada propia.",
+        d: "Lee más material del que cabe en la tarea del momento — un barrido, una auditoría, una revisión — y lo que produce es un informe, no un pasa o no pasa.",
+        fix: "Dale un subagente con su propio contexto y llámalo cuando quieras el informe.",
       },
       no_trigger: {
         h: "No hay un momento en que esto toque.",
@@ -267,6 +287,16 @@ window.STRINGS = {
         d: "这里的合规足够机械，可以交给程序去执行，而不是要代理记住。",
         fix: "如果 lint 规则、hook 或 CI 步骤能承担，就搬过去。",
       },
+      belongs_as_a_skill: {
+        h: "这该放进 skill，不该留在每次都加载的文件里。",
+        d: "它是某一类工作进行时才用得上的流程或参考资料。放在指令文件里，每一个与它无关的轮次都要把它载入、读过、计费。",
+        fix: "把它搬进一个 skill，等那类工作开始时再加载。",
+      },
+      belongs_as_a_subagent: {
+        h: "这需要单独跑一趟。",
+        d: "它要读的材料比手头这个任务装得下的更多——一次清扫、一次审计、一次复查——而它产出的是一份报告，不是通过或不通过。",
+        fix: "给它一个有自己上下文的 subagent，需要报告时再叫它。",
+      },
       no_trigger: {
         h: "没有哪个时刻会让它生效。",
         d: "没有指明任何可供读者自我核对的时机，所以它被读过一次，就再也不会触发。",
@@ -360,6 +390,16 @@ window.STRINGS = {
         h: "कोई उपकरण यह आपके लिए जाँच सकता है।",
         d: "यहाँ पालन इतना यांत्रिक लगता है कि कोई प्रोग्राम इसे लागू कर सके, एजेंट की याददाश्त पर छोड़ने के बजाय।",
         fix: "अगर कोई lint नियम, hook या CI चरण इसे उठा सकता है, तो वहीं ले जाएँ।",
+      },
+      belongs_as_a_skill: {
+        h: "यह skill में जाना चाहिए, हर बार लदने वाली फ़ाइल में नहीं।",
+        d: "यह एक प्रक्रिया या संदर्भ सामग्री है, जो सिर्फ़ एक तरह का काम चलते वक़्त काम आती है। निर्देश फ़ाइल में यह हर उस बार लादी, पढ़ी और चुकाई जाती है जिससे इसका कोई वास्ता नहीं।",
+        fix: "इसे एक skill में ले जाएँ जो वह काम शुरू होने पर लोड हो।",
+      },
+      belongs_as_a_subagent: {
+        h: "यह अपनी अलग पारी माँगता है।",
+        d: "यह उससे ज़्यादा सामग्री पढ़ता है जितनी मौजूदा काम में समाती है — एक झाड़ू, एक ऑडिट, एक समीक्षा — और नतीजा एक रिपोर्ट है, पास या फ़ेल नहीं।",
+        fix: "इसे अपने संदर्भ वाला subagent दें, और रिपोर्ट चाहिए तब बुलाएँ।",
       },
       no_trigger: {
         h: "ऐसा कोई क्षण नहीं जब यह लागू हो।",
@@ -455,6 +495,16 @@ window.STRINGS = {
         d: "الالتزام هنا يبدو آليًا بما يكفي ليفرضه برنامج، بدل أن يُترك لذاكرة الوكيل.",
         fix: "إن استطاع قيد lint أو hook أو خطوة CI حملها، فانقلها إلى هناك.",
       },
+      belongs_as_a_skill: {
+        h: "مكان هذه skill، لا الملف الذي يُحمَّل دائمًا.",
+        d: "هي إجراء أو مرجع لا يلزم إلا أثناء نوع واحد من العمل. في ملف التعليمات تُحمَّل وتُقرأ ويُدفع ثمنها في كل دورة لا علاقة لها بها.",
+        fix: "انقلها إلى skill يُحمِّلها الوكيل حين يبدأ ذلك العمل.",
+      },
+      belongs_as_a_subagent: {
+        h: "هذه تطلب تمريرة خاصة بها.",
+        d: "تقرأ مادة أكثر مما تسع المهمة الحالية — مسح أو تدقيق أو مراجعة — وما تنتجه تقرير، لا نجاح ولا إخفاق.",
+        fix: "أعطها subagent بسياقه الخاص، ونادِه حين تريد التقرير.",
+      },
       no_trigger: {
         h: "لا توجد لحظة تحين فيها.",
         d: "لا شيء يسمّي مناسبة يقيس عليها القارئ نفسه، فتُقرأ مرة واحدة ولا تعمل أبدًا.",
@@ -548,6 +598,16 @@ window.STRINGS = {
         h: "Un outil pourrait vérifier ceci à votre place.",
         d: "La conformité semble ici assez mécanique pour être imposée par un programme, plutôt que confiée à la mémoire de l'agent.",
         fix: "Si une règle de lint, un hook ou une étape de CI peut le porter, déplacez-le là.",
+      },
+      belongs_as_a_skill: {
+        h: "Ceci a sa place dans une skill, pas dans le fichier toujours chargé.",
+        d: "C'est une procédure, ou un corpus de référence, qui ne sert que pendant un certain type de travail. Dans le fichier d'instructions, il est chargé, lu et payé à chaque tour qui n'a rien à voir avec lui.",
+        fix: "Déplacez-le dans une skill que l'agent charge au début de ce travail.",
+      },
+      belongs_as_a_subagent: {
+        h: "Ceci demande une passe à part.",
+        d: "Il lit plus de matière que n'en contient la tâche du moment — un balayage, un audit, une revue — et ce qu'il produit est un rapport, pas un succès ou un échec.",
+        fix: "Donnez-lui un sous-agent avec son propre contexte, et appelez-le quand vous voulez le rapport.",
       },
       no_trigger: {
         h: "Il n'y a aucun moment où elle s'applique.",

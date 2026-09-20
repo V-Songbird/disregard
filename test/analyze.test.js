@@ -93,6 +93,58 @@ test("low routing confidence becomes the softer finding", async () => {
   assert.equal(f.confidence, 0.56);
 });
 
+// Measured 2026-09-20: every routing pick at or above the confidence cut was
+// right, 10 for 10. Above the cut the primitive is named; below it nothing is.
+// See docs/knowledge/is-rule-and-primitive-criteria.md.
+
+test("a confident skill is named as a skill", async () => {
+  const r = await analyze("When adding a migration: write up and down, add a fixture, run the migration test.", jev({
+    enforceability: { score: 0.9, confidence: 0.9 },
+    best_primitive: { choice: "skill", confidence: 0.92 },
+  }));
+  assert.ok(ids(r).includes("belongs_as_a_skill"));
+  assert.ok(!ids(r).includes("could_be_a_hook"), "a named primitive replaces the vague one");
+});
+
+// The bug this branch exists for: F8 asks whether a tool beats prose, which a
+// review pass fails, and gating routing on it meant a confident subagent
+// produced no finding at all.
+test("a confident subagent is named even when F8 is high", async () => {
+  const r = await analyze("Before each release, review every public API change against the changelog.", jev({
+    enforceability: { score: 2.6, confidence: 0.9 },
+    best_primitive: { choice: "subagent", confidence: 0.84 },
+  }));
+  assert.ok(ids(r).includes("belongs_as_a_subagent"));
+});
+
+test("a confident hook still says hook", async () => {
+  const r = await analyze("Run prettier on modified files before committing.", jev({
+    enforceability: { score: 0.01, confidence: 0.9 },
+    best_primitive: { choice: "hook", confidence: 0.99 },
+  }));
+  assert.ok(ids(r).includes("should_be_a_hook"));
+});
+
+// "Leave this a standing rule" is where it already is. A finding that tells a
+// reader to change nothing is noise.
+test("a confident rule produces no routing finding", async () => {
+  const r = await analyze("Prefer the smallest coherent solution.", jev({
+    enforceability: { score: 2.8, confidence: 0.9 },
+    best_primitive: { choice: "rule", confidence: 0.98 },
+  }));
+  for (const id of ["should_be_a_hook", "could_be_a_hook", "belongs_as_a_skill", "belongs_as_a_subagent"]) {
+    assert.ok(!ids(r).includes(id), id + " must not fire");
+  }
+});
+
+test("an unsure route above the F8 cut says nothing at all", async () => {
+  const r = await analyze("Keep the architecture coherent.", jev({
+    enforceability: { score: 2.9, confidence: 0.5 },
+    best_primitive: { choice: "skill", confidence: 0.4 },
+  }));
+  assert.ok(!ids(r).some((id) => /hook|skill|subagent/.test(id)));
+});
+
 test("a line that asks for nothing is reported as not a rule", async () => {
   const r = await analyze("All files are optimized for agent consumption.", jev({
     is_rule: { noul: 0.08 },

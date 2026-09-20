@@ -124,6 +124,12 @@ doubled, from five picks to ten.
 That is what the confidence-routing pattern is for, and this is the first
 evidence that it is doing its job here rather than being assumed to.
 
+**The page was changed to use it.** On the strength of 10/10, the confident band
+now names the primitive it picked — `skill` and `subagent` included, where
+before only `hook` was ever said out loud and everything else collapsed into
+*"a tool could check this for you"*. Below the cut nothing is named, exactly as
+before. See the groundwork note's page section.
+
 ### What the repair fixed, and what it broke
 
 Fixed: all three temporal-clause errors. *"When adding a database migration"*
