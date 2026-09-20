@@ -5,10 +5,11 @@ const assert = require("node:assert/strict");
 
 const { analyze, AnalyzeError } = require("../lib/analyze.js");
 
-// Every Jev answer is stubbed. These tests cover composition and the injection
-// bands, which is all that can be checked without paying for a run; whether the
-// questions themselves are right is what eval/ measures.
+// Every Jev answer is stubbed. These tests cover composition, the injection
+// bands and the English gate, which is all that can be checked without paying
+// for a run; whether the questions themselves are right is what eval/ measures.
 function jev(over = {}) {
+  const calls = [];
   const answers = {
     control: { noul: 0.02 },
     premise: { noul: 0.03 },
@@ -19,11 +20,12 @@ function jev(over = {}) {
     ...over,
   };
   return {
+    calls,
     apiKey: "test-key",
-    fetchImpl: async () => ({
-      ok: true,
-      json: async () => ({ answers, usage: { input_tokens: 880 } }),
-    }),
+    fetchImpl: async () => {
+      calls.push(1);
+      return { ok: true, json: async () => ({ answers, usage: { input_tokens: 2380 } }) };
+    },
   };
 }
 
@@ -44,23 +46,51 @@ test("the review band scores but renders nothing", async () => {
   assert.equal(r.risk, 0.44);
 });
 
+// The rule is the product's subject, and instruction files are English. Nothing
+// here was ever measured in another language, so another language is not a
+// half-answer, it is a no-answer — and it costs nothing to say so.
+test("a rule that is not English is refused before anything is spent", async () => {
+  const opts = jev();
+  const r = await analyze("Nunca subas secretos al repositorio; usa el gestor de secretos.", opts);
+  assert.equal(r.status, "not_english");
+  assert.deepEqual(r.language, { code: "es", name: "Spanish" });
+  assert.deepEqual(r.findings, []);
+  assert.equal(opts.calls.length, 0, "an unscoreable rule must not cost a request");
+});
+
+test("a script with no name still gets refused, and says nothing false", async () => {
+  const opts = jev();
+  const r = await analyze("Не записывайте секреты в репозиторий, используйте менеджер.", opts);
+  assert.equal(r.status, "not_english");
+  assert.equal(r.language.name, null, "naming a language we did not identify would be a guess");
+  assert.equal(opts.calls.length, 0);
+});
+
+test("an English rule is scored in full", async () => {
+  const r = await analyze("Never use `any`.", jev());
+  assert.equal(r.status, "ok");
+  for (const f of ["F1", "F2", "F3", "F7", "F8", "is_rule"]) {
+    assert.notEqual(r.factors[f], undefined, f + " must be measured");
+  }
+});
+
 test("a rule a command could settle is routed to a hook", async () => {
   const r = await analyze("Run prettier on modified files before committing.", jev({
     enforceability: { score: 0.15, confidence: 0.9 },
     best_primitive: { choice: "hook", confidence: 1.0 },
   }));
   assert.ok(ids(r).includes("should_be_a_hook"));
-  const f = r.findings.find((x) => x.id === "should_be_a_hook");
-  assert.match(f.headline, /should stop being a rule/);
 });
 
-test("low routing confidence asks instead of telling", async () => {
+test("low routing confidence becomes the softer finding", async () => {
   const r = await analyze("Keep CHANGELOG.md updated.", jev({
     enforceability: { score: 1.09, confidence: 0.5 },
     best_primitive: { choice: "hook", confidence: 0.56 },
   }));
-  const f = r.findings.find((x) => x.id === "should_be_a_hook");
-  assert.match(f.headline, /\?$/, "an unconfident routing is a question");
+  assert.ok(ids(r).includes("could_be_a_hook"));
+  const f = r.findings.find((x) => x.id === "could_be_a_hook");
+  assert.equal(f.choice, "hook");
+  assert.equal(f.confidence, 0.56);
 });
 
 test("a line that asks for nothing is reported as not a rule", async () => {
@@ -78,44 +108,44 @@ test("the deterministic half is wired in", async () => {
   assert.equal(r.factors.F8, 2.4, "Jev factors ride along with the deterministic ones");
 });
 
-test("a hedge is reported even inside a firm-sounding rule", async () => {
+test("a hedge is reported with the word that caused it", async () => {
   const r = await analyze("Always try to use functional components.", jev());
-  assert.ok(ids(r).includes("hedge_dominance"));
+  const f = r.findings.find((x) => x.id === "hedge_dominance");
+  assert.equal(f.verb, "try to");
   assert.equal(r.factors.F1, 0.2);
 });
 
-test("a Spanish rule gets the Jev half and says the other half is missing", async () => {
-  const r = await analyze("Nunca subas secretos al repositorio; usa el gestor de secretos.", jev({
-    enforceability: { score: 0.4, confidence: 0.8 },
-    best_primitive: { choice: "hook", confidence: 0.85 },
+// Findings carry ids and numbers. Every sentence a reader sees lives in the
+// page, which is how the interface speaks six languages and the rules do not.
+test("no finding carries prose", async () => {
+  const r = await analyze("Always try to use functional components.", jev({
+    is_rule: { noul: 0.2 }, enforceability: { score: 0.2, confidence: 0.9 },
+    trigger_distance: { score: 0.4, confidence: 0.9 },
+    best_primitive: { choice: "hook", confidence: 0.95 },
   }));
-  assert.equal(r.status, "partial");
-  assert.deepEqual(r.language, { code: "es", name: "Spanish", supported: true, deterministic: "withheld" });
-  assert.ok(ids(r).includes("should_be_a_hook"), "Jev still judges it");
-  assert.deepEqual(ids(r).filter((id) => ["stall_risk", "hedge_dominance", "no_concrete_anchor"].includes(id)), [],
-    "an English word list must not answer about Spanish");
-  for (const f of ["F1", "F2", "F7"]) assert.equal(r.factors[f], undefined, f + " is withheld, not zero");
-  assert.equal(r.factors.F8, 0.4);
-});
-
-test("an English rule says the deterministic half applied", async () => {
-  const r = await analyze("Never use `any`.", jev());
-  assert.equal(r.status, "ok");
-  assert.equal(r.language.code, "en");
-  assert.equal(r.language.deterministic, "applied");
+  assert.ok(r.findings.length >= 4);
+  for (const f of r.findings) {
+    assert.equal(f.headline, undefined);
+    assert.equal(f.detail, undefined);
+    assert.equal(typeof f.id, "string");
+  }
 });
 
 test("the input is bounded before anything is spent", async () => {
-  const calls = [];
-  const opts = { apiKey: "k", fetchImpl: async () => { calls.push(1); throw new Error("should not run"); } };
-  for (const bad of ["", "   ", 42, null, "x".repeat(2001)]) {
-    await assert.rejects(() => analyze(bad, opts), AnalyzeError);
+  const opts = jev();
+  for (const [bad, code] of [["", "empty"], ["   ", "empty"], [42, "bad_rule"], [null, "bad_rule"], ["x".repeat(2001), "too_long"]]) {
+    await assert.rejects(() => analyze(bad, opts), (e) => {
+      assert.ok(e instanceof AnalyzeError);
+      assert.equal(e.code, code);
+      return true;
+    });
   }
-  assert.equal(calls.length, 0, "no request is made for input that cannot be scored");
+  assert.equal(opts.calls.length, 0, "no request is made for input that cannot be scored");
 });
 
 test("a missing key is a configuration error, not a scoring one", async () => {
-  await assert.rejects(() => analyze("Use `const`.", { apiKey: "" }), (e) => e.status === 500);
+  await assert.rejects(() => analyze("Use `const`.", { apiKey: "" }),
+    (e) => e.code === "not_configured" && e.status === 500);
 });
 
 test("an upstream failure never leaks the upstream body", async () => {
@@ -125,7 +155,14 @@ test("an upstream failure never leaks the upstream body", async () => {
   };
   await assert.rejects(() => analyze("Use `const`.", opts), (e) => {
     assert.equal(e.status, 502);
+    assert.equal(e.code, "upstream");
     assert.doesNotMatch(e.message, /sk-real-key-here/);
     return true;
   });
+});
+
+test("a rate limit keeps its own code so the page can say wait", async () => {
+  const opts = { apiKey: "k", fetchImpl: async () => ({ ok: false, status: 429 }) };
+  await assert.rejects(() => analyze("Use `const`.", opts),
+    (e) => e.code === "rate_limited" && e.status === 429);
 });

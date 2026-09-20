@@ -3,38 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Readback — how your rule reads to the agent</title>
+<title>Readback</title>
 <meta name="description" content="Paste one rule from an agent instruction file. Readback says which lines are not rules and which ones should be hooks.">
 <link rel="stylesheet" href="/style.css">
+<script src="/i18n.js"></script>
 </head>
 <body>
 <main>
-  <h1>Readback</h1>
-  <p class="lede">Paste one rule from your agent's instruction file. Get back how it reads to the thing that has to follow it.</p>
+  <div class="topbar">
+    <h1 data-i18n="title">Readback</h1>
+    <p class="picker">
+      <label for="ui-lang" data-i18n="uiLang">Interface language</label>
+      <select id="ui-lang"></select>
+    </p>
+  </div>
+  <p class="lede" data-i18n="lede"></p>
 
   <form id="ask" novalidate>
-    <label for="rule">Your rule</label>
-    <p class="hint" id="rule-hint">One rule, not the whole file. Markdown and backticks are fine.</p>
-    <textarea id="rule" name="rule" aria-describedby="rule-hint rule-count" autocomplete="off"
+    <label for="rule" data-i18n="ruleLabel"></label>
+    <p class="hint" id="rule-hint" data-i18n="ruleHint"></p>
+    <textarea id="rule" name="rule" dir="auto" aria-describedby="rule-hint rule-count" autocomplete="off"
       placeholder="Always try to use functional components."></textarea>
     <div class="row">
-      <button type="submit" id="go">Read it back</button>
-      <span class="count" id="rule-count">0 / 2000</span>
+      <button type="submit" id="go" data-i18n="submit"></button>
+      <span class="count" id="rule-count"></span>
     </div>
   </form>
 
-  <p class="promise">
-    This is a check on how a rule is written. It does not predict whether an AI will follow it.
-    Your rule is sent to TypeSafe to be scored — <a href="/privacy">what happens to it</a>.
-    Don't paste secrets, credentials or anyone's personal data.
-  </p>
+  <p class="promise" id="promise"></p>
 
   <section id="out" aria-live="polite" aria-busy="false"></section>
 </main>
 
 <footer>
-  A readback is the receiver repeating an instruction so the sender can hear whether it landed.
-  <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+  <span data-i18n="footer"></span>
+  <a href="/privacy" data-i18n="privacy"></a> · <a href="/terms" data-i18n="terms"></a>
 </footer>
 
 <script>
@@ -45,14 +48,38 @@
   // enforces it; this only saves a round trip.
   const MAX = 2000;
 
-  // The two findings nobody else can make. They get the accent border.
-  const LEAD = new Set(["not_a_rule", "should_be_a_hook"]);
+  // The findings nobody else can make. They get the accent border.
+  const LEAD = new Set(["not_a_rule", "should_be_a_hook", "could_be_a_hook"]);
 
   const form = document.getElementById("ask");
   const input = document.getElementById("rule");
   const go = document.getElementById("go");
   const count = document.getElementById("rule-count");
   const out = document.getElementById("out");
+  const picker = document.getElementById("ui-lang");
+
+  const LOCALES = Object.keys(window.STRINGS);
+  let t = window.STRINGS.en;
+
+  // The last answer, kept so switching language re-renders it rather than
+  // clearing the screen under the reader.
+  let last = null;
+
+  // The reader's own language if we speak it, else English. A stored choice
+  // wins, because someone who picked once meant it.
+  function initialLocale() {
+    try {
+      const saved = localStorage.getItem("readback.lang");
+      if (saved && window.STRINGS[saved]) return saved;
+    } catch { /* private mode, or storage blocked */ }
+    for (const tag of navigator.languages || [navigator.language || "en"]) {
+      const code = String(tag).toLowerCase().split("-")[0];
+      if (window.STRINGS[code]) return code;
+    }
+    return "en";
+  }
+
+  const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
 
   const el = (tag, className, text) => {
     const n = document.createElement(tag);
@@ -61,12 +88,26 @@
     return n;
   };
 
-  // Server error strings start lowercase; they read as fragments in a sentence.
-  const sentence = (s) => (s ? s[0].toUpperCase() + s.slice(1) + (/[.!?]$/.test(s) ? "" : ".") : s);
+  function applyLocale(code) {
+    t = window.STRINGS[code];
+    document.documentElement.lang = code;
+    document.documentElement.dir = t.dir;
+    document.title = t.title;
+    for (const node of document.querySelectorAll("[data-i18n]")) {
+      node.textContent = t[node.dataset.i18n];
+    }
+    const promise = document.getElementById("promise");
+    const link = el("a", null, t.promiseLink);
+    link.href = "/privacy";
+    promise.replaceChildren(document.createTextNode(t.promiseA), link, document.createTextNode(t.promiseB));
+    updateCount();
+    if (last) render(last);
+    try { localStorage.setItem("readback.lang", code); } catch { /* nothing to do */ }
+  }
 
   function updateCount() {
     const n = input.value.length;
-    count.textContent = n + " / " + MAX;
+    count.textContent = fill(t.counter, { n: n, max: MAX });
     count.classList.toggle("over", n > MAX);
     go.disabled = n > MAX;
   }
@@ -78,110 +119,112 @@
     const box = el("div", "banner");
     box.append(el("strong", null, title));
     if (body) box.append(el("p", null, body));
-    if (echo) box.append(el("blockquote", "echo", echo));
+    if (echo) {
+      const q = el("blockquote", "echo", echo);
+      q.dir = "auto";
+      box.append(q);
+    }
     return box;
   }
 
   function findingCard(f) {
+    const copy = t.findings[f.id];
+    if (!copy) return null;
+    const vars = {
+      verb: f.verb,
+      choice: t.primitives[f.choice] || f.choice,
+      confidence: f.confidence,
+    };
     const li = el("li", LEAD.has(f.id) ? "finding lead" : "finding");
-    li.append(el("h2", null, f.headline), el("p", null, f.detail));
+    li.append(el("h2", null, copy.h), el("p", null, fill(copy.d, vars)));
     if (f.factor) li.append(el("span", "tag", f.factor + " " + f.value));
     return li;
   }
 
-  function factorList(factors, withheld) {
+  function factorList(factors) {
     const box = el("details");
-    box.append(el("summary", null, "What was measured"));
+    box.append(el("summary", null, t.measured));
     const dl = el("dl", "factors");
-    const names = {
-      is_rule: "Reads as an instruction",
-      F3: "Trigger distance (0–4)",
-      F8: "Enforceability (0–3)",
-      F1: "Verb force (0–1)",
-      F2: "Prohibition framing (0–1)",
-      F7: "Concreteness (0–1)",
-    };
-    for (const [key, label] of Object.entries(names)) {
+    for (const key of ["is_rule", "F3", "F8", "F1", "F2", "F7"]) {
       if (factors[key] === undefined) continue;
-      dl.append(el("dt", null, label), el("dd", null, String(factors[key])));
+      dl.append(el("dt", null, t.factors[key]), el("dd", null, String(factors[key])));
     }
     if (factors.primitive) {
-      dl.append(el("dt", null, "Belongs as"),
-        el("dd", null, factors.primitive.choice + " (confidence " + factors.primitive.confidence + ")"));
+      const name = t.primitives[factors.primitive.choice] || factors.primitive.choice;
+      dl.append(el("dt", null, t.factors.primitive),
+        el("dd", null, name + " (" + t.confidence + " " + factors.primitive.confidence + ")"));
     }
     box.append(dl);
-    if (withheld) box.append(el("p", null, withheld));
     return box;
   }
 
   function render(body) {
+    last = body;
     out.replaceChildren();
 
-    if (body.status === "refused" || body.status === "review") {
-      out.append(banner(
-        body.status === "refused" ? "This is not being scored." : "This is not being scored yet.",
-        body.status === "refused"
-          ? "It reads as an instruction aimed at whatever is processing it, rather than a rule for a coding agent. Here it is, unchanged."
-          : "Enough of it reads as an instruction aimed at the reader that a verdict would not mean much. Here it is, unchanged.",
-        body.echo));
+    if (body.status === "not_english") {
+      const code = body.language && body.language.code;
+      const lang = (code && t.languages[code]) || (body.language && body.language.name);
+      out.append(banner(t.notEnglishTitle,
+        lang ? fill(t.notEnglishBody, { lang: lang }) : t.notEnglishUnknown));
       return;
     }
 
-    if (body.status === "partial") {
-      const where = body.language.supported
-        ? "This rule is in " + body.language.name + ", which Jev judges."
-        : "This rule is not in a language the checks cover.";
-      out.append(banner("Half an answer, and here is the missing half.",
-        where + " The three checks that read English word lists — verb force, prohibition framing, concreteness — were withheld rather than guessed."));
+    if (body.status === "refused" || body.status === "review") {
+      const refused = body.status === "refused";
+      out.append(banner(refused ? t.refusedTitle : t.reviewTitle,
+        refused ? t.refusedBody : t.reviewBody, body.echo));
+      return;
     }
 
     if (body.findings.length === 0) {
-      out.append(banner("Nothing flagged.",
-        "None of the checks fired on this rule. That is not a prediction that an agent will follow it."));
+      out.append(banner(t.cleanTitle, t.cleanBody));
     } else {
       const list = el("ul", "findings");
-      for (const f of body.findings) list.append(findingCard(f));
+      for (const f of body.findings) {
+        const card = findingCard(f);
+        if (card) list.append(card);
+      }
       out.append(list);
     }
+    out.append(factorList(body.factors || {}));
+  }
 
-    out.append(factorList(body.factors || {},
-      body.language && body.language.deterministic === "withheld"
-        ? "F1, F2 and F7 are English word lists, so they were not run."
-        : null));
+  function showError(code) {
+    last = null;
+    out.replaceChildren(banner(t.errorTitle, fill(t.errors[code] || t.errors.failed, { max: MAX })));
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const rule = input.value.trim();
     if (!rule) {
-      out.replaceChildren(banner("Paste a rule first.", "One line from a CLAUDE.md or AGENTS.md is enough."));
+      last = null;
+      out.replaceChildren(banner(t.emptyTitle, t.emptyBody));
       input.focus();
       return;
     }
 
     go.disabled = true;
-    go.textContent = "Reading…";
+    go.textContent = t.submitBusy;
     out.setAttribute("aria-busy", "true");
-    out.replaceChildren(banner("Reading it back…", "One call, about a second."));
+    last = null;
+    out.replaceChildren(banner(t.busyTitle, t.busyBody));
 
     try {
       const res = await fetch("/api/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rule }),
+        body: JSON.stringify({ rule: rule }),
       });
       const body = await res.json();
-      if (!res.ok) {
-        out.replaceChildren(banner("That did not go through.", sentence(body.error) || "The service returned an error."));
-      } else {
-        render(body);
-      }
+      if (res.ok) render(body);
+      else showError(body.code);
     } catch {
-      out.replaceChildren(banner("That did not go through.",
-        "The request never reached the service. Check your connection and try again."));
+      showError("network");
     } finally {
       go.disabled = false;
-      go.textContent = "Read it back";
+      go.textContent = t.submit;
       out.setAttribute("aria-busy", "false");
       updateCount();
     }
@@ -193,7 +236,16 @@
   });
 
   input.addEventListener("input", updateCount);
-  updateCount();
+
+  for (const code of LOCALES) {
+    const option = el("option", null, window.STRINGS[code].label);
+    option.value = code;
+    picker.append(option);
+  }
+  picker.addEventListener("change", () => applyLocale(picker.value));
+
+  picker.value = initialLocale();
+  applyLocale(picker.value);
 })();
 </script>
 </body>

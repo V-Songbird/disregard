@@ -92,19 +92,32 @@ first time `is_rule` has been shown a non-rule, and it was right.
   from assay and has no evidence of its own beyond the rule-lab weights.
 - **The language screen itself.** It is assay's, ported, and it was never
   measured there either. Its thresholds encode a deliberate bias toward calling
-  things English — see `lib/language.js` — so the expected failure is a Spanish
-  rule scored as English, not the reverse.
+  things English — see `lib/language.js` — so the expected failure is a foreign
+  rule scored as English, not an English rule turned away.
+- **The six interface translations.** Written here, not reviewed by a native
+  speaker of any of them.
 
 ## Settled since
 
-**Language: the world's most spoken, and only English gets the word lists.**
-English, Chinese, Hindi, Spanish, Arabic and French are named and supported;
-fifth place is contested between French and Arabic depending on how Arabic
-varieties are counted, so both are in. English gets everything. Every other
-language gets the Jev half, `status: "partial"`, and
-`language.deterministic: "withheld"` — because F1, F2 and F7 are English word
-lists and `en vez de` will never match `instead`. Anything the screen does not
-recognise is treated the same way and marked `supported: false`.
+**Language: the interface carries it, the rules do not.**
+
+Rules are English. `CLAUDE.md` and `AGENTS.md` are written in English, it is the
+only language anything here was measured in, and F1, F2 and F7 are English word
+lists on top of that. So a rule in another language is **not scored at all** —
+it returns `status: "not_english"` with the language named, before a request is
+spent. An earlier draft scored such rules with the deterministic half withheld
+and called the result partial; that was wrong, because half a verdict on
+something never measured is still an unmeasured verdict.
+
+**The interface** speaks six languages — English, Chinese, Hindi, Spanish,
+Arabic and French. Fifth place is contested between French and Arabic depending
+on how Arabic varieties are counted, so both are in; Arabic is also what proves
+the layout works right to left. The picker remembers a choice and otherwise
+follows `navigator.languages`.
+
+This is why the API returns **finding ids and numbers, never sentences**. Every
+sentence a reader sees lives in `public/i18n.js`, including the error text,
+which is why errors carry a `code` as well as an English `error`.
 
 **Host: Cloudflare Workers**, on the existing free-plan account. `worker.js` is
 the entry point, `wrangler.jsonc` the config, and the key is a Worker secret:
@@ -180,38 +193,43 @@ The function is built. `api/score.js` takes `{ rule }`, `lib/analyze.js` sends
 one Jev request carrying all five questions and composes findings — **no grade**,
 by the ADR's honesty argument, so the inherited weighted mean was never wired and
 nothing here depends on it. `node --test` covers the bands and the composition
-with stubbed answers, 15/15.
+with stubbed answers, 24/24.
 
 **Deploy it.** `wrangler deploy`, then `wrangler secret put TYPESAFE_API_KEY`.
 Nothing is live. That is the only step left.
 
 ## The page
 
-`public/` — three static files and a stylesheet, no framework and no build step.
+`public/` — four static files and a stylesheet, no framework and no build step.
 It leads with the findings and never shows a grade, which is the ADR's honesty
-argument carried into the markup: `not_a_rule` and `should_be_a_hook` get the
+argument carried into the markup: `not_a_rule` and the hook findings get the
 accent border, the numbers sit behind a *"What was measured"* disclosure, and
 the honesty line sits under the input box rather than in the footer, where
 [jev-commercial-licensing.md](../knowledge/jev-commercial-licensing.md) says it
 belongs.
 
-Every state renders honestly rather than hiding a gap: `partial` opens with
-*"Half an answer, and here is the missing half"* and names the three withheld
-checks, `review` and `refused` hand the text straight back unchanged, and a
-clean rule gets *"Nothing flagged"* followed by the reminder that this is not a
-prediction of compliance.
+Every state says what it is rather than hiding a gap: `not_english` says rules
+go in English and names the language it found, `review` and `refused` hand the
+text straight back unchanged, and a clean rule gets *"Nothing flagged"* followed
+by the reminder that this is not a prediction of compliance.
+
+`i18n.js` holds all six translations, about 45 strings each. Switching language
+re-renders the answer already on screen rather than clearing it.
 
 `privacy.html` carries the five-fact notice the DPA requires, and `terms.html`
 the §9.3 reality. Both were draft text in the licensing doc; they are pages now,
-and neither has been read by a lawyer.
+neither has been read by a lawyer, and **both stay English on purpose** — an
+unreviewed translation of a legal notice is worse than one authoritative copy.
 
 **Checked, on the real thing.** Driven in a browser through the real handler
 against the live API: *"Always try to use functional components."* renders the
-hedge finding at F1 0.20, and a Spanish rule renders the partial banner with
-F1/F2/F7 absent from the measurements list. Also checked at 375 px with no
-horizontal scroll, a 44 px submit target, headings in order, `aria-live` on the
-results region, and both colour schemes. All five render paths were exercised
-against a stub, including the 502.
+hedge finding at F1 0.20, and a Spanish rule comes back unscored with the
+message in whichever of the six languages the interface is showing. Arabic sets
+`dir="rtl"` and the accent border flips to the right, because the stylesheet
+uses `border-inline-start`. Also checked at 375 px with no horizontal scroll, a
+44 px submit target, headings in order, `aria-live` on the results region, and
+both colour schemes. Every render path was exercised against a stub, including
+the 502.
 
 Not checked: a screen reader, and the page talking to the Worker in Workers with
 a real key — the live calls went through Node.

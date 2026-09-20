@@ -25,7 +25,15 @@ body {
   font: 1rem/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 main { max-width: 46rem; margin: 0 auto; }
-h1 { font-size: 1.9rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
+h1 { font-size: 1.9rem; margin: 0; letter-spacing: -.01em; }
+.topbar { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .25rem; }
+.picker { margin: 0; display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--muted); }
+.picker label { font-weight: 400; margin: 0; }
+select {
+  font: inherit; font-size: .9rem; padding: .35rem .5rem; min-height: 2.25rem;
+  color: inherit; background: var(--card);
+  border: 1px solid var(--line); border-radius: .3rem;
+}
 .lede { color: var(--muted); margin: 0 0 2rem; }
 label { display: block; font-weight: 600; margin-bottom: .4rem; }
 .hint { color: var(--muted); font-size: .9rem; margin: 0 0 .5rem; }
@@ -49,7 +57,7 @@ button[disabled] { background: var(--muted); cursor: default; }
 #out { margin-top: 2.5rem; }
 #out:empty { margin: 0; }
 .banner {
-  padding: .85rem 1rem; border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  padding: .85rem 1rem; border: 1px solid var(--line); border-inline-start: 4px solid var(--accent);
   border-radius: .3rem; background: var(--card); margin-bottom: 1.25rem;
 }
 .banner p { margin: .4rem 0 0; color: var(--muted); }
@@ -57,9 +65,9 @@ button[disabled] { background: var(--muted); cursor: default; }
 ul.findings { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
 li.finding {
   padding: 1rem; background: var(--card);
-  border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: .3rem;
+  border: 1px solid var(--line); border-inline-start: 4px solid var(--line); border-radius: .3rem;
 }
-li.finding.lead { border-left-color: var(--accent); }
+li.finding.lead { border-inline-start-color: var(--accent); }
 li.finding h2 { margin: 0 0 .35rem; font-size: 1.05rem; }
 li.finding p { margin: 0; color: var(--muted); }
 .tag {
@@ -68,7 +76,7 @@ li.finding p { margin: 0; color: var(--muted); }
   border-radius: 1rem; padding: .1rem .6rem;
 }
 blockquote.echo {
-  margin: .8rem 0 0; padding: .6rem .9rem; border-left: 3px solid var(--line);
+  margin: .8rem 0 0; padding: .6rem .9rem; border-inline-start: 3px solid var(--line);
   color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere;
 }
 details { margin-top: 1.5rem; color: var(--muted); font-size: .9rem; }

@@ -38,20 +38,23 @@ async function handler(request, env) {
   try {
     payload = await request.json();
   } catch {
-    return json({ error: "body must be JSON" }, 400);
+    return json({ code: "bad_body", error: "body must be JSON" }, 400);
   }
   if (!payload || typeof payload !== "object") {
-    return json({ error: "body must be a JSON object with a `rule` field" }, 400);
+    return json({ code: "bad_body", error: "body must be a JSON object with a `rule` field" }, 400);
   }
 
   try {
     const result = await analyze(payload.rule, { apiKey: apiKey(env) });
     return json(result);
   } catch (err) {
-    if (err instanceof AnalyzeError) return json({ error: err.message }, err.status);
+    // `code` is what the page renders, in whichever language it is showing;
+    // `error` is the English detail, for logs and for anyone calling this
+    // directly.
+    if (err instanceof AnalyzeError) return json({ code: err.code, error: err.message }, err.status);
     // Anything unrecognised is ours, and its message may carry the request or
     // the key. Say nothing.
-    return json({ error: "the rule could not be scored" }, 500);
+    return json({ code: "failed", error: "the rule could not be scored" }, 500);
   }
 }
 
