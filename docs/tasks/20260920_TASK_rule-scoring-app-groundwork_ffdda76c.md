@@ -9,6 +9,7 @@ related_files:
   - "docs/knowledge/injection-screen-criteria.md"
   - "eval/"
   - "lib/"
+  - "api/"
   - "test/"
 ---
 
@@ -38,7 +39,7 @@ same web report. Reasoning and the rest of the competitive picture:
 | May we resell Jev access itself? | No — MCA §2.3(a) | same |
 | May we train our own scorer on the verdicts? | **No** — §2.3(b) | same |
 | Do we need a privacy notice? | Yes; the DPA names us controller. Draft text is in the doc | same |
-| Cost per rule | ~880 tokens ≈ $0.000037 | same |
+| Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
 ## The three scorer defects, all fixed
@@ -51,7 +52,7 @@ its numbers and a "rules for changing this" section.
    neighbouring sentence sharing no words with the ban. Fix: a third state,
    `prohibition_alternative_unproven`, so the grade-capping verdict is kept only
    for a ban standing alone. **12/28 corpus errors → 0/28**, and 10 flags → 1.
-   Code and fixtures live in the assay repo, not here — see *Uncommitted work*.
+   Code and fixtures are here now: `lib/scorer.js`, `test/`.
 2. **F3 compressed the top of its scale.** Cause: the Score levels were written
    comparatively, and the model evaluates each level without seeing its
    neighbours. Fix: standalone situations with signals. **4/10 → 9/10 exact** on
@@ -69,11 +70,23 @@ its numbers and a "rules for changing this" section.
 question, the F8 question and the primitive-routing Choice from the first probe
 (F8 hit 4/4 on labelled cases; hook routing hit confidence 1.00).
 
+**All wired, and the wiring is exercised.** Three live calls through
+`api/score.js` on 2026-09-20 reproduced the documented numbers: the prettier rule
+came back F3 2.00, F8 0.01, `hook` at confidence **0.99**, `is_rule` 0.98; *"All
+files are optimized for agent consumption."* came back `is_rule` **0.24** and F3
+0.18; a prompt-injection string scored risk **0.98** and was refused. That is the
+first time `is_rule` has been shown a non-rule, and it was right.
+
 **Not validated:**
 
 - **F1, F4, F5, F7** have never been measured against a labelled set. F2 was the
   one that got checked, and it was wrong 9 times in 10. Assume the others carry
-  similar risk until someone looks.
+  similar risk until someone looks. F7 already shows it: it scored the prettier
+  rule 0.05 and raised *"nothing here is checkable"* over a line that names
+  `prettier`, because the word was not in backticks and not on its term list.
+- **`is_rule` and the `best_primitive` rubrics in `lib/questions.js`** are new
+  wording, not the probe's — that script is gone. One correct non-rule is an
+  anecdote, not a measurement.
 - **The composition** — weighted mean, soft floor, grade letters — is inherited
   from assay and has no evidence of its own beyond the rule-lab weights.
 - **Spanish.** Jev judges it acceptably; the deterministic half (F1/F2/F7) is
@@ -87,8 +100,9 @@ question, the F8 question and the primitive-routing Choice from the first probe
    `results/` for machine-local transcripts first.
 2. **Language policy.** English-only and say so, or accept Spanish with the
    deterministic half withheld and the verdict marked partial.
-3. **Where the app lives.** Nothing exists yet. The API key must stay
-   server-side, so it is a static page plus one serverless function.
+3. **Where the app lives.** The function is written and host-agnostic; no host
+   is chosen and nothing is deployed. The API key must stay server-side, so it
+   is a static page plus this one serverless function.
 4. **Whether to measure F1/F4/F5/F7** before launch or ship them labelled as
    unmeasured.
 
@@ -104,7 +118,7 @@ This project moved out of `Slag` on 2026-09-20 and is now **Readback**, at
 **The deterministic half is here.** `lib/scorer.js` carries F1, F2 and F7 ported
 verbatim out of `assay/scripts/assay.js`, with the F2 fix in place, and
 `test/f2-prohibition-corpus.test.js` carries the 28-case labelled corpus that
-proves it. `node --test` passes 5/5. The port was checked against the original
+proves it. The port was checked against the original
 on 43 texts across all three factors with zero mismatches, so the two
 implementations agree exactly at the moment of the copy. F4 and F5 did **not**
 come across: both need a whole file and a corpus, which this app does not have.
@@ -140,11 +154,21 @@ already owns it) and *Ruleproof* (accurate, flat).
 
 ## Next step
 
-Build the serverless function. The deterministic half is done — call
-`lib/scorer.js` — so what remains is one Jev request carrying the injection
-screen plus `is_rule`, F3, F8 and the primitive Choice, then composition, then
-findings — not a grade. The UI leads with *"this should be a hook"* and *"these
-lines are not rules"*, because those are the two things no competitor can say.
+The function is built. `api/score.js` takes `{ rule }`, `lib/analyze.js` sends
+one Jev request carrying all five questions and composes findings — **no grade**,
+by the ADR's honesty argument, so the inherited weighted mean was never wired and
+nothing here depends on it. `node --test` covers the bands and the composition
+with stubbed answers, 15/15.
 
-Composition has no evidence of its own and F1 is now portable but still
-unmeasured, so treat the weighted mean as inherited, not validated.
+Three things are left before a page can sit in front of it:
+
+1. **Pick a host.** The handler is Web-standard `Request -> Response`, so Vercel,
+   Netlify v2, Cloudflare and Node 22 all take it, but nothing is deployed and
+   there is no `package.json`.
+2. **Decide the language policy** — open decision 2. F1/F2/F7 are English word
+   lists and will answer confidently in Spanish anyway. Nothing detects this yet.
+3. **Build the UI.** It leads with *"this should be a hook"* and *"these lines
+   are not rules"*, because those are the two things no competitor can say.
+
+A whole file still needs splitting into rules before any of this scales past one
+paste, and that is a markdown pipeline, not a Jev question — see the ADR.
