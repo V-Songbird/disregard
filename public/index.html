@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Readback — how your rule reads to the agent</title>
+<meta name="description" content="Paste one rule from an agent instruction file. Readback says which lines are not rules and which ones should be hooks.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Readback</h1>
+  <p class="lede">Paste one rule from your agent's instruction file. Get back how it reads to the thing that has to follow it.</p>
+
+  <form id="ask" novalidate>
+    <label for="rule">Your rule</label>
+    <p class="hint" id="rule-hint">One rule, not the whole file. Markdown and backticks are fine.</p>
+    <textarea id="rule" name="rule" aria-describedby="rule-hint rule-count" autocomplete="off"
+      placeholder="Always try to use functional components."></textarea>
+    <div class="row">
+      <button type="submit" id="go">Read it back</button>
+      <span class="count" id="rule-count">0 / 2000</span>
+    </div>
+  </form>
+
+  <p class="promise">
+    This is a check on how a rule is written. It does not predict whether an AI will follow it.
+    Your rule is sent to TypeSafe to be scored — <a href="/privacy">what happens to it</a>.
+    Don't paste secrets, credentials or anyone's personal data.
+  </p>
+
+  <section id="out" aria-live="polite" aria-busy="false"></section>
+</main>
+
+<footer>
+  A readback is the receiver repeating an instruction so the sender can hear whether it landed.
+  <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // Matches MAX_RULE_CHARS in lib/analyze.js. The server is the one that
+  // enforces it; this only saves a round trip.
+  const MAX = 2000;
+
+  // The two findings nobody else can make. They get the accent border.
+  const LEAD = new Set(["not_a_rule", "should_be_a_hook"]);
+
+  const form = document.getElementById("ask");
+  const input = document.getElementById("rule");
+  const go = document.getElementById("go");
+  const count = document.getElementById("rule-count");
+  const out = document.getElementById("out");
+
+  const el = (tag, className, text) => {
+    const n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  // Server error strings start lowercase; they read as fragments in a sentence.
+  const sentence = (s) => (s ? s[0].toUpperCase() + s.slice(1) + (/[.!?]$/.test(s) ? "" : ".") : s);
+
+  function updateCount() {
+    const n = input.value.length;
+    count.textContent = n + " / " + MAX;
+    count.classList.toggle("over", n > MAX);
+    go.disabled = n > MAX;
+  }
+
+  // Everything below writes with textContent. The `echo` field hands back text
+  // a stranger pasted, and a refused rule is by definition one that was trying
+  // something.
+  function banner(title, body, echo) {
+    const box = el("div", "banner");
+    box.append(el("strong", null, title));
+    if (body) box.append(el("p", null, body));
+    if (echo) box.append(el("blockquote", "echo", echo));
+    return box;
+  }
+
+  function findingCard(f) {
+    const li = el("li", LEAD.has(f.id) ? "finding lead" : "finding");
+    li.append(el("h2", null, f.headline), el("p", null, f.detail));
+    if (f.factor) li.append(el("span", "tag", f.factor + " " + f.value));
+    return li;
+  }
+
+  function factorList(factors, withheld) {
+    const box = el("details");
+    box.append(el("summary", null, "What was measured"));
+    const dl = el("dl", "factors");
+    const names = {
+      is_rule: "Reads as an instruction",
+      F3: "Trigger distance (0–4)",
+      F8: "Enforceability (0–3)",
+      F1: "Verb force (0–1)",
+      F2: "Prohibition framing (0–1)",
+      F7: "Concreteness (0–1)",
+    };
+    for (const [key, label] of Object.entries(names)) {
+      if (factors[key] === undefined) continue;
+      dl.append(el("dt", null, label), el("dd", null, String(factors[key])));
+    }
+    if (factors.primitive) {
+      dl.append(el("dt", null, "Belongs as"),
+        el("dd", null, factors.primitive.choice + " (confidence " + factors.primitive.confidence + ")"));
+    }
+    box.append(dl);
+    if (withheld) box.append(el("p", null, withheld));
+    return box;
+  }
+
+  function render(body) {
+    out.replaceChildren();
+
+    if (body.status === "refused" || body.status === "review") {
+      out.append(banner(
+        body.status === "refused" ? "This is not being scored." : "This is not being scored yet.",
+        body.status === "refused"
+          ? "It reads as an instruction aimed at whatever is processing it, rather than a rule for a coding agent. Here it is, unchanged."
+          : "Enough of it reads as an instruction aimed at the reader that a verdict would not mean much. Here it is, unchanged.",
+        body.echo));
+      return;
+    }
+
+    if (body.status === "partial") {
+      const where = body.language.supported
+        ? "This rule is in " + body.language.name + ", which Jev judges."
+        : "This rule is not in a language the checks cover.";
+      out.append(banner("Half an answer, and here is the missing half.",
+        where + " The three checks that read English word lists — verb force, prohibition framing, concreteness — were withheld rather than guessed."));
+    }
+
+    if (body.findings.length === 0) {
+      out.append(banner("Nothing flagged.",
+        "None of the checks fired on this rule. That is not a prediction that an agent will follow it."));
+    } else {
+      const list = el("ul", "findings");
+      for (const f of body.findings) list.append(findingCard(f));
+      out.append(list);
+    }
+
+    out.append(factorList(body.factors || {},
+      body.language && body.language.deterministic === "withheld"
+        ? "F1, F2 and F7 are English word lists, so they were not run."
+        : null));
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const rule = input.value.trim();
+    if (!rule) {
+      out.replaceChildren(banner("Paste a rule first.", "One line from a CLAUDE.md or AGENTS.md is enough."));
+      input.focus();
+      return;
+    }
+
+    go.disabled = true;
+    go.textContent = "Reading…";
+    out.setAttribute("aria-busy", "true");
+    out.replaceChildren(banner("Reading it back…", "One call, about a second."));
+
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rule }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        out.replaceChildren(banner("That did not go through.", sentence(body.error) || "The service returned an error."));
+      } else {
+        render(body);
+      }
+    } catch {
+      out.replaceChildren(banner("That did not go through.",
+        "The request never reached the service. Check your connection and try again."));
+    } finally {
+      go.disabled = false;
+      go.textContent = "Read it back";
+      out.setAttribute("aria-busy", "false");
+      updateCount();
+    }
+  });
+
+  // Ctrl/Cmd+Enter submits, which is what anyone pasting into a textarea tries.
+  input.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") form.requestSubmit();
+  });
+
+  input.addEventListener("input", updateCount);
+  updateCount();
+})();
+</script>
+</body>
+</html>

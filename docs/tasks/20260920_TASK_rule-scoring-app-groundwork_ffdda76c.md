@@ -10,6 +10,7 @@ related_files:
   - "eval/"
   - "lib/"
   - "api/"
+  - "public/"
   - "test/"
 ---
 
@@ -181,13 +182,39 @@ by the ADR's honesty argument, so the inherited weighted mean was never wired an
 nothing here depends on it. `node --test` covers the bands and the composition
 with stubbed answers, 15/15.
 
-Two things are left before a page can sit in front of it:
+**Deploy it.** `wrangler deploy`, then `wrangler secret put TYPESAFE_API_KEY`.
+Nothing is live. That is the only step left.
 
-1. **Deploy it.** `wrangler deploy`, then put the secret in. Nothing is live.
-2. **Build the UI.** It leads with *"this should be a hook"* and *"these lines
-   are not rules"*, because those are the two things no competitor can say, and
-   it has to render `status: "partial"` as an honest half-answer rather than
-   hiding the missing half.
+## The page
+
+`public/` — three static files and a stylesheet, no framework and no build step.
+It leads with the findings and never shows a grade, which is the ADR's honesty
+argument carried into the markup: `not_a_rule` and `should_be_a_hook` get the
+accent border, the numbers sit behind a *"What was measured"* disclosure, and
+the honesty line sits under the input box rather than in the footer, where
+[jev-commercial-licensing.md](../knowledge/jev-commercial-licensing.md) says it
+belongs.
+
+Every state renders honestly rather than hiding a gap: `partial` opens with
+*"Half an answer, and here is the missing half"* and names the three withheld
+checks, `review` and `refused` hand the text straight back unchanged, and a
+clean rule gets *"Nothing flagged"* followed by the reminder that this is not a
+prediction of compliance.
+
+`privacy.html` carries the five-fact notice the DPA requires, and `terms.html`
+the §9.3 reality. Both were draft text in the licensing doc; they are pages now,
+and neither has been read by a lawyer.
+
+**Checked, on the real thing.** Driven in a browser through the real handler
+against the live API: *"Always try to use functional components."* renders the
+hedge finding at F1 0.20, and a Spanish rule renders the partial banner with
+F1/F2/F7 absent from the measurements list. Also checked at 375 px with no
+horizontal scroll, a 44 px submit target, headings in order, `aria-live` on the
+results region, and both colour schemes. All five render paths were exercised
+against a stub, including the 502.
+
+Not checked: a screen reader, and the page talking to the Worker in Workers with
+a real key — the live calls went through Node.
 
 A whole file still needs splitting into rules before any of this scales past one
 paste, and that is a markdown pipeline, not a Jev question — see the ADR.

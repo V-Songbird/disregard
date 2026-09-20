@@ -6,6 +6,10 @@
   "main": "worker.js",
   "compatibility_date": "2026-09-20",
 
+  // The page. Assets are matched first, so the Worker only ever sees
+  // /api/score and typos.
+  "assets": { "directory": "./public" },
+
   // TYPESAFE_API_KEY is a secret, not a var: it must never be in this file.
   //   wrangler secret put TYPESAFE_API_KEY
   "observability": { "enabled": true }

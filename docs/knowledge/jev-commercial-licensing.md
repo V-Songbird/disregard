@@ -241,6 +241,10 @@ moderation accordingly.
 
 ## Draft notice for the app
 
+**Shipped as `public/privacy.html`**, with the terms page below as
+`public/terms.html`, both linked from under the input box. Neither has been
+reviewed by a lawyer. The draft below is the source text.
+
 The obligation is smaller than it sounds. Five facts, one short page, linked from
 under the input box. Everything in it is traceable to a clause above.
 

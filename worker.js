@@ -6,13 +6,19 @@
 //   wrangler deploy       ship it
 //   wrangler secret put TYPESAFE_API_KEY
 //
-// Nothing else is routed yet. The static page, when it exists, is served by
-// Workers static assets next to this.
+// The page in public/ is served by Workers static assets, which match before
+// this runs. Only /api/score and mistyped paths reach here.
 
 import handler from "./api/score.js";
 
 export default {
   fetch(request, env, ctx) {
+    if (new URL(request.url).pathname !== "/api/score") {
+      return new Response(JSON.stringify({ error: "not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+      });
+    }
     return handler(request, env, ctx);
   },
 };
