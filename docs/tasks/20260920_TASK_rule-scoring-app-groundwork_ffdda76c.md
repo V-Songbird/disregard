@@ -200,10 +200,13 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 `nodejs_compat` is off.
 
 The rename made a new Worker rather than renaming the old one, so the secret had
-to be set again on `disregard-score` and `readback-score` is still up at its own
-URL. Version `e4c70725` was checked there: the prettier rule comes back `hook` at
-confidence 0.99 with F3 2.00 and F8 0.01, the page serves 200 and `/api/score`
-still answers 405 to a GET. Retiring the old Worker is the one step left.
+to be set again on `disregard-score`. Version `e4c70725` was checked there: the
+prettier rule comes back `hook` at confidence 0.99 with F3 2.00 and F8 0.01, the
+page serves 200 and `/api/score` still answers 405 to a GET.
+
+`readback-score` was deleted on 2026-09-20 and its URL now answers 404, so one
+copy is running and the old link is gone for good. Every reference inside this
+repo was moved with the rename; anything outside it was not checked.
 
 ## Open decisions
 
