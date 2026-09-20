@@ -8,6 +8,8 @@ related_files:
   - "docs/knowledge/f3-trigger-distance-criteria.md"
   - "docs/knowledge/injection-screen-criteria.md"
   - "eval/"
+  - "lib/"
+  - "test/"
 ---
 
 # Rule-scoring app — groundwork, before any code
@@ -96,18 +98,21 @@ This project moved out of `Slag` on 2026-09-20 and is now **Readback**, at
 `D:\Projects\Songbird\Readback`. Only `docs/` and `eval/` came across;
 `Slag/docs/collet-plugin.md` stayed behind because it belongs to that repo.
 
-**Readback is not a git repository yet.** Nothing here has been committed and
-there is no history — that needs doing before any of it is relied on.
+**Readback is a git repository as of 2026-09-20**, on `main`, first commit
+`db63860`. Identity is set per-repository, not globally.
 
-Two things live outside this folder and are needed:
+**The deterministic half is here.** `lib/scorer.js` carries F1, F2 and F7 ported
+verbatim out of `assay/scripts/assay.js`, with the F2 fix in place, and
+`test/f2-prohibition-corpus.test.js` carries the 28-case labelled corpus that
+proves it. `node --test` passes 5/5. The port was checked against the original
+on 43 texts across all three factors with zero mismatches, so the two
+implementations agree exactly at the moment of the copy. F4 and F5 did **not**
+come across: both need a whole file and a corpus, which this app does not have.
+The upstream copies stay uncommitted in `slag`, and assay is still being
+retired; nothing here depends on them any more.
 
-- **The F2 fix**, in `D:\Projects\Personal\SoftwareDevelopment\slag`:
-  `assay/scripts/assay.js` and `assay/tests/assay.test.js` modified,
-  `assay/tests/f2-prohibition-corpus.test.js` new, all **uncommitted**. Suites
-  pass 353/353. assay is being retired, so this fix has no long-term home; the
-  app depends on that scorer, so port F1/F2/F7 out of it rather than leaving the
-  work stranded. A copy of the plugin without the fix sits at
-  `D:\Projects\Personal\Backups\assay`.
+One thing still lives outside this folder and is needed:
+
 - **The earlier research** — `writing-rules-for-ai.md` (the extracted rubric) and
   `jev-rule-scoring-feasibility.md` (the first Jev probe) — in that same repo
   under `docs/`, which it gitignores by design. They are local-only and will
@@ -135,8 +140,11 @@ already owns it) and *Ruleproof* (accurate, flat).
 
 ## Next step
 
-Build the serverless function: port F1/F2/F7 from assay, send one Jev request
-carrying the injection screen plus `is_rule`, F3, F8 and the primitive Choice,
-compose, and return findings — not a grade. The UI leads with *"this should be a
-hook"* and *"these lines are not rules"*, because those are the two things no
-competitor can say.
+Build the serverless function. The deterministic half is done — call
+`lib/scorer.js` — so what remains is one Jev request carrying the injection
+screen plus `is_rule`, F3, F8 and the primitive Choice, then composition, then
+findings — not a grade. The UI leads with *"this should be a hook"* and *"these
+lines are not rules"*, because those are the two things no competitor can say.
+
+Composition has no evidence of its own and F1 is now portable but still
+unmeasured, so treat the weighted mean as inherited, not validated.
