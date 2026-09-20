@@ -4,6 +4,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { detectLanguage } = require("../lib/language.js");
+const { FOREIGN, ENGLISH } = require("../eval/lang-set.js");
 
 // This screen answers one question — is the rule in English? — because that is
 // the only language instruction files are written in and the only one anything
@@ -51,6 +52,60 @@ test("anything short, mixed or ambiguous stays English", () => {
     "Use `el` and `la` as the locale keys in the map",     // English carrying foreign tokens
     "Run `npm run build` in packages/app before pushing",  // almost all of it is code
     "",
+  ]) {
+    assert.equal(detectLanguage(text).english, true, text);
+  }
+});
+
+// Measured 2026-09-20 against eval/lang-set.js. It was leaking 12 of 20 foreign
+// rules, because the thresholds were written for paragraphs and a rule is one
+// line: six prose words minimum and three closed-class hits, where a real rule
+// has five words and two hits. Leaks 12 → 1, refusals 0 → 0. The numbers and the
+// reasoning are in docs/knowledge/language-screen-criteria.md.
+
+// The mistake that must never happen: telling someone to translate English.
+test("no English rule is ever handed back", () => {
+  const bad = ENGLISH.filter((c) => !detectLanguage(c.text).english).map((c) => c.id);
+  assert.deepEqual(bad, [], "refused English: " + bad.join(", "));
+});
+
+// One case still leaks, pinned by name so it cannot quietly become two.
+const KNOWN_LEAK = new Set(["es-typescript"]);
+
+test("the corpus leaks exactly the one case it is known to leak", () => {
+  const leaked = FOREIGN.filter((c) => detectLanguage(c.text).english).map((c) => c.id);
+  assert.deepEqual(leaked, [...KNOWN_LEAK], "leaks moved: " + leaked.join(", "));
+});
+
+test("a caught rule is named as the language it is in", () => {
+  for (const c of FOREIGN) {
+    const got = detectLanguage(c.text);
+    if (got.english) continue;
+    assert.equal(got.code, c.code, c.id);
+  }
+});
+
+// The two thresholds that moved, as named cases, so a future change has to
+// argue with them rather than with a count.
+test("a five-word rule is long enough to screen", () => {
+  assert.equal(detectLanguage("Nunca subas secretos al repositorio.").code, "es");
+  assert.equal(detectLanguage("Ne jamais commiter sur main.").code, "fr");
+});
+
+test("one borrowed English word no longer outvotes the sentence", () => {
+  const got = detectLanguage("Nunca uses any en el código de producción.");
+  assert.equal(got.english, false);
+  assert.equal(got.code, "es");
+});
+
+// The tie still goes to English, which is the asymmetry the whole file is
+// built on.
+test("English carrying foreign tokens as data stays English", () => {
+  for (const text of [
+    "Use `el` and `la` as the locale keys in the map.",
+    "Keep the si and no answers as booleans.",
+    "Document the de and fr translations in `docs/i18n.md`.",
+    "Name the daily export `menu-du-jour.csv` and nothing else.",
   ]) {
     assert.equal(detectLanguage(text).english, true, text);
   }

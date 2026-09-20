@@ -1,0 +1,17 @@
+# node eval/lang-eval.js   2026-09-20, after the repair.
+#
+# Baseline: working 5 leaks / 10, HELD OUT 7 leaks / 10, refusals 0 throughout.
+# The held-out half is SPENT: niemals and jede were added because of de-main
+# and de-change, which are both in it.
+#
+
+### working set   22/22
+  leaks     0/12   foreign scored as English
+  refusals  0/10   English handed back — the worse mistake
+
+### HELD OUT   19/20
+  leaks     1/10   foreign scored as English
+  refusals  0/10   English handed back — the worse mistake
+    LEAK      es-typescript   3 prose tokens   No uses `any` en TypeScript.
+
+SUMMARY  HELD OUT  1 leaks, 0 refusals   |  working  0 leaks, 0 refusals   |  misnamed 0

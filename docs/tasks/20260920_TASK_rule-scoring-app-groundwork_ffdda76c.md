@@ -9,6 +9,7 @@ related_files:
   - "docs/knowledge/is-rule-and-primitive-criteria.md"
   - "docs/knowledge/f3-trigger-distance-criteria.md"
   - "docs/knowledge/injection-screen-criteria.md"
+  - "docs/knowledge/language-screen-criteria.md"
   - "eval/"
   - "lib/"
   - "api/"
@@ -45,11 +46,11 @@ same web report. Reasoning and the rest of the competitive picture:
 | Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
-## Eight defects, found by measuring
+## Nine defects, found by measuring
 
 Each was found against labelled cases, and each is written up with its numbers
-and a "rules for changing this" section. Six are fixed outright; the last two
-are improved, with what is left named and left alone on purpose.
+and a "rules for changing this" section. Seven are fixed outright; two are
+improved, with what is left named and left alone on purpose.
 
 1. **F2 over-flagged bare prohibitions.** 10 of 37 bullets in a real
    `CLAUDE.md`, 9 of them wrong. Cause: the replacement usually sits in a
@@ -96,6 +97,16 @@ are improved, with what is left named and left alone on purpose.
    it. Repair: the check leads and the disqualifier is explicit. **12/16 → 13/16**,
    nothing unstable, and **every pick at confidence 0.80 or better was right, 10
    for 10**. Same document.
+9. **The language screen leaked 12 of 20 foreign rules.** The first gate every
+   request passes, and the only one that can hand a reader a confident answer
+   with no warning. Its thresholds were written for paragraphs — six prose words
+   and three closed-class hits — and a rule is one line with five words and two
+   hits. *"Nunca subas secretos al repositorio."* came back scored, with
+   **2,573 tokens spent** on a rule the design promises never to charge for.
+   Fix: the thresholds moved into the gap the corpus showed, the English veto
+   became a tie-break, and the closed-class lists got the words the port was
+   missing. **Leaks 12/20 → 1/20, refusals 0 throughout.**
+   [language-screen-criteria.md](../knowledge/language-screen-criteria.md)
 
 Both repairs are live as of version `7caeec0c` and were checked on the deployed
 endpoint: the description that scored 0.79 now comes back **0.37** and raises
@@ -147,10 +158,9 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
   that do not are the two built to be hard.
 - **The composition** — weighted mean, soft floor, grade letters — is inherited
   from assay and has no evidence of its own beyond the rule-lab weights.
-- **The language screen itself.** It is assay's, ported, and it was never
-  measured there either. Its thresholds encode a deliberate bias toward calling
-  things English — see `lib/language.js` — so the expected failure is a foreign
-  rule scored as English, not an English rule turned away.
+- **The language screen's held-out half is spent**, and one case still leaks:
+  *"No uses `any` en TypeScript."* has three prose words and one of them on any
+  list, so there is nothing there to read. Pinned by name in the test.
 - **The six interface translations.** Written here, not reviewed by a native
   speaker of any of them.
 
@@ -196,11 +206,10 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **What to measure next.** Every question the app asks now has a labelled set
-   behind it. What is left with none is the **language screen** — assay's, ported,
-   never measured there either — and the **six interface translations**, which
+2. **What to measure next.** Everything the app decides now has a labelled set
+   behind it. What is left with none is the **six interface translations**, which
    need a native speaker rather than a harness. After that, fresh held-out sets
-   for the three spent ones.
+   for the four that are spent.
 
 ## Where things live
 

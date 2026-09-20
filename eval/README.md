@@ -17,6 +17,7 @@ change and it is mirrored in the test suite. The Jev harnesses need Node 18+ and
 $0.0015 per set of ten at three repetitions.
 
 ```bash
+node eval/lang-eval.js    # the language screen: leaks and refusals, counted apart
 node eval/det-eval.js     # F1 hedging and F7 anchors, working set then held-out
 node eval/jev-eval.js     # is_rule and best_primitive, 32 cases at three reps
 node eval/f3-eval.js      # trigger distance: tuned set, then held-out set
