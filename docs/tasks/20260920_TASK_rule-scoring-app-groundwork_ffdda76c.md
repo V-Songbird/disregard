@@ -293,10 +293,24 @@ confidence cut the primitive is now named — `should_be_a_hook`,
 still names none. A confident `rule` emits nothing, because telling a reader to
 leave a rule where it already is says nothing.
 
-That branch has **no F8 gate**, which is the other half of the fix. F8 asks
-whether a deterministic tool beats prose; a review pass fails that and still
-belongs in a subagent, which is why *"Before each release, review every public
-API change"* used to produce no routing finding at all.
+That branch has **no F8 gate**, because F8 asks a different question — whether a
+deterministic tool beats prose — and a review pass fails that while still
+belonging in a subagent. Checked on the live endpoint, though, the gate is not
+what had been hiding those cases: *"Before each release, review every public API
+change"* routes at **0.70**, under the confidence cut, so it stays silent either
+way. The naming is what did the work. Removing the gate is right in principle
+and, on the five rules probed, **unexercised** — no case had a confident
+non-`rule` route and an F8 above the cut at the same time.
+
+**Checked live at version `a1fcd3d7`:**
+
+| Rule | Route | Finding |
+| --- | --- | --- |
+| *"When adding a database migration: …"* | `skill` 0.90 | `belongs_as_a_skill` |
+| *"Once a quarter, sweep the codebase for TODO comments…"* | `subagent` 0.89 | `belongs_as_a_subagent` |
+| *"Run `prettier` on modified files before committing."* | `hook` 0.99 | `should_be_a_hook` |
+| *"Prefer the smallest coherent solution."* | `rule` 0.98 | silent, as intended |
+| *"Before each release, review every public API change…"* | `subagent` 0.70 | silent, under the cut |
 
 **A finding has three parts: what is wrong, why it matters, and what to do.**
 The third one was added on 2026-09-20 after a reader asked what he was supposed
