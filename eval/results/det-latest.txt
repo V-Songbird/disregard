@@ -1,0 +1,14 @@
+# node eval/det-eval.js   2026-09-20, after the two fixes.
+# Baseline before them: working 16/18 and 17/18, held-out 16/18 and 16/18.
+# Misses were zero in every run, before and after.
+
+### LABELLED  working set   18 rules
+  hedge_dominance      18/18   false alarms 0   missed 0
+  no_concrete_anchor   18/18   false alarms 0   missed 0
+
+### HELD-OUT  never consulted while fixing   18 rules
+  hedge_dominance      17/18   false alarms 1   missed 0
+  no_concrete_anchor   18/18   false alarms 0   missed 0
+    untrusted-inputs        hedge want false got true (F1 0.3 via consider)
+
+SUMMARY  held-out hedge 17/18   held-out anchor 18/18   working 18/18 and 18/18

@@ -1,18 +1,23 @@
 # eval
 
-The labelled sets and harnesses behind the two Jev questions the rule-scoring app
-depends on. Both were validated here before any of it was written down; the
-criteria themselves, the measurements and the reasoning live in
-[`docs/knowledge/f3-trigger-distance-criteria.md`](../docs/knowledge/f3-trigger-distance-criteria.md)
+The labelled sets and harnesses behind everything the rule-scoring app judges:
+the two Jev questions, and the two deterministic findings. All of it was
+validated here before any of it was written down; the criteria themselves, the
+measurements and the reasoning live in
+[`docs/knowledge/f3-trigger-distance-criteria.md`](../docs/knowledge/f3-trigger-distance-criteria.md),
+[`docs/knowledge/injection-screen-criteria.md`](../docs/knowledge/injection-screen-criteria.md)
 and
-[`docs/knowledge/injection-screen-criteria.md`](../docs/knowledge/injection-screen-criteria.md).
+[`docs/knowledge/f1-f7-deterministic-criteria.md`](../docs/knowledge/f1-f7-deterministic-criteria.md).
 
 ## Running
 
-Needs Node 18+ and `TYPESAFE_API_KEY` in the environment. Each run is a real
-paid call — roughly $0.0015 per set of ten at three repetitions.
+`det-eval.js` is free: F1 and F7 are local word lists, so it can be run on every
+change and it is mirrored in the test suite. The Jev harnesses need Node 18+ and
+`TYPESAFE_API_KEY` in the environment, and each run is a real paid call — roughly
+$0.0015 per set of ten at three repetitions.
 
 ```bash
+node eval/det-eval.js     # F1 hedging and F7 anchors, working set then held-out
 node eval/f3-eval.js      # trigger distance: tuned set, then held-out set
 node eval/inj-eval3.js    # injection screen: two questions, three bands
 node eval/inj-eval.js     # the v1 vs v2 comparison the fix came from
@@ -34,3 +39,10 @@ means little. `inj-set.js` marks eight benign cases `hard: true` — rules whose
 subject is prompts, scores, ignoring or overriding, which is the vocabulary a
 keyword filter trips on. They are the only reason its false-alarm count means
 anything.
+
+`det-set.js` splits the same way and labels the **finding**, not the 0-1 value:
+`hedge` is whether the rule's force really is soft, `anchor` is whether it names
+anything checkable. Its `HELDOUT` half is ordinary instruction-file idiom that
+was labelled before anything was run. One case in it, `untrusted-inputs`, is a
+known false alarm left deliberately unfixed — fitting the scorer to it would
+spend the only number that means anything.

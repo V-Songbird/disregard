@@ -5,6 +5,7 @@ summary: "State of the Jev rule-scoring app now that it is built and live on Clo
 related_files:
   - "docs/decisions/rule-scoring-product-viability.md"
   - "docs/knowledge/jev-commercial-licensing.md"
+  - "docs/knowledge/f1-f7-deterministic-criteria.md"
   - "docs/knowledge/f3-trigger-distance-criteria.md"
   - "docs/knowledge/injection-screen-criteria.md"
   - "eval/"
@@ -43,7 +44,7 @@ same web report. Reasoning and the rest of the competitive picture:
 | Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
-## The three scorer defects, all fixed
+## The five scorer defects, all fixed
 
 Each was found by measuring against labelled cases, and each is written up with
 its numbers and a "rules for changing this" section.
@@ -64,6 +65,16 @@ its numbers and a "rules for changing this" section.
    an instruction. Fix: explicit true/false criteria, then split into two narrow
    questions. **9/9 attacks caught, 14/15 benign clean, margin 0.74.**
    [injection-screen-criteria.md](../knowledge/injection-screen-criteria.md)
+4. **F1 let a hedge govern a sentence it did not lead.** *"Do not try to work
+   around the sandbox"* scored 0.20 hedged, because any hedging verb anywhere in
+   the text won outright. Fix: a hedge positioned after the first prohibition
+   marker no longer governs. Held-out **16/18 → 17/18**, zero misses throughout.
+   [f1-f7-deterministic-criteria.md](../knowledge/f1-f7-deterministic-criteria.md)
+5. **F7 only knew marketing capitalization.** *"Use npm, not yarn."* scored 0.05
+   with no markers at all, because the tool list holds `Prettier` and `Zod` and
+   instruction files write `prettier` and `zod`. Fix: a second, case-insensitive
+   list of tokens that are never ordinary English. Held-out **16/18 → 18/18**.
+   Same document.
 
 ## What is validated, and what is not
 
@@ -80,11 +91,18 @@ first time `is_rule` has been shown a non-rule, and it was right.
 
 **Not validated:**
 
-- **F1, F4, F5, F7** have never been measured against a labelled set. F2 was the
-  one that got checked, and it was wrong 9 times in 10. Assume the others carry
-  similar risk until someone looks. F7 already shows it: it scored the prettier
-  rule 0.05 and raised *"nothing here is checkable"* over a line that names
-  `prettier`, because the word was not in backticks and not on its term list.
+- **The two fixes above are not live.** The deployed Worker still carries the
+  scorer as it was before the measurement, so *"Use npm, not yarn."* still comes
+  back with no anchor on the public page. A deploy is what closes that gap.
+- **F4 and F5 are not in this app and cannot be.** Both take a whole file —
+  `scoreF4(rule, file)` reads the file's globs, `scoreF5(lineStart, file)` reads
+  a line offset — and this app scores one pasted rule. The earlier draft of this
+  note listed them as unmeasured risks here, which was wrong: they are not risks,
+  they are absent. Measuring them means measuring assay against a corpus of whole
+  files, which is a different project.
+- **The corpus behind F1 and F7 is 36 rules.** Enough to catch a structural
+  defect, nowhere near enough to certify an accuracy. One held-out false alarm is
+  still open and named in the test.
 - **`is_rule` and the `best_primitive` rubrics in `lib/questions.js`** are new
   wording, not the probe's — that script is gone. One correct non-rule is an
   anecdote, not a measurement.
@@ -139,8 +157,9 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **Whether to measure F1/F4/F5/F7** before launch or ship them labelled as
-   unmeasured.
+2. **Whether to deploy the F1 and F7 fixes now** or hold them until the residual
+   `consider` false alarm is settled against a fresh set. The measurement is done;
+   what is open is when it reaches the public page.
 
 ## Where things live
 
