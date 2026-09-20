@@ -1,141 +1,228 @@
 # Readback
 
-Paste one rule from your agent's instruction file. Get back how it reads to the
-thing that has to follow it.
+Readback scores one rule from an agent instruction file, such as a line of a
+`CLAUDE.md` or an `AGENTS.md`, and reports how that line reads to the agent that
+has to follow it. It answers what a local linter cannot: whether the line is a
+rule at all, and whether it should stop being prose and become a hook, a skill
+or a subagent.
 
-**[readback-score.victor-villegas.workers.dev](https://readback-score.victor-villegas.workers.dev/)**
+Try it on [the live service](https://readback-score.victor-villegas.workers.dev/).
 
-A readback is the receiver repeating an instruction so the sender can hear
-whether it landed.
+**It scores one line, not a file, and English only.** Anything over 2000
+characters is rejected, and another language is handed back unscored, because
+nothing here was measured outside English. To review a whole instruction file,
+[AgentLinter](https://agentlinter.com/) already does that, free.
 
-## What comes back
+## Requirements
 
-One rule in, findings out, and **deliberately no grade**. A letter is the part a
-reader over-trusts and the part that says least. The two things no local linter
-can tell you are *"this line is not a rule"* and *"this should be a hook"*, and
-both of those are findings.
+- **Node 18 or later**, for the tests and the offline harness. Checked on
+  22.22.2.
+- **A TypeSafe API key**, to score a rule. The tests and the offline harness run
+  without one.
+- **A Cloudflare account**, only to deploy your own copy.
 
-Nine of them. The first five lead, because nothing else on the page says them:
+## Quick start
 
-| Finding | What it means |
-| --- | --- |
-| `not_a_rule` | The line asks for nothing. It is carried, read and paid for every turn without changing what the agent does. |
-| `should_be_a_hook` | Compliance is mechanical and the model is sure. Prose is the weaker copy of a check that is never skipped. |
-| `belongs_as_a_skill` | A procedure or a body of reference that only matters while one kind of work is under way. |
-| `belongs_as_a_subagent` | A sweep, an audit, a review. It reads more than the task holds, and what it produces is a report. |
-| `could_be_a_hook` | A tool could carry it, but the routing will not say which kind. |
-| `no_trigger` | Nothing names an occasion the reader could check themselves against, so it is read once and never fires. |
-| `stall_risk` | A ban that names nothing to do instead. A blocked task becomes a stopped one. |
-| `hedge_dominance` | One hedging verb sets the force of the whole sentence downward, however firm the rest sounds. |
-| `no_concrete_anchor` | No file, command, symbol or number, so two readers can both follow it and disagree about what they did. |
-
-Findings cross the wire as an id and the numbers behind it, never prose. The
-page owns every sentence a reader sees, which is what lets the interface speak
-six languages while the rules it scores stay English.
-
-## The four answers
-
-| `status` | When | Cost |
-| --- | --- | --- |
-| `ok` | It was scored. `findings` may be empty. | one Jev request |
-| `not_english` | Another language. Nothing here was measured outside English, so a number would mean nothing. | none, the screen runs first |
-| `review` | Injection risk at or above 0.35. Scored, but no verdict is rendered over text that may be addressing the reader. | already spent |
-| `refused` | Injection risk at or above 0.70. The text is aimed at whatever is processing it. Handed straight back. | already spent |
-
-## Running it
-
-No build step, no `package.json`, no dependencies. CommonJS everywhere except
-[worker.js](worker.js), the one ESM module Cloudflare wants — wrangler's bundler
-joins the two.
+Score a rule against the running service. Nothing to install, no key needed.
 
 ```bash
-node --test                             # 47 tests, all local, no key needed
-npx --yes wrangler dev                  # local server; key goes in .dev.vars
-npx --yes wrangler deploy               # ship it
-npx --yes wrangler secret put TYPESAFE_API_KEY
+curl -s -X POST https://readback-score.victor-villegas.workers.dev/api/score \
+  -H "Content-Type: application/json" \
+  -d '{"rule":"Always try to keep functions small."}'
 ```
 
-The key is a **secret, not a var**: it must never land in
-[wrangler.jsonc](wrangler.jsonc). `.dev.vars` is gitignored for the same reason.
-
-## The API
-
-The page is a static asset, matched before the Worker runs. Only `/api/score`
-and mistyped paths reach any code of ours.
-
-```
-POST /api/score    { "rule": "Always prefer the smallest coherent solution." }
-```
-
-`rule` is a string of 2000 characters or fewer. A real response to that rule:
+Expected output, pretty-printed from the single line the service returns:
 
 ```json
 {
   "status": "ok",
-  "risk": 0.04,
+  "risk": 0.03,
   "findings": [
-    { "id": "hedge_dominance", "factor": "F1", "value": 0.5, "verb": "prefer" },
+    { "id": "hedge_dominance", "factor": "F1", "value": 0.2, "verb": "try to" },
     { "id": "no_concrete_anchor", "factor": "F7", "value": 0.05 }
   ],
   "factors": {
-    "F1": 0.5, "F2": 0.35, "F7": 0.05, "F3": 1.66, "F8": 2.63,
-    "is_rule": 0.94,
-    "primitive": { "choice": "rule", "confidence": 0.99 }
+    "F1": 0.2, "F2": 0.85, "F7": 0.05, "F3": 2.19, "F8": 1.32,
+    "is_rule": 0.96,
+    "primitive": { "choice": "rule", "confidence": 0.96 }
   },
   "tokens": 2570
 }
 ```
 
+Two findings fired. `hedge_dominance` reports that `try to` softens the whole
+sentence. `no_concrete_anchor` reports that nothing in the line is checkable.
+
+Your numbers will differ slightly. Four of the values come back probability
+weighted, so they move a little between runs while the findings stay the same.
+That is why every set under `eval/` labels the finding rather than the value.
+
+## What comes back
+
+Findings, and **deliberately no grade**. A letter is the part a reader
+over-trusts and the part that says least.
+
+Findings cross the wire as an id and the numbers behind it, never prose. The
+page owns every sentence a reader sees. That is what lets the interface speak
+six languages while the rules it scores stay English.
+
+There are nine findings. The first five lead on the page, because nothing else
+there says them.
+
+| Finding | What it means |
+| --- | --- |
+| `not_a_rule` | The line asks for nothing. It is read and paid for every turn without changing what the agent does. |
+| `should_be_a_hook` | Compliance is mechanical, and the model is confident. Prose is the weaker copy of a check. |
+| `belongs_as_a_skill` | A procedure or reference that only matters while one kind of work is under way. |
+| `belongs_as_a_subagent` | A sweep, an audit or a review. It produces a report rather than a pass or a fail. |
+| `could_be_a_hook` | A tool could carry it, but the routing will not say which kind. |
+| `no_trigger` | Nothing names an occasion, so the line is read once and never comes due. |
+| `stall_risk` | A ban that names nothing to do instead. A blocked task becomes a stopped one. |
+| `hedge_dominance` | One hedging verb sets the force of the whole sentence downward. |
+| `no_concrete_anchor` | No file, command, symbol or number, so two readers can disagree about what they did. |
+
+The `status` field says which of four answers you got.
+
+| `status` | When | Cost |
+| --- | --- | --- |
+| `ok` | It was scored. `findings` may be empty. | one Jev request |
+| `not_english` | The language screen read another language. | none, that screen runs first |
+| `review` | Injection risk at or above 0.35. Scored, but no verdict is rendered. | already spent |
+| `refused` | Injection risk at or above 0.70. The text is aimed at whatever processes it. | already spent |
+
 Errors carry a `code` for the page to translate and an English `error` for logs:
 `bad_body`, `bad_rule`, `empty`, `too_long`, `not_configured`, `upstream`,
-`rate_limited`, `failed`. Nothing from upstream is passed through, because an
+`rate_limited` and `failed`. Nothing from upstream is passed through, because an
 upstream body can carry the submitted rule back verbatim.
 
-## Layout
+## Run it locally
 
-| Path | What is in it |
-| --- | --- |
-| [lib/analyze.js](lib/analyze.js) | One rule in, findings out. Every threshold, each with the document it came from. |
-| [lib/questions.js](lib/questions.js) | The six Jev questions, sent as one request per rule. |
-| [lib/scorer.js](lib/scorer.js) | F1, F2 and F7 — English word lists, no call, no cost. |
-| [lib/language.js](lib/language.js) | The screen that runs before anything is spent. |
-| [api/score.js](api/score.js) | The one server-side piece, and only because a key cannot go in a page. |
-| [public/](public/) | The page. No framework, no build. [i18n.js](public/i18n.js) holds six locales. |
-| [eval/](eval/) | The labelled sets and harnesses. [eval/README.md](eval/README.md) says which number to report. |
-| [docs/](docs/) | Why each criteria string says what it says, and what it measured at. |
+There is no build step and no `package.json`. `npx` ships with Node and
+downloads wrangler on first use.
 
-The handler is written against the Web standard `Request -> Response` and
-touches no Node built-in, so it runs unchanged on Netlify v2, Vercel, Deno or
-Node 22. Cloudflare is the host, not a dependency.
+1. Put your key in `.dev.vars`, replacing `<YOUR_KEY>`. The file is gitignored.
 
-## Changing any of it
+   ```bash
+   echo "TYPESAFE_API_KEY=<YOUR_KEY>" > .dev.vars
+   ```
 
-**Change a criteria string, re-run the set, report the held-out number — not the
-tuned one.** Every question here was wrong in its first version, and each time it
-was a labelled set that caught it, never a reading. Each knowledge doc carries a
-"rules for changing this" section naming what is spent and what is still safe to
-quote.
+2. Start the server. Wrangler prints the local address it is listening on.
+
+   ```bash
+   npx --yes wrangler dev
+   ```
+
+The page in `public/` is served as a static asset and is matched before any code
+of ours runs. Only `/api/score` and mistyped paths reach the Worker.
+
+## Configuration
+
+One setting, and it is a secret.
+
+| Name | Required | Default | What it does |
+| --- | --- | --- | --- |
+| `TYPESAFE_API_KEY` | To score a rule | none | Authenticates the call to Jev. Without it, `/api/score` answers `not_configured`. |
+
+Where the value goes: `.dev.vars` on a developer machine, a Cloudflare Workers
+secret in production. **Never `wrangler.jsonc`**, which is committed. Everything
+else the service uses is a constant in [lib/analyze.js](lib/analyze.js), next to
+the document that measured it.
+
+## Deploy
+
+Requires a Cloudflare account and `wrangler login`. Run both, in this order,
+from the repository root.
+
+1. Publish the Worker and the page.
+
+   ```bash
+   npx --yes wrangler deploy
+   ```
+
+2. Set the key. The Worker must already exist.
+
+   ```bash
+   npx --yes wrangler secret put TYPESAFE_API_KEY
+   ```
+
+## Development and tests
+
+The suite is local, needs no key, and costs nothing.
+
+```bash
+node --test
+```
+
+Expected output, last lines:
+
+```text
+# tests 47
+# suites 0
+# pass 47
+# fail 0
+```
+
+The labelled sets and their harnesses live in `eval/`. One of them is free and
+the rest spend real money per run. Read
+[the eval guide](eval/README.md) before running any of them, because it says
+which number a given set is still allowed to report.
+
+## Changing the criteria
+
+**Change a criteria string, re-run its set, and report the held-out number, not
+the tuned one.** Every question here was wrong in its first version, and a
+labelled set caught it each time. Each document below carries a "rules for
+changing this" section naming what is spent and what is still safe to quote.
 
 | What it decides | Held out | Read first |
 | --- | --- | --- |
-| Is this text steering the evaluator? | 9/9 attacks caught, 14/15 benign clean, margin 0.74 | [injection-screen-criteria.md](docs/knowledge/injection-screen-criteria.md) |
-| Is it English? | 1 leak / 20, **0 refusals** | [language-screen-criteria.md](docs/knowledge/language-screen-criteria.md) |
-| Is it a rule? | 7/8, and the ordering is what matters | [is-rule-and-primitive-criteria.md](docs/knowledge/is-rule-and-primitive-criteria.md) |
-| Rule, hook, skill or subagent? | 6/8 overall, **10/10 on confident picks** | same |
-| When does it come due? (F3) | 6/10 exact, MAE 0.39 levels | [f3-trigger-distance-criteria.md](docs/knowledge/f3-trigger-distance-criteria.md) |
-| Is the verb soft? Is anything checkable? (F1, F7) | 20/20 and 20/20 | [f1-f7-deterministic-criteria.md](docs/knowledge/f1-f7-deterministic-criteria.md) |
+| Is this text steering the evaluator? | 9/9 attacks caught, 14/15 benign clean, margin 0.74 | [the injection screen](docs/knowledge/injection-screen-criteria.md) |
+| Is it English? | 1 leak / 20, **0 refusals** | [the language screen](docs/knowledge/language-screen-criteria.md) |
+| Is it a rule? | 7/8, and the ordering matters more than the count | [is_rule and best_primitive](docs/knowledge/is-rule-and-primitive-criteria.md) |
+| Rule, hook, skill or subagent? | 6/8 overall, **10/10 on confident picks** | same document |
+| When does it come due? | 6/10 exact, mean error 0.39 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
+| Is the verb soft? Is anything checkable? | 20/20 and 20/20 | [the deterministic factors](docs/knowledge/f1-f7-deterministic-criteria.md) |
 
-Four of those held-out halves are **spent** — a fix was diagnosed from a case
+Four of those held-out halves are **spent**. A fix was diagnosed from a case
 inside them, so they are regression guards now, not measurements. Build a fresh
-set rather than quietly promoting a guard back.
+set rather than promoting a guard back.
 
-## What is not measured
+## Where things live
 
-- **`enforceability` (F8)** has no labelled set of its own. It gates one
-  finding, `could_be_a_hook`.
-- **The six interface translations.** They need a native reader, not a harness.
-- **F4 (scope) and F5 (position)** are not here and cannot be: both take a
-  *file*, and this scores one pasted line.
+| Path | What is in it |
+| --- | --- |
+| [lib/analyze.js](lib/analyze.js) | One rule in, findings out. Every threshold, with the document it came from. |
+| [lib/questions.js](lib/questions.js) | The six Jev questions, sent as one request per rule. |
+| [lib/scorer.js](lib/scorer.js) | F1, F2 and F7. English word lists, no call, no cost. |
+| [lib/language.js](lib/language.js) | The screen that runs before anything is spent. |
+| [api/score.js](api/score.js) | The one server-side piece, and only because a key cannot go in a page. |
+| [worker.js](worker.js) | The Cloudflare entry point, and the only ESM file here. |
+| [public/](public/) | The page. No framework, no build. `i18n.js` holds six locales. |
+| [eval/](eval/) | Labelled sets and harnesses. |
+| [docs/](docs/) | Why each criteria string says what it says, and what it measured at. |
 
-A clean result is not a prediction that an agent will follow the rule. It means
-none of the checks above fired.
+The handler is written against the Web standard `Request` to `Response` and
+touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
+22. Cloudflare is the host, not a dependency.
+
+## Limits
+
+- **Enforceability has no labelled set of its own.** It gates one finding,
+  `could_be_a_hook`.
+- **The six interface translations are unmeasured.** They need a native reader,
+  not a harness.
+- **Scope and position are not scored and cannot be.** Both need the whole file,
+  and this scores one pasted line.
+- **A clean result is not a prediction that an agent will follow the rule.** It
+  means none of the checks above fired.
+
+## Support and license
+
+This repository has no public issue tracker, no `CONTRIBUTING.md` and no
+`SECURITY.md`. The documents under `docs/` are the only route for questions
+about why a criteria string says what it says. Report anything security related
+privately to the repository owner rather than in a public channel.
+
+**No license file has been chosen yet**, so no distribution terms are granted.
+The service's own terms and privacy notice are shipped with the page, at
+[terms](public/terms.html) and [privacy](public/privacy.html).
