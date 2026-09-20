@@ -89,11 +89,16 @@ files are optimized for agent consumption."* came back `is_rule` **0.24** and F3
 0.18; a prompt-injection string scored risk **0.98** and was refused. That is the
 first time `is_rule` has been shown a non-rule, and it was right.
 
+**The F1 and F7 fixes are live, and were checked there.** Eight rules through
+the deployed endpoint on 2026-09-20, live factors identical to local on all
+eight. *"Use npm, not yarn."* went F7 **0.05 → 0.85** and stopped raising
+*"nothing here is checkable"*; *"Do not try to work around the sandbox"* went F1
+**0.20 hedged → 0.95 unhedged**; *"Avoid `any`; prefer `unknown`"* went 0.50
+hedged → 0.85. Both controls held: *"Always try to use functional components"*
+is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
+
 **Not validated:**
 
-- **The two fixes above are not live.** The deployed Worker still carries the
-  scorer as it was before the measurement, so *"Use npm, not yarn."* still comes
-  back with no anchor on the public page. A deploy is what closes that gap.
 - **F4 and F5 are not in this app and cannot be.** Both take a whole file —
   `scoreF4(rule, file)` reads the file's globs, `scoreF5(lineStart, file)` reads
   a line offset — and this app scores one pasted rule. The earlier draft of this
@@ -157,9 +162,11 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **Whether to deploy the F1 and F7 fixes now** or hold them until the residual
-   `consider` false alarm is settled against a fresh set. The measurement is done;
-   what is open is when it reaches the public page.
+2. **The residual `consider` false alarm.** *"Consider all inputs untrusted"*
+   still reads as a suggestion. Settling it needs a fresh labelled set, because
+   the only evidence for it is a held-out case and fitting to that case would
+   spend the measurement. See
+   [f1-f7-deterministic-criteria.md](../knowledge/f1-f7-deterministic-criteria.md).
 
 ## Where things live
 
