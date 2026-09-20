@@ -97,6 +97,13 @@ are improved, with what is left named and left alone on purpose.
    nothing unstable, and **every pick at confidence 0.80 or better was right, 10
    for 10**. Same document.
 
+Both repairs are live as of version `7caeec0c` and were checked on the deployed
+endpoint: the description that scored 0.79 now comes back **0.37** and raises
+`not_a_rule`; the migration procedure comes back **`skill` at 0.92** where it
+used to say `hook`; the release review comes back **`subagent` at 0.64**; and
+*"Run `prettier` on modified files before committing."* is unchanged at `hook`
+0.99.
+
 ## What is validated, and what is not
 
 **Validated and ready to wire:** the injection screen (two Nouls), the F3 Score
@@ -185,11 +192,17 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 
 ## Open decisions
 
-1. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
+1. **The page cannot say "skill" or "subagent".** `jevFindings` emits
+   `should_be_a_hook` only when the choice is `hook` and confident, and
+   `could_be_a_hook` for everything else under the F8 cut — so a confident
+   `skill` at 0.92 renders as *"a tool could check this for you"* and the answer
+   is thrown away. The measurement is what exposed it: the routing is now right
+   about skills and subagents often enough to be worth showing.
+2. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **What to measure next.** Every question the app asks now has a labelled set
+3. **What to measure next.** Every question the app asks now has a labelled set
    behind it. What is left with none is the **language screen** — assay's, ported,
    never measured there either — and the **six interface translations**, which
    need a native speaker rather than a harness. After that, fresh held-out sets
