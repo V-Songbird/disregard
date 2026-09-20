@@ -17,6 +17,7 @@
       <select id="ui-lang"></select>
     </p>
   </div>
+  <p class="hint" id="ai-note" data-i18n="aiTranslated"></p>
   <p class="lede" data-i18n="lede"></p>
 
   <form id="ask" novalidate>
@@ -97,6 +98,8 @@
     for (const node of document.querySelectorAll("[data-i18n]")) {
       node.textContent = t[node.dataset.i18n];
     }
+    // English is the source; every other locale was machine-translated.
+    document.getElementById("ai-note").hidden = !t.aiTranslated;
     const promise = document.getElementById("promise");
     const link = el("a", null, t.promiseLink);
     link.href = "/privacy";

@@ -220,11 +220,12 @@ repo was moved with the rename; anything outside it was not checked.
    Only the owner's reversal is left.
 2. **What to measure next.** Everything the app decides now has a labelled set
    behind it. What is left with none is the **six interface translations**, which
-   need a native speaker rather than a harness. **The owner has no way to reach
-   one**, stated 2026-09-20, so this cannot be measured as written. Two honest
-   ways out: say on the page that the translations are unreviewed, or serve the
-   interface in English only, which is the one language the scoring was measured
-   in anyway. Either is a decision, not a task.
+   need a native speaker rather than a harness. **Settled on 2026-09-20:** the
+   owner has no way to reach one, so the page now says so instead. Each of the
+   five translated locales carries an `aiTranslated` line under the title
+   declaring the translation machine-made and possibly wrong; English is the
+   source and shows nothing. Measuring them stays undone, and is now disclosed
+   rather than pending.
 3. **Fresh held-out sets** for the four that are spent.
 
 ## Where things live
