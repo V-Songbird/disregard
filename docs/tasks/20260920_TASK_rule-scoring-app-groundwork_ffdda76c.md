@@ -95,7 +95,7 @@ files are optimized for agent consumption."* came back `is_rule` **0.24** and F3
 0.18; a prompt-injection string scored risk **0.98** and was refused. That is the
 first time `is_rule` has been shown a non-rule, and it was right.
 
-**The first two F1 and F7 fixes are live, and were checked there.** Eight rules through
+**All three F1 and F7 fixes are live, and were checked there.** Eight rules through
 the deployed endpoint on 2026-09-20, live factors identical to local on all
 eight. *"Use npm, not yarn."* went F7 **0.05 → 0.85** and stopped raising
 *"nothing here is checkable"*; *"Do not try to work around the sandbox"* went F1
@@ -111,8 +111,6 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
   note listed them as unmeasured risks here, which was wrong: they are not risks,
   they are absent. Measuring them means measuring assay against a corpus of whole
   files, which is a different project.
-- **The `consider` fix is not live.** It is the sixth defect above, committed
-  but not deployed. Everything else in this section is on the public page.
 - **The corpus behind F1 and F7 is 56 rules across three sets.** Enough to catch
   a structural defect, nowhere near enough to certify an accuracy. One residual
   is still open and named in the test: *"Consider logging disabled in
@@ -296,11 +294,14 @@ uses `border-inline-start`. Also checked at 375 px with no horizontal scroll, a
 both colour schemes. Every render path was exercised against a stub, including
 the 502.
 
-Rechecked after the findings were rewritten: the page served locally against the
-live endpoint, *"All async functions MUST have timeout"* rendering the fix line
-and **no digit anywhere in the card**, at 375 px in all six languages, with the
-numbers disclosure both open and closed and no horizontal overflow in any of
-them. Arabic flips the fix line's accent border to the right.
+Rechecked on the deployed origin after the findings were rewritten. *"All async
+functions MUST have timeout"* — the rule that prompted the change — renders as
+*"A tool could check this for you"* with the fix line under it and **no digit
+anywhere in the card**, in English and in Arabic. The numbers stay one
+disclosure away, and on that run the routing confidence came back **0.56** where
+the reader's screenshot had shown 0.61. It moves between runs, which is its own
+argument against printing it. Checked at 375 px in all six languages, numbers
+open and closed, no horizontal overflow.
 
 Not checked: a screen reader.
 
