@@ -1,0 +1,41 @@
+
+### v1  flat comparative strings   exact 4/10   MAE 0.68 levels   14217 tok
+id                  want  got   lvl  err   spread
+getProjectCommands  4     3.07  3    0.93  0.12
+barrel-imports      4     3.34  3    0.66  0.12
+grammar-psi         3     3.6   4    0.60  0.04
+functional-new      3     3.79  4    0.79  0.01
+state-synced        2     3.71  4    1.71  0.05
+prettier-commit     2     3     3    1.00  0.03
+aquatic             1     0.97  1    0.03  0.01
+try-prefer          1     1.36  1    0.36  0.08
+changelog           1     1.19  1    0.19  0.02
+optimized-files     0     0.48  0    0.48  0.02
+
+### v2  standalone situations + signals   exact 9/10   MAE 0.14 levels   34947 tok
+id                  want  got   lvl  err   spread
+getProjectCommands  4     4     4    0.00  0
+barrel-imports      4     3.98  4    0.02  0.01
+grammar-psi         3     3     3    0.00  0
+functional-new      3     3.06  3    0.06  0
+state-synced        2     2.25  2    0.25  0.05
+prettier-commit     2     2     2    0.00  0
+aquatic             1     1.02  1    0.02  0.01
+try-prefer          1     1.85  2    0.85  0.09
+changelog           1     1.01  1    0.01  0.01
+optimized-files     0     0.16  0    0.16  0.04
+
+### v2 on HELD-OUT cases   exact 6/10   MAE 0.39 levels   35142 tok
+id                  want  got   lvl  err   spread
+temp-files-report   2     2     2    0.00  0
+english-docs        1     2.53  3    1.53  0.12
+lastexitcode        4     3.87  4    0.13  0.04
+run-checks          2     2.52  3    0.52  0.06
+select-object       4     3.93  4    0.07  0.02
+read-before-edit    3     3.01  3    0.01  0.04
+exclude-deps        1     1.81  2    0.81  0.08
+not-predictor       0     0.69  1    0.69  0.07
+rename-refs         3     2.96  3    0.04  0
+no-recursive        3     3.1   3    0.10  0.05
+
+SUMMARY  tuned 4/10 -> 9/10 (MAE 0.68 -> 0.14)   HELD-OUT 6/10 MAE 0.39
