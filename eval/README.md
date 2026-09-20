@@ -40,9 +40,10 @@ subject is prompts, scores, ignoring or overriding, which is the vocabulary a
 keyword filter trips on. They are the only reason its false-alarm count means
 anything.
 
-`det-set.js` splits the same way and labels the **finding**, not the 0-1 value:
-`hedge` is whether the rule's force really is soft, `anchor` is whether it names
-anything checkable. Its `HELDOUT` half is ordinary instruction-file idiom that
-was labelled before anything was run. One case in it, `untrusted-inputs`, is a
-known false alarm left deliberately unfixed — fitting the scorer to it would
-spend the only number that means anything.
+`det-set.js` labels the **finding**, not the 0-1 value: `hedge` is whether the
+rule's force really is soft, `anchor` is whether it names anything checkable. It
+carries three sets, and which one to report changes as they are spent.
+`HELDOUT` was the first measurement; the `consider` fix was diagnosed on a case
+inside it, so it is a regression guard now. **`HELDOUT2` is the live held-out
+number.** When that one is spent in its turn, build `HELDOUT3` rather than
+quietly promoting a guard back into a measurement.

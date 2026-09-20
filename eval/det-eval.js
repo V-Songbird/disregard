@@ -6,10 +6,12 @@
 //
 //   node eval/det-eval.js
 //
-// Report the HELD-OUT line. Fitting the working set is easy and means little.
+// Report HELD-OUT 2. The first held-out set is spent — the `consider` fix of
+// 2026-09-20 was diagnosed on a case inside it — so it is a regression guard
+// now, not a measurement.
 
 const { scoreF1, scoreF7 } = require("../lib/scorer.js");
-const { LABELLED, HELDOUT } = require("./det-set.js");
+const { LABELLED, HELDOUT, HELDOUT2 } = require("./det-set.js");
 
 // The two predicates lib/analyze.js uses to decide whether a finding fires.
 const firesHedge = (text) => scoreF1(text).hedged === true;
@@ -27,14 +29,13 @@ function run(name, set) {
     };
   });
 
-  const tally = (want, got) => ({
-    fp: rows.filter((r) => !r[want] && r[got]).length,
-    fn: rows.filter((r) => r[want] && !r[got]).length,
-    ok: rows.filter((r) => r[want] === r[got]).length,
-  });
+  const h = {
+    fp: rows.filter((r) => !r.hedgeWant && r.hedgeGot).length,
+    fn: rows.filter((r) => r.hedgeWant && !r.hedgeGot).length,
+    ok: rows.filter((r) => r.hedgeWant === r.hedgeGot).length,
+  };
   // hedge_dominance fires on hedgeGot; no_concrete_anchor fires on !anchorGot,
   // so an anchor the scorer misses is a false ALARM on screen.
-  const h = tally("hedgeWant", "hedgeGot");
   const a = {
     fp: rows.filter((r) => r.anchorWant && !r.anchorGot).length,
     fn: rows.filter((r) => !r.anchorWant && r.anchorGot).length,
@@ -47,8 +48,7 @@ function run(name, set) {
   console.log("  no_concrete_anchor   " + a.ok + "/" + rows.length +
     "   false alarms " + a.fp + "   missed " + a.fn);
 
-  const bad = rows.filter((r) => r.hedgeWant !== r.hedgeGot || r.anchorWant !== r.anchorGot);
-  for (const r of bad) {
+  for (const r of rows.filter((x) => x.hedgeWant !== x.hedgeGot || x.anchorWant !== x.anchorGot)) {
     const parts = [];
     if (r.hedgeWant !== r.hedgeGot) {
       parts.push("hedge want " + r.hedgeWant + " got " + r.hedgeGot +
@@ -63,10 +63,13 @@ function run(name, set) {
   return { rows, h, a };
 }
 
-const l = run("LABELLED  working set", LABELLED);
-const o = run("HELD-OUT  never consulted while fixing", HELDOUT);
-console.log("\nSUMMARY  held-out hedge " + o.h.ok + "/" + HELDOUT.length +
-  "   held-out anchor " + o.a.ok + "/" + HELDOUT.length +
-  "   working " + l.h.ok + "/" + LABELLED.length + " and " + l.a.ok + "/" + LABELLED.length);
+const l = run("LABELLED   working set", LABELLED);
+const o = run("HELD-OUT   spent on the consider fix, now a regression guard", HELDOUT);
+const o2 = run("HELD-OUT 2   the live held-out set", HELDOUT2);
+
+const line = (name, r, n) => name + " " + r.h.ok + "/" + n + " and " + r.a.ok + "/" + n;
+console.log("\nSUMMARY  " + line("HELD-OUT 2", o2, HELDOUT2.length) +
+  "  |  " + line("first held-out", o, HELDOUT.length) +
+  "  |  " + line("working", l, LABELLED.length));
 
 module.exports = { firesHedge, firesNoAnchor };

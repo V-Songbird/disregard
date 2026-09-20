@@ -44,7 +44,7 @@ same web report. Reasoning and the rest of the competitive picture:
 | Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
-## The five scorer defects, all fixed
+## The six scorer defects, all fixed
 
 Each was found by measuring against labelled cases, and each is written up with
 its numbers and a "rules for changing this" section.
@@ -75,6 +75,12 @@ its numbers and a "rules for changing this" section.
    instruction files write `prettier` and `zod`. Fix: a second, case-insensitive
    list of tokens that are never ordinary English. Held-out **16/18 → 18/18**.
    Same document.
+6. **F1 read `consider` as a suggestion however it was used.** *"Consider all
+   inputs untrusted"* scored 0.30 hedged, when it means *regard* them as
+   untrusted. The first measurement found it and could not settle it — the only
+   evidence sat in the held-out set. Fix: `consider` is a suggestion only before
+   `whether`, `if`, or a gerund whose stem is a verb the file knows. A second
+   held-out set of 20 went **16/20 → 20/20**, zero misses. Same document.
 
 ## What is validated, and what is not
 
@@ -89,7 +95,7 @@ files are optimized for agent consumption."* came back `is_rule` **0.24** and F3
 0.18; a prompt-injection string scored risk **0.98** and was refused. That is the
 first time `is_rule` has been shown a non-rule, and it was right.
 
-**The F1 and F7 fixes are live, and were checked there.** Eight rules through
+**The first two F1 and F7 fixes are live, and were checked there.** Eight rules through
 the deployed endpoint on 2026-09-20, live factors identical to local on all
 eight. *"Use npm, not yarn."* went F7 **0.05 → 0.85** and stopped raising
 *"nothing here is checkable"*; *"Do not try to work around the sandbox"* went F1
@@ -105,9 +111,12 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
   note listed them as unmeasured risks here, which was wrong: they are not risks,
   they are absent. Measuring them means measuring assay against a corpus of whole
   files, which is a different project.
-- **The corpus behind F1 and F7 is 36 rules.** Enough to catch a structural
-  defect, nowhere near enough to certify an accuracy. One held-out false alarm is
-  still open and named in the test.
+- **The `consider` fix is not live.** It is the sixth defect above, committed
+  but not deployed. Everything else in this section is on the public page.
+- **The corpus behind F1 and F7 is 56 rules across three sets.** Enough to catch
+  a structural defect, nowhere near enough to certify an accuracy. One residual
+  is still open and named in the test: *"Consider logging disabled in
+  production"*, where a gerund is used as a noun.
 - **`is_rule` and the `best_primitive` rubrics in `lib/questions.js`** are new
   wording, not the probe's — that script is gone. One correct non-rule is an
   anecdote, not a measurement.
@@ -162,11 +171,11 @@ same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
    harness that lets strangers add model columns for ~$41 each. Its README calls
    itself *"never published"*, so publishing reverses a standing decision. Audit
    `results/` for machine-local transcripts first.
-2. **The residual `consider` false alarm.** *"Consider all inputs untrusted"*
-   still reads as a suggestion. Settling it needs a fresh labelled set, because
-   the only evidence for it is a held-out case and fitting to that case would
-   spend the measurement. See
-   [f1-f7-deterministic-criteria.md](../knowledge/f1-f7-deterministic-criteria.md).
+2. **What to measure next.** The deterministic half is done. What is left with
+   no labelled evidence at all is `is_rule` and the `best_primitive` rubric in
+   `lib/questions.js`, the language screen, and the six interface translations.
+   The first two are Jev questions, so a set costs real money; the third needs a
+   native speaker, not a harness.
 
 ## Where things live
 

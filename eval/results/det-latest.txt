@@ -1,14 +1,17 @@
-# node eval/det-eval.js   2026-09-20, after the two fixes.
-# Baseline before them: working 16/18 and 17/18, held-out 16/18 and 16/18.
-# Misses were zero in every run, before and after.
+# node eval/det-eval.js   2026-09-20, after all three fixes.
+# Baselines: HELDOUT 16/18 and 16/18 before the first two fixes;
+# HELDOUT2 16/20 hedging before the consider fix. Misses were zero throughout.
 
-### LABELLED  working set   18 rules
+### LABELLED   working set   18 rules
   hedge_dominance      18/18   false alarms 0   missed 0
   no_concrete_anchor   18/18   false alarms 0   missed 0
 
-### HELD-OUT  never consulted while fixing   18 rules
-  hedge_dominance      17/18   false alarms 1   missed 0
+### HELD-OUT   spent on the consider fix, now a regression guard   18 rules
+  hedge_dominance      18/18   false alarms 0   missed 0
   no_concrete_anchor   18/18   false alarms 0   missed 0
-    untrusted-inputs        hedge want false got true (F1 0.3 via consider)
 
-SUMMARY  held-out hedge 17/18   held-out anchor 18/18   working 18/18 and 18/18
+### HELD-OUT 2   the live held-out set   20 rules
+  hedge_dominance      20/20   false alarms 0   missed 0
+  no_concrete_anchor   20/20   false alarms 0   missed 0
+
+SUMMARY  HELD-OUT 2 20/20 and 20/20  |  first held-out 18/18 and 18/18  |  working 18/18 and 18/18

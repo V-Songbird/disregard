@@ -4,11 +4,11 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { scoreF1, scoreF7 } = require("../lib/scorer.js");
-const { LABELLED, HELDOUT } = require("../eval/det-set.js");
+const { LABELLED, HELDOUT, HELDOUT2 } = require("../eval/det-set.js");
 
-// F1 and F7 measured against a labelled corpus for the first time, 2026-09-20.
-// The corpus and the reasoning are in eval/det-set.js and
-// docs/knowledge/f1-f7-deterministic-criteria.md. Two defects were found:
+// F1 and F7 measured against labelled corpora, 2026-09-20. The sets and the
+// reasoning are in eval/det-set.js and
+// docs/knowledge/f1-f7-deterministic-criteria.md. Three defects were found:
 //
 //   F1  a hedge anywhere in the text governed the whole rule, so "Do not try to
 //       work around the sandbox" scored 0.20 hedged. Fixed: a hedge only governs
@@ -16,42 +16,37 @@ const { LABELLED, HELDOUT } = require("../eval/det-set.js");
 //   F7  the tool-name list matched marketing capitalization only, so a bullet
 //       naming `prettier`, `zod` or `npm` scored 0.05 and raised "nothing here
 //       is checkable". Fixed: a case-insensitive list of unambiguous tokens.
+//   F1  `consider` counted as a suggestion however it was used, so "Consider all
+//       inputs untrusted" scored 0.30 hedged. Fixed: it is a suggestion only
+//       before `whether`, `if`, or a gerund of a verb the file knows.
 //
-// Held-out went 16/18 to 17/18 on hedging and 16/18 to 18/18 on anchors. The
-// numbers below are the measurement; change the scorer and they move, which is
-// the point. Re-run with `node eval/det-eval.js` and report the held-out line.
+// All three sets are clean now. Re-run with `node eval/det-eval.js` and report
+// HELD-OUT 2 — the first held-out set is spent, because the `consider` fix was
+// diagnosed on a case inside it.
 
 // The two predicates lib/analyze.js uses to decide whether a finding fires.
 const firesHedge = (text) => scoreF1(text).hedged === true;
 const firesNoAnchor = (text) => scoreF7(text).concrete.length === 0;
 
 const wrong = (set) => set.filter((c) =>
-  firesHedge(c.text) !== c.hedge || firesNoAnchor(c.text) !== !c.anchor);
+  firesHedge(c.text) !== c.hedge || firesNoAnchor(c.text) !== !c.anchor).map((c) => c.id);
 
-test("the working set is clean, both findings", () => {
-  const bad = wrong(LABELLED).map((c) => c.id);
-  assert.deepEqual(bad, [], "regressed on: " + bad.join(", "));
-});
+for (const [name, set] of [["working", LABELLED], ["first held-out", HELDOUT], ["held-out 2", HELDOUT2]]) {
+  test("the " + name + " set is clean, both findings", () => {
+    const bad = wrong(set);
+    assert.deepEqual(bad, [], "regressed on: " + bad.join(", "));
+  });
+}
 
-// `consider` doubles as a plain verb meaning "regard as" — "Consider all inputs
-// untrusted" is a directive, not a suggestion. Left unfixed on purpose: the only
-// evidence for it is a held-out case, and fitting the scorer to it would spend
-// the one measurement that means anything. A fresh set is what should settle it.
-const KNOWN = new Set(["untrusted-inputs"]);
-
-test("held-out carries exactly one known false alarm", () => {
-  const bad = wrong(HELDOUT).map((c) => c.id);
-  assert.deepEqual(bad, [...KNOWN], "held-out moved: " + bad.join(", "));
-});
-
-test("no real hedge is lost to the prohibition fix", () => {
-  for (const c of [...LABELLED, ...HELDOUT].filter((x) => x.hedge)) {
+test("no real hedge is lost to either F1 fix", () => {
+  for (const c of [...LABELLED, ...HELDOUT, ...HELDOUT2].filter((x) => x.hedge)) {
     assert.equal(firesHedge(c.text), true, c.id + " is hedged and must be flagged");
   }
 });
 
-// The two bullets that drove each fix, kept as named cases so a future change
-// has to argue with them rather than with a count.
+// The bullets that drove each fix, kept as named cases so a future change has
+// to argue with them rather than with a count.
+
 test("a ban that contains a hedge word is still a ban", () => {
   assert.equal(scoreF1("Do not try to work around the sandbox.").hedged, undefined);
   assert.equal(scoreF1("Never prefer a mock over the real database.").hedged, undefined);
@@ -83,4 +78,49 @@ test("ordinary English is not an anchor", () => {
   ]) {
     assert.equal(firesNoAnchor(text), true, text);
   }
+});
+
+test("`consider` before a gerund or a question is a suggestion", () => {
+  for (const text of [
+    "Consider using a hook instead.",
+    "Consider adding a regression test.",
+    "Consider refactoring the module.",
+    "Consider caching the result.",
+    "Consider whether to split the file.",
+    "Consider if the lock file changed.",
+  ]) {
+    assert.equal(firesHedge(text), true, text);
+  }
+});
+
+test("`consider` meaning regard-as is a directive", () => {
+  for (const text of [
+    "Consider all inputs untrusted at the handler boundary.",
+    "Consider the public API frozen after a minor release.",
+    "Consider the build broken until the pipeline is green.",
+  ]) {
+    assert.equal(firesHedge(text), false, text);
+    assert.equal(scoreF1(text).value, 0.85, text);
+  }
+});
+
+// Why the gerund test checks the stem against ALL_VERBS instead of matching
+// /\w+ing/: these three end in -ing and none of them is a verb.
+test("an -ing word that is not a gerund does not rescue the suggestion", () => {
+  for (const text of [
+    "Consider everything in `/tmp` disposable.",
+    "Consider anything under `build/` generated.",
+    "Consider the string frozen.",
+  ]) {
+    assert.equal(firesHedge(text), false, text);
+  }
+});
+
+// The honest limit of the gerund test. "Consider logging disabled" is
+// regard-as, but `logging` is a real gerund of a verb this file knows, so the
+// stem check cannot see the difference — only the complement that follows can,
+// and that needs a parser. Left as is: the construction is ambiguous in English
+// too, and no corpus case depends on it. Pinned so it cannot quietly spread.
+test("a gerund used as a noun is the one construction still misread", () => {
+  assert.equal(firesHedge("Consider logging disabled in production."), true);
 });

@@ -1,6 +1,6 @@
 ---
 type: knowledge
-summary: "The first labelled measurement of the deterministic factors F1 (verb force) and F7 (concreteness), the two defects it found and fixed, the held-out numbers, and why F4 and F5 cannot be measured in this app at all; read before touching lib/scorer.js."
+summary: "The labelled measurement of the deterministic factors F1 (verb force) and F7 (concreteness), the three defects it found and fixed, the held-out numbers from two independent sets, and why F4 and F5 cannot be measured in this app at all; read before touching lib/scorer.js."
 related_files:
   - "lib/scorer.js"
   - "eval/det-set.js"
@@ -35,14 +35,20 @@ call it makes, and the float behind it is a presentation detail nobody acts on.
 
 ## The corpus
 
-36 rules in [eval/det-set.js](../../eval/det-set.js), split the way
+56 rules in [eval/det-set.js](../../eval/det-set.js), split the way
 [eval/README.md](../../eval/README.md) requires:
 
 - **`LABELLED`, 18.** Real bullets lifted from a live `CLAUDE.md` and this
   project's own instructions, plus three probes aimed at branches whose code
   comments call them deliberate.
 - **`HELDOUT`, 18.** Ordinary instruction-file idiom, labelled before anything
-  was run and not consulted while fixing.
+  was run and not consulted while fixing. **Spent** as of the third defect
+  below, which was diagnosed on a case inside it. It is a regression guard now,
+  not a measurement.
+- **`HELDOUT2`, 20.** Built to settle that third defect on data it had never
+  seen. Eight `consider` rules in both readings, four other hedging verbs, two
+  bans containing a hedge word, six plain rules. Every `consider` label follows
+  one stated test, so a reader can check each one instead of trusting it.
 
 Each case carries `hedge` (the rule's force really is soft) and `anchor` (it
 names something mechanically checkable), with the reason written down. The run
@@ -65,12 +71,13 @@ have. Every error was a false alarm, which is the same shape the F2 defect had
 and the same reason it mattered: the finding that fires on a good rule is the
 one that costs a reader their trust.
 
-## The two defects
+## The three defects
 
 ### F1 — a hedge governed a sentence it did not lead
 
-Five false alarms across both sets, one cause. `scoreF1` collected every verb
-match anywhere in the text and let the weakest hedging one win outright:
+Four hedge false alarms across both sets, three of them one cause. `scoreF1`
+collected every verb match anywhere in the text and let the weakest hedging one
+win outright:
 
 | Rule | Scored | Why it is wrong |
 | --- | --- | --- |
@@ -103,34 +110,62 @@ and `Rails` stay case-sensitive in the old list on purpose — *"move it to the
 next step"* and *"read the rest of the file"* are not anchors, and a blanket
 `/i` would have turned both into ones.
 
+### F1 again — `consider` was not always a suggestion
+
+`consider` sits in the suggestion tier at 0.30, alongside `aim to` and `where
+practical`. Those two are unambiguous. `consider` is the only verb in any
+hedging tier that doubles as an ordinary transitive verb meaning *regard as*:
+
+| Rule | Reading | Scored |
+| --- | --- | --- |
+| *"Consider adding a regression test."* | suggestion — genuinely optional | 0.30 hedged, correctly |
+| *"Consider all inputs untrusted."* | directive — *regard* them as untrusted | 0.30 hedged, **wrongly** |
+
+The first measurement caught exactly one of these and could not settle it: the
+only evidence was a held-out case, and fitting to it would have spent that
+number. `HELDOUT2` was built for it, and the baseline came back **hedge 16/20,
+four false alarms, every one a `consider`** used as *regard as*.
+
+**Fix.** `consider` stays a suggestion only before `whether`, `if`, or a gerund.
+The gerund test checks the stem against `ALL_VERBS` — the verb vocabulary the
+file already carries — rather than matching `/\w+ing/`, because *"Consider
+everything in `/tmp` disposable"* and *"Consider the string frozen"* both end a
+word in -ing and neither is a gerund. Anything else is scored as the bare
+imperative it is, at 0.85.
+
 ## Result
 
 ```
-LABELLED   hedge 18/18  false alarms 0  missed 0     anchor 18/18  false alarms 0  missed 0
-HELD-OUT   hedge 17/18  false alarms 1  missed 0     anchor 18/18  false alarms 0  missed 0
+LABELLED     hedge 18/18  false alarms 0  missed 0     anchor 18/18  false alarms 0  missed 0
+HELD-OUT     hedge 18/18  false alarms 0  missed 0     anchor 18/18  false alarms 0  missed 0
+HELD-OUT 2   hedge 20/20  false alarms 0  missed 0     anchor 20/20  false alarms 0  missed 0
 ```
 
-**Held-out hedging 16/18 → 17/18. Held-out anchors 16/18 → 18/18.** No real
-hedge was lost: every case labelled `hedge: true` in either set still fires,
-which is asserted directly in
-[test/f1-f7-corpus.test.js](../../test/f1-f7-corpus.test.js). The suite went 24
-to 31 tests, and the 28-case F2 corpus still passes unchanged.
+| Set | Hedging | Anchors |
+| --- | --- | --- |
+| `HELDOUT`, first measurement | 16/18 → 17/18 → **18/18** | 16/18 → **18/18** |
+| `HELDOUT2`, `consider` only | 16/20 → **20/20** | **20/20** unchanged |
 
-Two of the three F1 cases were working-set probes, so the third —
-*"Avoid `any`; prefer `unknown`"* — is the honest evidence: a held-out rule the
-same fix repaired without being fitted to it.
+**Missed zero in every run of all three sets, before and after every fix.**
+Every error this document reports was a false alarm, and every case labelled
+`hedge: true` anywhere still fires — asserted directly in
+[test/f1-f7-corpus.test.js](../../test/f1-f7-corpus.test.js). The suite went 24
+to 36 tests, and the 28-case F2 corpus passes unchanged throughout.
+
+`HELDOUT2`'s anchor column never moved, which is the useful null result: the
+`consider` fix touches F1 only, and a fresh set agreed with F7 twenty times out
+of twenty without being consulted.
 
 ### The one residual
 
-*"Consider all inputs untrusted at the handler boundary."* still scores 0.30
-hedged via `consider`. It is not a suggestion; `consider X Y` means *regard X as
-Y*, and the rule is a directive. `consider` is the only verb in its tier that
-doubles as a plain transitive verb — `aim to` and `where practical` do not.
+*"Consider logging disabled in production."* still scores 0.30 hedged. `logging`
+really is the gerund of a verb this file knows, so the stem test cannot tell it
+apart from *"Consider logging every request"* — only the complement that follows
+can, and reading that needs a parser.
 
-**Left unfixed on purpose.** The only evidence for it is a held-out case, and
-fitting the scorer to that case would spend the one number in this document that
-means anything. A fresh set should settle it. It is pinned by name in the test
-so it cannot quietly become two.
+**Left as is.** The construction is ambiguous in English too, no corpus case
+depends on it, and a parser is far out of proportion to one reading of one verb.
+It is pinned by name in the test so it cannot quietly become a class.
 
 ## F4 and F5 are not here, and cannot be
 
@@ -156,13 +191,16 @@ built, and then the corpus has to be built first.
 
 ## Rules for changing this
 
-1. **Change a word list, re-run the set, report the held-out number.** Not the
-   working one. `node eval/det-eval.js` prints both.
+1. **Change a word list, re-run the sets, report `HELDOUT2`.** Not the working
+   set, and not `HELDOUT` — that one is spent. `node eval/det-eval.js` prints all
+   three. When `HELDOUT2` is spent in its turn, build `HELDOUT3`; do not quietly
+   promote a guard back into a measurement.
 2. **A new false alarm is a defect; a new miss is a worse one.** Both sets have
    stood at zero misses since before the fixes. Do not trade that away for a
    false-alarm count.
-3. **Do not fit to `untrusted-inputs`.** Fixing the named residual from the
-   held-out set makes every number above unverifiable. Build a fresh set.
+3. **Do not fit to `Consider logging disabled`.** It is the named residual, and
+   fixing it from the probe alone repeats the mistake this rule exists to
+   prevent. If it matters enough to fix, it matters enough to build a set for.
 4. **Case-insensitive tokens must never be ordinary English.** That is the whole
    reason `TOOL_NAME_REGEX` is separate from `CONCRETE_REGEX` instead of being
    the same list with an `/i`.
@@ -183,6 +221,16 @@ pinned as tests.
 **Dropping the `[Foreman: 075]` hedge rule entirely.** It is right for the
 sentence it was written for. The defect was its reach, not its existence.
 
-**Reporting F1 and F7 as accuracy percentages.** 36 hand-labelled rules is a
+**Matching `/\w+ing/` for the gerund test.** One character shorter and it breaks
+on *"Consider everything in `/tmp` disposable"*, because "everything" ends in
+-ing. Checking the stem against `ALL_VERBS` costs three lines and is exact. All
+three counterexamples are pinned as tests.
+
+**Fitting the `consider` fix to `untrusted-inputs` when it was first found.**
+Faster by an hour and it would have made every held-out number in this document
+unverifiable. The second set cost one file and settled the question on data the
+fix had never seen.
+
+**Reporting F1 and F7 as accuracy percentages.** 56 hand-labelled rules is a
 defect hunt, not a benchmark. Counts, with the failures named, say what actually
 happened.

@@ -135,4 +135,92 @@ const HELDOUT = [
     why: "The weakest tier, and 'large' is unmeasured." },
 ];
 
-module.exports = { LABELLED, HELDOUT };
+// A second held-out set, written for one defect the first one found and could
+// not settle: `consider` is the only verb in the hedging tiers that doubles as
+// an ordinary transitive verb. Fitting the scorer to the single HELDOUT case
+// that showed it would have spent that measurement, so this set was built
+// instead.
+//
+// Every `consider` label here follows one stated test, so a reader can check
+// each one rather than trust it: **`consider` + gerund, or + `whether`/`if`, is
+// a suggestion. `consider` + anything else is "regard as", which is a
+// directive.** The other twelve cases are controls — the older hedging verbs,
+// two bans that contain a hedge word, and six plain rules — so the set cannot
+// pass by treating every `consider` the same way.
+//
+// HELDOUT is spent for hedging as of the fix this set validates. HELDOUT2 is
+// the live held-out number.
+
+const HELDOUT2 = [
+  // `consider` as "regard as" — a directive, however softly it reads.
+  { id: "api-frozen", hedge: false, anchor: false,
+    text: "Consider the public API frozen after a minor release.",
+    why: "Regard it as frozen. Names no version, file or symbol." },
+  { id: "hostile-responses", hedge: false, anchor: false,
+    text: "Consider every third-party response hostile.",
+    why: "A definition of how to treat input, not an option." },
+  { id: "build-broken", hedge: false, anchor: false,
+    text: "Consider the build broken until the pipeline is green.",
+    why: "Regard it as broken. Nothing named is checkable." },
+  { id: "node-modules", hedge: false, anchor: true,
+    text: "Consider `node_modules/` untracked.",
+    why: "Regard it as untracked. Names the exact directory." },
+
+  // `consider` + gerund or `whether` — a real suggestion.
+  { id: "consider-test", hedge: true, anchor: false,
+    text: "Consider adding a regression test before closing the issue.",
+    why: "Gerund. Genuinely optional, and it names nothing checkable." },
+  { id: "consider-clone", hedge: true, anchor: true,
+    text: "Consider using `structuredClone` instead of a deep-copy helper.",
+    why: "Gerund, and the replacement is named." },
+  { id: "consider-whether", hedge: true, anchor: false,
+    text: "Consider whether the cache needs invalidating before you ship.",
+    why: "A question put to the reader. Nothing named." },
+  { id: "consider-split", hedge: true, anchor: true,
+    text: "Consider splitting the file once it passes 500 lines.",
+    why: "Gerund, with a bright-line number." },
+
+  // The other hedging tiers, unchanged by the fix.
+  { id: "prefer-await", hedge: true, anchor: true,
+    text: "Prefer `async`/`await` over raw promise chains.",
+    why: "A preference naming both keywords." },
+  { id: "aim-bundle", hedge: true, anchor: true,
+    text: "Aim to keep the bundle under 200 kb.",
+    why: "'Aim to' is a suggestion, and the threshold is checkable." },
+  { id: "colocate-tests", hedge: true, anchor: false,
+    text: "Where practical, colocate tests with the code they cover.",
+    why: "An explicit escape clause, and nothing named." },
+  { id: "windows-paths", hedge: true, anchor: false,
+    text: "Keep in mind that Windows paths use backslashes.",
+    why: "The weakest tier there is." },
+
+  // Bans that contain a hedging word. These guard the earlier fix.
+  { id: "ban-consider", hedge: false, anchor: false,
+    text: "Never consider a draft PR ready to merge.",
+    why: "'consider' is inside what is banned. The rule is absolute." },
+  { id: "ban-prefer-auth", hedge: false, anchor: false,
+    text: "Do not prefer convenience over correctness in the auth path.",
+    why: "'prefer' is the banned behaviour. Nothing concrete is named." },
+
+  // Plain rules, neither hedged nor unanchored by accident.
+  { id: "compose-up", hedge: false, anchor: true,
+    text: "Run `docker compose up` before the integration suite.",
+    why: "Names the exact command." },
+  { id: "doc-comments", hedge: false, anchor: false,
+    text: "Every public function must have a doc comment.",
+    why: "A mandate with nothing checkable behind it." },
+  { id: "body-limit", hedge: false, anchor: true,
+    text: "Reject requests larger than 10 mb at the edge.",
+    why: "A number with a unit." },
+  { id: "migration-rollback", hedge: false, anchor: false,
+    text: "Write the migration and its rollback in the same commit.",
+    why: "Imperative. Names no directory or tool." },
+  { id: "module-ownership", hedge: false, anchor: false,
+    text: "Be explicit about ownership in every module header.",
+    why: "'Be explicit' is not a hedge tier, and nothing is named." },
+  { id: "pnpm-everywhere", hedge: false, anchor: true,
+    text: "Use `pnpm` in CI and locally.",
+    why: "Names the package manager." },
+];
+
+module.exports = { LABELLED, HELDOUT, HELDOUT2 };
