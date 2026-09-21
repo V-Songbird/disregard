@@ -226,6 +226,26 @@ absolute filesystem path, no username, no email address and no home-directory or
 cells ship. The scan looked for those patterns only; it is not a review of what
 the response text says.
 
+**It does not belong in this repository.** Checked 2026-09-20. Three reasons,
+in order of weight:
+
+1. **This repository has no remote.** Moving `rule-lab` here publishes nothing,
+   because Disregard itself is not published. `slag` is public at
+   <https://github.com/V-Songbird/slag> and answers 200 unauthenticated.
+2. **The contribution target is already in `slag`.** A contributor submits one
+   `scripts/models/<id>.js` plus a line in `index.js`, and
+   `assay/scripts/models/` holds exactly that, tracked, with `fable5`,
+   `haiku45`, `opus5` and `sonnet5` beside `index.js`. The harness and the
+   files its output feeds would sit in one repository.
+3. **This app consumes nothing from it.** `lib/analyze.js` emits findings and
+   deliberately no grade, and its thresholds are its own, each measured in a
+   document under `docs/knowledge/`. The note elsewhere in `docs/tasks/` calling
+   the composition "inherited from assay beyond the rule-lab weights" describes
+   assay's weighted mean, which this app does not use.
+
+So the move is inside `slag`: out of the blanket-ignored `/docs/*` tree, or an
+un-ignore for that one path. Nothing here does it, and nothing here should.
+
 ---
 
 ## The publishable angle
