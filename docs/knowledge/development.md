@@ -1,0 +1,126 @@
+---
+type: knowledge
+summary: "Explains local setup, product test commands, and browser-check requirements for developing a fork of Disregard."
+related_files:
+  - .nvmrc
+  - .dev.vars.example
+  - wrangler.jsonc
+  - .github/workflows/check.yml
+  - checks/request-ui.cjs
+  - checks/file-review-ui.cjs
+  - checks/theme-accessibility.cjs
+---
+
+# Development
+
+The repository contains the product code, current scoring criteria, and tests
+needed to develop a fork. It has no `package.json` or separate build step.
+Use the Node version in [.nvmrc](../../.nvmrc).
+
+## Offline tests
+
+From the repository root:
+
+```shell
+node --test --test-reporter=dot
+```
+
+The suite uses Node's built-in test runner. It does not need a provider key, external
+packages, or a network connection. Passing tests print dots; failures return a
+nonzero exit code. Drop `--test-reporter=dot` for names and totals.
+
+To test one file:
+
+```shell
+node --test --test-reporter=dot lib/analyze.test.js
+```
+
+[GitHub Actions](../../.github/workflows/check.yml) runs the same test runner using
+the version in `.nvmrc`. Tests establish the behavior they assert; they do not
+establish provider accuracy or the quality of an agent's resulting edits.
+
+## Local server
+
+Copy [.dev.vars.example](../../.dev.vars.example) to `.dev.vars` and set
+`TYPESAFE_API_KEY`. With Node and npm available, run:
+
+```shell
+npx --yes wrangler dev
+```
+
+Open the local address printed by Wrangler. File preview and prompt generation
+run in the browser. Analysis calls the provider using the server key and can incur
+charges. A local server is not an offline provider simulation.
+
+The Worker requires both rate-limit bindings in
+[wrangler.jsonc](../../wrangler.jsonc). A missing or invalid binding returns 503
+instead of bypassing protection. Never commit the key or put it in Worker variables.
+
+## Optional browser checks
+
+These scripts require an installed Microsoft Edge browser and a Playwright package
+available to Node. They launch Edge explicitly with `channel: "msedge"` and use
+local HTTP servers with mock scoring responses; no provider key is needed.
+
+If Playwright is not available, install it in an external tools directory or an
+ignored local directory. For example, from the repository root:
+
+```shell
+npm install --prefix .private/browser-tools --no-package-lock --no-save playwright
+```
+
+Point `DISREGARD_PLAYWRIGHT_MODULE` at that package. In PowerShell:
+
+```powershell
+$env:DISREGARD_PLAYWRIGHT_MODULE = (Resolve-Path '.private/browser-tools/node_modules/playwright').Path
+```
+
+In a POSIX shell:
+
+```bash
+export DISREGARD_PLAYWRIGHT_MODULE="$PWD/.private/browser-tools/node_modules/playwright"
+```
+
+Each command below requires a new output path. The scripts create the parent
+directory and refuse to overwrite an existing report:
+
+```shell
+node checks/request-ui.cjs .private/checks/request-ui.json
+node checks/file-review-ui.cjs .private/checks/file-review-ui.json
+node checks/theme-accessibility.cjs .private/checks/theme-accessibility.json
+```
+
+Reports and associated screenshots stay in the ignored `.private/` directory.
+Choose another filename when repeating a check.
+
+- `request-ui.cjs` checks the single-rule request lifecycle and translated states.
+- `file-review-ui.cjs` checks parsing previews, coverage, cancellation, retries, and prompt export.
+- `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior.
+
+Browser checks use viewport emulation, not physical mobile devices. Prompt clipboard
+tests simulate successful and rejected writes; they do not prove operating-system
+clipboard permission or the receiving agent's behavior.
+
+## Implementation map
+
+The CommonJS modules in `lib/` implement scoring, screening, and request guards.
+`api/score.js` is a portable Web API handler. The Worker entry point uses an ES module
+default export; Wrangler bundles the CommonJS modules for that runtime.
+
+The interface is plain HTML, CSS, and JavaScript. The bundled CommonMark parser in
+`public/vendor/` supplies Markdown block structure. The local document reader owns
+source ranges and eligibility; `refactor-prompt.js` validates scored evidence before export.
+
+Keep source ranges and explicit unreviewed states intact when changing the file
+workflow. Keep finding identifiers in the API and translated prose in the interface.
+See the [scoring API contract](../apis/score.md) for response fields and limits.
+
+## Verification boundaries
+
+Use synthetic regression cases for product behavior and mock provider responses
+for request handling. Run the relevant browser check when changing UI behavior or
+rendered presentation. Report which checks ran and what remains unverified.
+
+Provider calls, deployment, and the receiving agent's edits are separate from the
+offline suite. A passing suite does not demonstrate live service configuration,
+actual device behavior, or preservation of instruction intent after refactoring.

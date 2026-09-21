@@ -1,0 +1,7 @@
+# Local-only secrets, read by `npx --yes wrangler dev`. Copy this file to
+# `.dev.vars` and fill in the value. `.dev.vars` is gitignored; this file is not.
+#
+# In production the same name is a Cloudflare Workers secret:
+#   npx --yes wrangler secret put TYPESAFE_API_KEY
+# It must never go in wrangler.jsonc, which is committed.
+TYPESAFE_API_KEY=

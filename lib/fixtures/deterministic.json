@@ -1,0 +1,338 @@
+[
+  {
+    "id": "simple-format",
+    "text": "Prefer a compact message format.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "inspect-config",
+    "text": "Read the service configuration before making changes.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "unsupported-tools",
+    "text": "Do not assume external converters are installed.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "converter-path",
+    "text": "Invoke the converter through `tools/convert.exe`.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "formatting-preference",
+    "text": "Quote labels and prefer short names where supported.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "no-password-output",
+    "text": "Never print, persist, or embed passwords.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "approved-changes",
+    "text": "Publish, delete, or replace remote records only when authorized.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "precise-labels",
+    "text": "Keep labels precise.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "result-field",
+    "text": "Capture `result.status` immediately after each request; use `retry: false` for failed uploads.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "convert-command",
+    "text": "Use `convert --format=png <input>` for image exports.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "no-global-setting",
+    "text": "Do not run `config --global` or rely on settings persisting between jobs.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "named-driver",
+    "text": "For database queries, use PostgreSQL with `ssl: true`.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "prefer-components",
+    "text": "Prefer existing components, layouts, and shared styles.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "no-unbounded-reads",
+    "text": "Never run unconstrained recursive reads across unrelated directories.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "retry-connections",
+    "text": "Retry failed connections only for temporary network failures.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "ban-contains-hedge",
+    "text": "Do not try to work around the sandbox.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "ban-contains-prefer",
+    "text": "Never prefer a mock over the real database in integration tests.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "lowercase-tool",
+    "text": "Run prettier on modified files before committing.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "untrusted-inputs",
+    "text": "Consider all inputs untrusted at the handler boundary.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "short-functions",
+    "text": "Try to keep functions under 50 lines.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "clean-code",
+    "text": "Write clean, maintainable code.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "handle-errors",
+    "text": "Handle errors appropriately.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "zod-validation",
+    "text": "All handlers must validate input with zod.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "npm-not-yarn",
+    "text": "Use npm, not yarn.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "pr-size",
+    "text": "Keep pull requests under 400 lines.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "const-over-let",
+    "text": "Where possible, use `const` over `let`.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "changelog-check",
+    "text": "It's worth checking the changelog before upgrading a dependency.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "no-body-logging",
+    "text": "Never log the request body in production.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "any-to-unknown",
+    "text": "Avoid `any`; prefer `unknown` when the type is genuinely open.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "best-practices",
+    "text": "Follow best practices for error handling.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "reversible-migrations",
+    "text": "Every migration must be reversible.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "request-timeout",
+    "text": "Set the request timeout to 30 seconds.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "pnpm-default",
+    "text": "Default to `pnpm` for new packages.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "eslint-before-pr",
+    "text": "Run `eslint --fix` before opening a pull request.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "shared-state",
+    "text": "Be careful with shared mutable state.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "split-components",
+    "text": "You might want to split large components into smaller ones.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "api-frozen",
+    "text": "Consider the public API frozen after a minor release.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "hostile-responses",
+    "text": "Consider every third-party response hostile.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "build-broken",
+    "text": "Consider the build broken until the pipeline is green.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "node-modules",
+    "text": "Consider `node_modules/` untracked.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "consider-test",
+    "text": "Consider adding a regression test before closing the issue.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "consider-clone",
+    "text": "Consider using `structuredClone` instead of a deep-copy helper.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "consider-whether",
+    "text": "Consider whether the cache needs invalidating before you ship.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "consider-split",
+    "text": "Consider splitting the file once it passes 500 lines.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "prefer-await",
+    "text": "Prefer `async`/`await` over raw promise chains.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "aim-bundle",
+    "text": "Aim to keep the bundle under 200 kb.",
+    "hedge": true,
+    "anchor": true
+  },
+  {
+    "id": "colocate-tests",
+    "text": "Where practical, colocate tests with the code they cover.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "windows-paths",
+    "text": "Keep in mind that Windows paths use backslashes.",
+    "hedge": true,
+    "anchor": false
+  },
+  {
+    "id": "ban-consider",
+    "text": "Never consider a draft PR ready to merge.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "ban-prefer-auth",
+    "text": "Do not prefer convenience over correctness in the auth path.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "compose-up",
+    "text": "Run `docker compose up` before the integration suite.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "doc-comments",
+    "text": "Every public function must have a doc comment.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "body-limit",
+    "text": "Reject requests larger than 10 mb at the edge.",
+    "hedge": false,
+    "anchor": true
+  },
+  {
+    "id": "migration-rollback",
+    "text": "Write the migration and its rollback in the same commit.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "module-ownership",
+    "text": "Be explicit about ownership in every module header.",
+    "hedge": false,
+    "anchor": false
+  },
+  {
+    "id": "pnpm-everywhere",
+    "text": "Use `pnpm` in CI and locally.",
+    "hedge": false,
+    "anchor": true
+  }
+]

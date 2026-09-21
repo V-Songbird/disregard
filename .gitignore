@@ -1,0 +1,113 @@
+# ==============================================================================
+# 1. Local Environment & Secrets
+# ==============================================================================
+# Prevent agents and scripts from leaking environment credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.token
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+credentials.json
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# npm writes registry auth tokens here
+.npmrc
+
+# Wrangler's local state, and the file it reads local secrets from.
+.wrangler/
+
+# ==============================================================================
+# 2. Anthropic Claude & Claude Code
+# ==============================================================================
+# Machine-local overrides and trust decisions
+.claude/settings.local.json
+.claude/memory/
+.claude/backups/
+.claude/logs/
+.claude/worktrees/
+.claude/transcripts/
+
+# Synced plugins and skills caches
+.claude/skills/synced/
+.claude/skills/.trash/
+.claude/plugins/synced/
+.claude/plugins/.trash/
+
+# Corrupted configuration dumps
+.claude.json.corrupted.*
+
+# Personal instruction files.
+CLAUDE.local.md
+AGENTS.override.md
+
+# ==============================================================================
+# 3. Agent Workspace & Execution Artifacts
+# ==============================================================================
+# Ephemeral plans generated during Plan Mode (keep folder via .gitkeep)
+tasks/plans/*
+!tasks/plans/.gitkeep
+
+
+# Throwaway spikes and exploratory prototypes
+labs/spikes/*
+!labs/spikes/.gitkeep
+labs/**/*.log
+labs/**/.ipynb_checkpoints/
+*.log
+
+# Evaluation outputs and run telemetry (keep fixtures and scenarios)
+**/evals/results/
+**/evals/runs/
+**/evals/logs/
+benchmarks/results/
+benchmarks/runs/
+
+# Temporary conversational scratchpads
+scratchpad.md
+scratchpad.*.md
+agent_context/
+*.prompt.tmp
+
+# Private notes; never part of a public record
+docs/research/
+.private/
+/eval/
+/research/
+/.agents/
+/.claude/
+
+# ==============================================================================
+# 4. Editors & IDEs
+# ==============================================================================
+# JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# ==============================================================================
+# 5. Operating System Junk
+# ==============================================================================
+.DS_Store
+Thumbs.db
+
+# ==============================================================================
+# 6. Common files and folders
+# ==============================================================================
+node_modules/
+out/
+dist/
+docs/*
+!docs/apis/
+docs/apis/*
+!docs/apis/score.md
+!docs/knowledge/
+docs/knowledge/*
+!docs/knowledge/development.md

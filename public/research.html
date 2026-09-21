@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How scoring works — Disregard</title>
+<meta name="description" content="What Disregard checks, how to interpret its factors, and what still needs your agent's contextual review.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>How scoring works</h1>
+  <p class="lede">Findings about the wording of an instruction, with the context still yours to review.</p>
+
+  <h2>From file to findings</h2>
+
+  <p>The file preview runs in your browser. It reads Markdown, preserves source lines,
+  selects excerpts for isolated scoring, and marks recognized context dependencies.
+  Nothing is sent for scoring until you select Analyze.</p>
+
+  <p>Eligible excerpts are submitted separately. Each request checks the language,
+  screens for text that tries to redirect the evaluator, and combines local wording
+  checks with model judgments. An excerpt can receive several findings or none.</p>
+
+  <p>File input accepts up to 64 KiB, 256 structural blocks, and 40 ready excerpts.
+  A scored excerpt can contain at most 2000 JavaScript string units. Context-dependent
+  or oversized excerpts remain visible as unreviewed text.</p>
+
+  <h2>What the factors mean</h2>
+
+  <ul>
+    <li><strong>Verb strength (F1).</strong> Recognized verbs and phrases describe how
+    strongly an action is stated. A preference can be deliberate; making it mandatory
+    would change its meaning.</li>
+    <li><strong>Prohibition framing (F2).</strong> A local check looks for a prohibition
+    and an allowed alternative. Some prohibitions are complete on their own.</li>
+    <li><strong>Trigger distance (F3).</strong> A model judges when an instruction
+    becomes relevant and whether that occasion is explicit. Standing requirements can
+    be valid without a named event.</li>
+    <li><strong>Concrete anchors (F7).</strong> Local patterns recognize paths, tools,
+    quantities, and other concrete targets. A missing match does not prove that an
+    instruction is unclear.</li>
+    <li><strong>Enforceability (F8).</strong> A model judges how much a deterministic
+    tool could check. Lower values indicate more mechanical coverage; higher values
+    indicate a greater need for judgment.</li>
+  </ul>
+
+  <p>Additional model questions distinguish instructions from background and suggest
+  a possible home: a standing rule, an event-driven hook, a task-specific skill, or
+  a separate review pass. These suggestions require checking against your project.</p>
+
+  <h2>Reading a finding</h2>
+
+  <p>Findings identify something to inspect. They are not an overall grade, a
+  probability of compliance, or an instruction to maximize every factor. Model values
+  can vary between requests, especially near a decision threshold.</p>
+
+  <p>Before acting, check the original intent and surrounding conditions. Keep
+  preferences as preferences, preserve valid prohibitions, and verify a replacement
+  tool's coverage before removing the instruction it would enforce.</p>
+
+  <p>A clean result means that none of these checks produced a finding. It does not
+  establish that the file is complete, correct, or likely to be followed.</p>
+
+  <h2>What the refactoring prompt carries</h2>
+
+  <p>The prompt is built locally from the reviewed snapshot. It carries source
+  locations, scored evidence, and a list of ranges that remain unreviewed. Copying it
+  does not make another model request.</p>
+
+  <p>Your receiving agent must read the current file, reconcile findings with its
+  context, and preserve the intended requirements. Review the resulting changes
+  before accepting them.</p>
+
+  <h2>What still needs context</h2>
+
+  <p>Excerpts are scored independently and in English. Disregard does not produce a
+  file-wide judgment about contradictions, precedence, duplication, or completeness.
+  Extraction and language screening use heuristics and can make mistakes. A heading
+  can affect an excerpt's meaning without being recognized as a condition.</p>
+
+  <p>The interface has six languages, but translated interface text does not make
+  scoring multilingual. Refused, failed, skipped, and context-dependent excerpts
+  contribute no scored advice to the prompt.</p>
+
+  <p>The <a href="https://github.com/V-Songbird/disregard">source code</a> includes
+  the current criteria and thresholds. The
+  <a href="https://github.com/V-Songbird/disregard/blob/main/docs/apis/score.md">API reference</a>
+  describes the factor ranges, screening states, and request contract.</p>
+
+  <p class="promise"><a href="/">Back to Disregard</a> · <a href="https://github.com/V-Songbird/disregard">Source</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+</main>
+</body>
+</html>

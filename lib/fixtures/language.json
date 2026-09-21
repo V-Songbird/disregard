@@ -1,0 +1,196 @@
+{
+  "FOREIGN": [
+    {
+      "id": "es-secrets",
+      "text": "Nunca subas secretos al repositorio.",
+      "code": "es"
+    },
+    {
+      "id": "es-pnpm",
+      "text": "Usa siempre pnpm, nunca npm.",
+      "code": "es"
+    },
+    {
+      "id": "es-tests",
+      "text": "Ejecuta las pruebas antes de cada commit.",
+      "code": "es"
+    },
+    {
+      "id": "fr-main",
+      "text": "Ne jamais commiter sur main.",
+      "code": "fr"
+    },
+    {
+      "id": "fr-const",
+      "text": "Toujours utiliser const, jamais var.",
+      "code": "fr"
+    },
+    {
+      "id": "it-any",
+      "text": "Non usare mai `any` nel codice.",
+      "code": "it"
+    },
+    {
+      "id": "de-tests",
+      "text": "Immer die Tests vor dem Push laufen lassen.",
+      "code": "de"
+    },
+    {
+      "id": "pt-push",
+      "text": "Sempre rode os testes antes do push.",
+      "code": "pt"
+    },
+    {
+      "id": "zh-format",
+      "text": "提交前运行格式化工具。",
+      "code": "zh"
+    },
+    {
+      "id": "ar-secrets",
+      "text": "لا تكتب الأسرار في المستودع.",
+      "code": "ar"
+    },
+    {
+      "id": "es-borrowed",
+      "text": "Nunca uses any en el código de producción.",
+      "code": "es"
+    },
+    {
+      "id": "fr-borrowed",
+      "text": "Ne jamais utiliser any dans le code de production.",
+      "code": "fr"
+    },
+    {
+      "id": "es-typescript",
+      "text": "No uses `any` en TypeScript.",
+      "code": "es"
+    },
+    {
+      "id": "es-english-msgs",
+      "text": "Escribe los mensajes de commit en inglés.",
+      "code": "es"
+    },
+    {
+      "id": "fr-push",
+      "text": "Lancer les tests avant chaque push.",
+      "code": "fr"
+    },
+    {
+      "id": "fr-deps",
+      "text": "Ne pas ajouter de dépendance sans discussion.",
+      "code": "fr"
+    },
+    {
+      "id": "it-tests",
+      "text": "Esegui i test prima di ogni commit.",
+      "code": "it"
+    },
+    {
+      "id": "it-change",
+      "text": "Ogni modifica deve avere un test.",
+      "code": "it"
+    },
+    {
+      "id": "de-main",
+      "text": "Niemals direkt auf main committen.",
+      "code": "de"
+    },
+    {
+      "id": "de-change",
+      "text": "Jede Änderung braucht einen Test.",
+      "code": "de"
+    },
+    {
+      "id": "pt-main",
+      "text": "Nunca faça commit direto na main.",
+      "code": "pt"
+    },
+    {
+      "id": "hi-tests",
+      "text": "कमिट करने से पहले टेस्ट चलाएँ।",
+      "code": "hi"
+    }
+  ],
+  "ENGLISH": [
+    {
+      "id": "en-const",
+      "text": "Use `const`, never `var`."
+    },
+    {
+      "id": "en-main",
+      "text": "Never commit to main."
+    },
+    {
+      "id": "en-npm",
+      "text": "Use npm, not yarn."
+    },
+    {
+      "id": "en-prettier",
+      "text": "Run `prettier` on modified files before committing."
+    },
+    {
+      "id": "en-clean",
+      "text": "Write clean, maintainable code."
+    },
+    {
+      "id": "en-locale-keys",
+      "text": "Use `el` and `la` as the locale keys in the map."
+    },
+    {
+      "id": "en-locale-files",
+      "text": "Name Spanish locale files `es.json` and Portuguese ones `pt.json`."
+    },
+    {
+      "id": "en-si-no",
+      "text": "Keep the si and no answers as booleans."
+    },
+    {
+      "id": "en-timeout",
+      "text": "Set the request timeout to 30 seconds."
+    },
+    {
+      "id": "en-tools",
+      "text": "Do not assume external converters are installed."
+    },
+    {
+      "id": "en-unknown",
+      "text": "Prefer `unknown` over `any`."
+    },
+    {
+      "id": "en-push",
+      "text": "Always run `npm test` before you push."
+    },
+    {
+      "id": "en-build",
+      "text": "Every commit modifying `src/` must end with a passing build."
+    },
+    {
+      "id": "en-errors",
+      "text": "Handle errors appropriately."
+    },
+    {
+      "id": "en-untrusted",
+      "text": "Consider all inputs untrusted at the handler boundary."
+    },
+    {
+      "id": "en-any-unknown",
+      "text": "Avoid `any`; prefer `unknown` when the type is genuinely open."
+    },
+    {
+      "id": "en-de-fr-docs",
+      "text": "Document the de and fr translations in `docs/i18n.md`."
+    },
+    {
+      "id": "en-du-jour",
+      "text": "Name the daily export `menu-du-jour.csv` and nothing else."
+    },
+    {
+      "id": "en-short-cut",
+      "text": "Cut it."
+    },
+    {
+      "id": "en-compact-format",
+      "text": "Prefer a compact message format."
+    }
+  ]
+}

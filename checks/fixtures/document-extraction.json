@@ -1,0 +1,105 @@
+{
+  "purpose": "Synthetic document-reader regression examples for source ranges, retained context, and extraction limitations.",
+  "cases": [
+    {
+      "name": "Multiline formatting rule and a dependent paragraph",
+      "sourceName": "AGENTS.md",
+      "source": "## Formatting\n\n- **Write reports with [format.js](format.js).** Every report under\n  `reports/` contains a `title` and an `items` array. The report\n  includes a timestamp and a format identifier. Store the final\n  report beside the generated manifest.\n- **The export uses a single timezone.** It is UTC for all dates,\n  including dates shown in summaries. Keep it that way.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 6,
+          "state": "ready"
+        },
+        {
+          "startLine": 7,
+          "endLine": 8,
+          "state": "requires_context",
+          "reason": "dependent_text"
+        }
+      ],
+      "annotation": "The second item contains an explicit dependent pronoun. The source remains available for contextual review."
+    },
+    {
+      "name": "A conditional section and an unresolved imported file",
+      "sourceName": "CLAUDE.md",
+      "source": "# Before deployment\n\n- Run the full test suite.\n- Check the generated manifest.\n\n# General\n\n@.claude/rules/style.md\n\n- Generated documentation must be in English.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "requires_context",
+          "reason": "inherited_scope"
+        },
+        {
+          "startLine": 4,
+          "endLine": 4,
+          "state": "requires_context",
+          "reason": "inherited_scope"
+        },
+        {
+          "startLine": 6,
+          "endLine": 6,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 8,
+          "endLine": 8,
+          "state": "skipped",
+          "reason": "unresolved_reference"
+        },
+        {
+          "startLine": 10,
+          "endLine": 10,
+          "state": "requires_context",
+          "reason": "inherited_scope"
+        }
+      ],
+      "annotation": "A paragraph directly before a list is conservatively carried as parent context, including an unresolved reference. No contextual instruction is silently omitted."
+    },
+    {
+      "name": "Known arbitrary domain-heading limitation",
+      "sourceName": "AGENTS.md",
+      "source": "# Backend\n\n- Use snake_case for field names.\n\n# Frontend\n\n- Use camelCase for field names.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "ready"
+        },
+        {
+          "startLine": 5,
+          "endLine": 5,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 7,
+          "endLine": 7,
+          "state": "ready"
+        }
+      ],
+      "knownLimitation": "false_self_contained",
+      "annotation": "Backend and Frontend can restrict applicability but are not among the explicit conditional/platform cues. Headings remain separate context; callers must not claim those isolated results establish file-wide consistency or scope. A receiving agent must reassess applicability in the original section."
+    }
+  ]
+}

@@ -1,0 +1,437 @@
+{
+  "purpose": "Synthetic renderer and prompt-export regression: all finding messages, null/zero values, role metadata, and named/unnamed language responses.",
+  "providerRequests": 0,
+  "captureScreenshots": false,
+  "checkPromptExport": true,
+  "sourceHashes": {
+    "public/i18n.js": "175f62a44365be7cef0c81016b7864a3dff6c6d3c92660a14de945948ad571ba",
+    "public/refactor-prompt.js": "eadf5b4c34d8d658568f48c1adb6cc05367c27b443ae2d1814a99a58b1474d4e"
+  },
+  "cases": [
+    {
+      "id": "synthetic-not-a-rule",
+      "text": "The build cache is stored in `.cache/`.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "not_a_rule",
+            "factor": "is_rule",
+            "value": 0.25
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.25,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "background",
+            "confidence": 0.84
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-hook",
+      "text": "Before committing, run `node --test`.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "should_be_a_hook",
+            "factor": "F8",
+            "value": 0.2,
+            "choice": "hook",
+            "confidence": 0.88
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 0.2,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "hook",
+            "confidence": 0.88
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-generic-hook",
+      "text": "Run the tests and review the failure messages.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "could_be_a_hook",
+            "factor": "F8",
+            "value": 0.8,
+            "choice": "rule",
+            "confidence": 0.65
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 0.8,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.65
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-skill",
+      "text": "When releasing, follow the release checklist.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "belongs_as_a_skill",
+            "factor": "F8",
+            "value": 2,
+            "choice": "skill",
+            "confidence": 0.9
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "skill",
+            "confidence": 0.9
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-subagent",
+      "text": "Before releases, review all public API changes and report risks.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "belongs_as_a_subagent",
+            "factor": "F8",
+            "value": 2.5,
+            "choice": "subagent",
+            "confidence": 0.91
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.5,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "subagent",
+            "confidence": 0.91
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-trigger",
+      "text": "Keep exported JSON deterministic.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "no_trigger",
+            "factor": "F3",
+            "value": 0.7
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 0.7,
+          "F8": 2.1,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-prohibition",
+      "text": "Never log passwords.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "stall_risk",
+            "factor": "F2",
+            "value": 0.2
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.2,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-hedge",
+      "text": "Try to reuse the `cache/` directory.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "hedge_dominance",
+            "factor": "F1",
+            "value": 0.2,
+            "verb": "try to"
+          }
+        ],
+        "factors": {
+          "F1": 0.2,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-concreteness",
+      "text": "Maintain excellent quality.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [
+          {
+            "id": "no_concrete_anchor",
+            "factor": "F7",
+            "value": 0.05
+          }
+        ],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.05,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-null-force",
+      "text": "The configuration file uses LF line endings.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [],
+        "factors": {
+          "F1": null,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.9,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "direct_action",
+            "confidence": 0.87
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-zero-values",
+      "text": "Keep the guard.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [],
+        "factors": {
+          "F1": 0,
+          "F2": 0,
+          "F7": 0,
+          "F3": 0,
+          "F8": 0,
+          "is_rule": 0,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "artifact_requirement",
+            "confidence": 0.9
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-artifact-guard",
+      "text": "Every text file ends with a newline.",
+      "source": "Hand-authored synthetic fixture",
+      "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs for renderer/export compatibility, not analyzer output, provider samples, or accuracy evidence.",
+      "body": {
+        "status": "ok",
+        "risk": 0.02,
+        "tokens": null,
+        "findings": [],
+        "factors": {
+          "F1": 1,
+          "F2": 0.85,
+          "F7": 0.8,
+          "F3": 2.4,
+          "F8": 2.1,
+          "is_rule": 0.1,
+          "primitive": {
+            "choice": "rule",
+            "confidence": 0.89
+          },
+          "rule_role": {
+            "choice": "artifact_requirement",
+            "confidence": 0.92
+          }
+        }
+      }
+    },
+    {
+      "id": "synthetic-named-language",
+      "text": "提交之前运行格式化工具。",
+      "scope": "Synthetic language rejection response for localized display checks.",
+      "body": {
+        "status": "not_english",
+        "language": {
+          "code": "zh",
+          "name": "Chinese"
+        },
+        "findings": []
+      }
+    },
+    {
+      "id": "synthetic-unnamed-language",
+      "text": "保存한 파일을 먼저 확인하세요.",
+      "scope": "Synthetic unnamed language rejection response for localized display checks.",
+      "body": {
+        "status": "not_english",
+        "language": {
+          "code": "other",
+          "name": null
+        },
+        "findings": []
+      }
+    }
+  ]
+}

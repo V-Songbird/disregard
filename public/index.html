@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disregard</title>
+<meta name="description" content="Review an agent instruction file or one rule, then copy an evidence-based refactoring prompt for your AI agent.">
+<link rel="stylesheet" href="/style.css">
+<script src="/i18n.js"></script>
+<script src="/file-i18n.js"></script>
+<script src="/vendor/commonmark-0.31.2.min.js"></script>
+<script src="/document-model.js"></script>
+<script src="/refactor-prompt.js"></script>
+<script src="/review-ui.js"></script>
+</head>
+<body>
+<main>
+  <div class="topbar">
+    <h1 data-i18n="title">Disregard</h1>
+    <p class="picker">
+      <label for="ui-lang" data-i18n="uiLang">Interface language</label>
+      <select id="ui-lang"></select>
+    </p>
+  </div>
+  <p class="hint" id="ai-note" data-i18n="aiTranslated"></p>
+  <p class="lede" data-i18n="lede"></p>
+
+  <div class="mode-picker" role="group" id="input-mode">
+    <button type="button" id="mode-file" aria-pressed="true" aria-controls="file-panel"></button>
+    <button type="button" id="mode-rule" aria-pressed="false" aria-controls="rule-panel"></button>
+  </div>
+  <section id="file-panel"></section>
+
+  <section id="rule-panel" hidden>
+  <form id="ask" novalidate>
+    <label for="rule" data-i18n="ruleLabel"></label>
+    <p class="hint" id="rule-hint" data-i18n="ruleHint"></p>
+    <textarea id="rule" name="rule" dir="auto" aria-describedby="rule-hint rule-count" autocomplete="off"
+      placeholder="Always try to use functional components."></textarea>
+    <div class="row">
+      <button type="submit" id="go" data-i18n="submit"></button>
+      <span class="count" id="rule-count"></span>
+    </div>
+  </form>
+
+  <section id="out" aria-live="polite" aria-busy="false"></section>
+  </section>
+
+  <p class="promise" id="promise"></p>
+</main>
+
+<footer>
+  <span data-i18n="footer"></span>
+  <a href="/research" data-i18n="research"></a> · <a href="/privacy" data-i18n="privacy"></a> · <a href="/terms" data-i18n="terms"></a>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // Matches MAX_RULE_CHARS in lib/analyze.js. The server is the one that
+  // enforces it; this only saves a round trip.
+  const MAX = 2000;
+  // The server gives its provider 30 seconds. Leave room for the round trip,
+  // then release the form even if the connection never returns a response.
+  const REQUEST_TIMEOUT_MS = 35000;
+
+  // Leading finding categories use the accent border.
+  const LEAD = new Set(["not_a_rule", "should_be_a_hook", "could_be_a_hook",
+    "belongs_as_a_skill", "belongs_as_a_subagent"]);
+
+  const form = document.getElementById("ask");
+  const input = document.getElementById("rule");
+  const go = document.getElementById("go");
+  const count = document.getElementById("rule-count");
+  const out = document.getElementById("out");
+  const picker = document.getElementById("ui-lang");
+
+  const LOCALES = Object.keys(window.STRINGS);
+  let t = window.STRINGS.en;
+
+  // Retain every display state so locale changes also translate errors and
+  // pending/empty messages. A request owns the field until it settles.
+  let view = { kind: "idle" };
+  let pending = false;
+  let reviewUI;
+
+  // The reader's own language if we speak it, else English. A stored choice
+  // wins, because someone who picked once meant it.
+  function initialLocale() {
+    try {
+      const saved = localStorage.getItem("disregard.lang");
+      if (saved && window.STRINGS[saved]) return saved;
+    } catch { /* private mode, or storage blocked */ }
+    for (const tag of navigator.languages || [navigator.language || "en"]) {
+      const code = String(tag).toLowerCase().split("-")[0];
+      if (window.STRINGS[code]) return code;
+    }
+    return "en";
+  }
+
+  const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+
+  const el = (tag, className, text) => {
+    const n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  function applyLocale(code) {
+    t = window.STRINGS[code];
+    document.documentElement.lang = code;
+    document.documentElement.dir = t.dir;
+    document.title = t.title;
+    for (const node of document.querySelectorAll("[data-i18n]")) {
+      node.textContent = t[node.dataset.i18n];
+    }
+    // English is the source; every other locale was machine-translated.
+    document.getElementById("ai-note").hidden = !t.aiTranslated;
+    const promise = document.getElementById("promise");
+    const link = el("a", null, t.promiseLink);
+    link.href = "/privacy";
+    promise.replaceChildren(document.createTextNode(t.promiseA), link, document.createTextNode(t.promiseB));
+    updateCount();
+    renderView();
+    reviewUI?.refresh();
+    try { localStorage.setItem("disregard.lang", code); } catch { /* nothing to do */ }
+  }
+
+  function updateCount() {
+    const n = input.value.length;
+    count.textContent = fill(t.counter, { n: n, max: MAX });
+    count.classList.toggle("over", n > MAX);
+    go.disabled = pending || n > MAX;
+    go.textContent = pending ? t.submitBusy : t.submit;
+    input.readOnly = pending;
+    out.setAttribute("aria-busy", String(pending));
+    reviewUI?.setRuleBusy(pending);
+  }
+
+  // Everything below writes with textContent. The `echo` field hands back text
+  // a stranger pasted, and a refused rule is by definition one that was trying
+  // something.
+  function banner(title, body, echo) {
+    const box = el("div", "banner");
+    box.append(el("strong", null, title));
+    if (body) box.append(el("p", null, body));
+    if (echo) {
+      const q = el("blockquote", "echo", echo);
+      q.dir = "auto";
+      box.append(q);
+    }
+    return box;
+  }
+
+  // A finding says what is wrong, why it matters, and what to do about it. The
+  // factor and its number stay behind the "what was measured" disclosure:
+  // someone about to rewrite a rule needs the fix, not the arithmetic that
+  // found it, and a bare "F8 0.8" is a number they have to interpret for us.
+  function findingCard(f) {
+    const copy = t.findings[f.id];
+    if (!copy) return null;
+    const vars = { verb: f.verb };
+    const li = el("li", LEAD.has(f.id) ? "finding lead" : "finding");
+    li.append(el("h2", null, copy.h), el("p", null, fill(copy.d, vars)));
+    if (copy.fix) li.append(el("p", "fix", fill(copy.fix, vars)));
+    return li;
+  }
+
+  function factorList(factors) {
+    const box = el("details");
+    box.append(el("summary", null, t.measured));
+    const dl = el("dl", "factors");
+    for (const key of ["is_rule", "F3", "F8", "F1", "F2", "F7"]) {
+      if (factors[key] === undefined) continue;
+      const value = factors[key] === null ? t.undetermined : String(factors[key]);
+      dl.append(el("dt", null, t.factors[key]), el("dd", null, value));
+    }
+    if (factors.rule_role) {
+      const role = t.ruleRoles[factors.rule_role.choice] || factors.rule_role.choice;
+      dl.append(el("dt", null, t.factors.rule_role),
+        el("dd", null, role + " (" + t.confidence + " " + factors.rule_role.confidence + ")"));
+    }
+    if (factors.primitive) {
+      const name = t.primitives[factors.primitive.choice] || factors.primitive.choice;
+      dl.append(el("dt", null, t.factors.primitive),
+        el("dd", null, name + " (" + t.confidence + " " + factors.primitive.confidence + ")"));
+    }
+    box.append(dl);
+    return box;
+  }
+
+  function render(body) {
+    out.replaceChildren();
+
+    if (body.status === "not_english") {
+      const code = body.language && body.language.code;
+      const lang = (code && t.languages[code]) || (body.language && body.language.name);
+      out.append(banner(t.notEnglishTitle,
+        lang ? fill(t.notEnglishBody, { lang: lang }) : t.notEnglishUnknown));
+      return;
+    }
+
+    if (body.status === "refused" || body.status === "review") {
+      const refused = body.status === "refused";
+      out.append(banner(refused ? t.refusedTitle : t.reviewTitle,
+        refused ? t.refusedBody : t.reviewBody, body.echo));
+      return;
+    }
+
+    if (body.findings.length === 0) {
+      out.append(banner(t.cleanTitle, t.cleanBody));
+    } else {
+      const list = el("ul", "findings");
+      for (const f of body.findings) {
+        const card = findingCard(f);
+        if (card) list.append(card);
+      }
+      out.append(list);
+    }
+    out.append(factorList(body.factors || {}));
+    if (view.rule) out.append(window.DisregardReview.promptPanel({
+      schemaVersion: 1, sourceName: "Instruction excerpt (source file not provided)", sourceText: view.rule,
+      units: [{ id: "rule", startLine: 1, endLine: view.rule.split(/\r\n|\r|\n/).length,
+        startOffset: 0, endOffset: view.rule.length, rawText: view.rule, rule: view.rule,
+        context: [], state: "ok", result: body }],
+    }, t.file));
+  }
+
+  function renderView() {
+    if (view.kind === "result") render(view.body);
+    else if (view.kind === "busy") out.replaceChildren(banner(t.busyTitle, t.busyBody));
+    else if (view.kind === "empty") out.replaceChildren(banner(t.emptyTitle, t.emptyBody));
+    else if (view.kind === "error") {
+      out.replaceChildren(banner(t.errorTitle, fill(t.errors[view.code] || t.errors.failed, { max: MAX })));
+    } else out.replaceChildren();
+  }
+
+  function showView(next) {
+    view = next;
+    renderView();
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    // requestSubmit() and keyboard shortcuts can bypass a disabled button.
+    if (pending) return;
+    const submitted = input.value;
+    const rule = submitted.trim();
+    if (submitted.length > MAX) {
+      showView({ kind: "error", code: "too_long" });
+      input.focus();
+      return;
+    }
+    if (!rule) {
+      showView({ kind: "empty" });
+      input.focus();
+      return;
+    }
+
+    // Disabling the focused button moves focus to the document in Chromium.
+    // Restore it after this request only if the reader has not moved elsewhere.
+    let restoreSubmitFocus = document.activeElement === go;
+    pending = true;
+    updateCount();
+    showView({ kind: "busy" });
+    const preserveReaderFocus = () => { restoreSubmitFocus = false; };
+    if (restoreSubmitFocus) {
+      document.addEventListener("pointerdown", preserveReaderFocus, { once: true });
+      document.addEventListener("focusin", preserveReaderFocus, { once: true });
+    }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rule: rule }),
+        signal: controller.signal,
+      });
+      const body = await res.json();
+      // Also discard responses after a programmatic edit of the read-only field.
+      if (input.value !== submitted) showView({ kind: "idle" });
+      else if (res.ok) showView({ kind: "result", body, rule });
+      else showView({ kind: "error", code: body?.code });
+    } catch {
+      showView(input.value !== submitted ? { kind: "idle" }
+        : { kind: "error", code: controller.signal.aborted ? "timeout" : "network" });
+    } finally {
+      clearTimeout(timeout);
+      document.removeEventListener("pointerdown", preserveReaderFocus);
+      document.removeEventListener("focusin", preserveReaderFocus);
+      pending = false;
+      updateCount();
+      if (restoreSubmitFocus && document.hasFocus() && document.activeElement === document.body && !go.disabled) go.focus();
+    }
+  });
+
+  // Focus may return here before a held Enter is released. Its repeated
+  // keydowns are not new submissions; Space and fresh Enter presses stay native.
+  go.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.repeat && !event.isComposing) event.preventDefault();
+  });
+
+  // Ctrl/Cmd+Enter submits once per press, including when a held key outlasts
+  // the request. Composition remains the input method's responsibility.
+  input.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === "Enter" && !event.isComposing) {
+      event.preventDefault();
+      if (!event.repeat && !pending) form.requestSubmit();
+    }
+  });
+
+  input.addEventListener("input", () => {
+    if (!pending) showView({ kind: "idle" });
+    updateCount();
+  });
+
+  reviewUI = window.DisregardReview.create({
+    host: document.getElementById("file-panel"), getStrings: () => t,
+    findingCard, factorList,
+  });
+
+  for (const code of LOCALES) {
+    const option = el("option", null, window.STRINGS[code].label);
+    option.value = code;
+    picker.append(option);
+  }
+  picker.addEventListener("change", () => applyLocale(picker.value));
+
+  picker.value = initialLocale();
+  applyLocale(picker.value);
+})();
+</script>
+</body>
+</html>

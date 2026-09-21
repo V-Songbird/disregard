@@ -1,0 +1,31 @@
+{
+  // Static assets and the single-rule scoring endpoint.
+  "name": "disregard-score",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-20",
+
+  // The page. Assets are matched first, so the Worker only ever sees
+  // /api/score and typos.
+  "assets": { "directory": "./public" },
+
+  // Approximate request protection within each Cloudflare location, not a
+  // global budget. The anonymous client quota is shared by users on one IP.
+  // Namespace IDs are non-secret account-wide identifiers; keep them unique
+  // unless sharing counters with another Worker is intentional.
+  "ratelimits": [
+    {
+      "name": "SCORE_CLIENT_LIMITER",
+      "namespace_id": "930021",
+      "simple": { "limit": 60, "period": 60 }
+    },
+    {
+      "name": "SCORE_AGGREGATE_LIMITER",
+      "namespace_id": "930022",
+      "simple": { "limit": 180, "period": 60 }
+    }
+  ],
+
+  // TYPESAFE_API_KEY is a secret, not a var: it must never be in this file.
+  //   wrangler secret put TYPESAFE_API_KEY
+  "observability": { "enabled": true }
+}
