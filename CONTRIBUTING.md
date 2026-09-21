@@ -10,6 +10,16 @@ node --test
 There is no `package.json` and no build step, which is deliberate. The Node
 version is in [.nvmrc](.nvmrc).
 
+## How a change lands
+
+`main` takes no direct pushes. Open a pull request, and the check has to be
+green before it can merge — the same `node --test` you ran locally, on Node
+from [.nvmrc](.nvmrc). Your branch also has to be current with `main` first,
+so a rebase may be the last thing between a green check and a merge.
+
+No approving review is required, because there is one maintainer. The check is
+the gate, not a person.
+
 ## What is most worth contributing
 
 **A model column.** This is the real gap. Every structural finding in
