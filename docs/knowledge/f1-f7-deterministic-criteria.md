@@ -6,6 +6,8 @@ related_files:
   - "eval/det-set.js"
   - "eval/det-eval.js"
   - "lib/scorer.f1-f7-corpus.test.js"
+  - "lib/analyze.js"
+  - "eval/results/det-latest.txt"
 ---
 
 # F1 and F7, measured
@@ -27,8 +29,8 @@ drives exactly one:
 
 | Finding | Fires when | In |
 | --- | --- | --- |
-| `hedge_dominance` | `scoreF1(text).hedged` | [lib/analyze.js:81](../../lib/analyze.js:81) |
-| `no_concrete_anchor` | `scoreF7(text).concrete.length === 0` | [lib/analyze.js:84](../../lib/analyze.js:84) |
+| `hedge_dominance` | `scoreF1(text).hedged` | [lib/analyze.js](../../lib/analyze.js) |
+| `no_concrete_anchor` | `scoreF7(text).concrete.length === 0` | [lib/analyze.js](../../lib/analyze.js) |
 
 Both are binary, so both were labelled binary. A factor is only as good as the
 call it makes, and the float behind it is a presentation detail nobody acts on.
@@ -149,8 +151,9 @@ HELD-OUT 2   hedge 20/20  false alarms 0  missed 0     anchor 20/20  false alarm
 **Missed zero in every run of all three sets, before and after every fix.**
 Every error this document reports was a false alarm, and every case labelled
 `hedge: true` anywhere still fires — asserted directly in
-[lib/scorer.f1-f7-corpus.test.js](../../lib/scorer.f1-f7-corpus.test.js). The suite went 24
-to 36 tests, and the 28-case F2 corpus passes unchanged throughout.
+[lib/scorer.f1-f7-corpus.test.js](../../lib/scorer.f1-f7-corpus.test.js). The 28-case F2
+corpus passes unchanged throughout. The latest recorded run is
+[eval/results/det-latest.txt](../../eval/results/det-latest.txt).
 
 `HELDOUT2`'s anchor column never moved, which is the useful null result: the
 `consider` fix touches F1 only, and a fresh set agreed with F7 twenty times out
@@ -169,25 +172,23 @@ It is pinned by name in the test so it cannot quietly become a class.
 
 ## F4 and F5 are not here, and cannot be
 
-The groundwork note listed F4 and F5 alongside F1 and F7 as unmeasured risks.
-That was wrong: they are not risks to this app, because they are not in it.
+An earlier draft of the groundwork note listed F4 and F5 alongside F1 and F7 as
+unmeasured risks. That was wrong: they are not risks to this app, because they
+are not in it.
 
-| Factor | What it judges | Signature in assay |
+| Factor | What it judges | What it needs |
 | --- | --- | --- |
-| F4 | scope — *"applies too broadly"* | `scoreF4(rule, file)` |
-| F5 | position — *"buried near the bottom"* | `scoreF5(lineStart, file)` |
+| F4 | scope — *"applies too broadly"* | the file's globs and the paths it governs |
+| F5 | position — *"buried near the bottom"* | the rule's line offset and the file's length |
 
-Both take a **file**. F4 reads `file.globs`, `file.alwaysLoaded` and
-`file.globMatchCount` to ask whether a rule's stated scope matches the paths the
-file governs; F5 measures a line offset against the file's length. Disregard's
-input is one rule pasted into a box. There is no file, so F5 is undefined and F4
-has nothing to align against — which is why the port took F1, F2 and F7 and left
-those two behind.
+Both take a **file**. Disregard's input is one rule pasted into a box. There is
+no file, so F5 is undefined and F4 has nothing to align against — which is why
+the port took F1, F2 and F7 and left those two behind, as the header of
+[lib/scorer.js](../../lib/scorer.js) records.
 
-Measuring them means measuring assay, against a corpus of whole instruction
-files, in a repository that is being retired. That is a different project. It
-becomes this project's problem only if the ADR's whole-file pipeline is ever
-built, and then the corpus has to be built first.
+Measuring them needs a corpus of whole instruction files. It becomes this
+project's problem only if the ADR's whole-file pipeline is ever built, and then
+the corpus has to be built first.
 
 ## Rules for changing this
 
@@ -195,7 +196,7 @@ built, and then the corpus has to be built first.
    set, and not `HELDOUT` — that one is spent. `node eval/det-eval.js` prints all
    three. When `HELDOUT2` is spent in its turn, build `HELDOUT3`; do not quietly
    promote a guard back into a measurement.
-2. **A new false alarm is a defect; a new miss is a worse one.** Both sets have
+2. **A new false alarm is a defect; a new miss is a worse one.** All three sets have
    stood at zero misses since before the fixes. Do not trade that away for a
    false-alarm count.
 3. **Do not fit to `Consider logging disabled`.** It is the named residual, and
@@ -204,7 +205,7 @@ built, and then the corpus has to be built first.
 4. **Case-insensitive tokens must never be ordinary English.** That is the whole
    reason `TOOL_NAME_REGEX` is separate from `CONCRETE_REGEX` instead of being
    the same list with an `/i`.
-5. The corpus is 36 rules. It is enough to catch a structural defect and far too
+5. The corpus is 56 rules across three sets. It is enough to catch a structural defect and far too
    small to certify anything. Treat a number here as evidence that a specific
    failure is gone, not as an accuracy claim.
 

@@ -1,5 +1,11 @@
 # Rule lab — findings
 
+> This notebook was written while the lab lived beside the assay plugin, in
+> another repository. Entries that name `assay/…` paths, an ADR, a roadmap
+> number or an engine constant record changes made there, not here. They are kept
+> as written because they date each decision. What Disregard took from assay is
+> in `lib/scorer.js` and `research/rubrics.md`.
+
 **Goal:** identify, with replicated experimental evidence, which structural properties of a rule change whether Claude follows it in a real Claude Code session.
 
 **Goal contract:** the goal is met when every core question below is RESOLVED. A question is RESOLVED when its answer replicates — the same verdict (CONFIRMED with a 95% CI excluding zero, or NULL with the CI inside ±0.10) in **at least two distinct rule intents**, each on anti-default tasks (baseline compliance < 0.5). One-intent results stay OPEN with a note. When all are RESOLVED, write the synthesis section at the bottom and stop the loop.
@@ -131,7 +137,7 @@ Each verdict updates `WORDING_STUDY_EVIDENCE.limits`. A 5-gen **null on Q7** is 
 **The precondition it names was checked on 2026-08-25: there is no 5-generation SMALL tier.** The smallest current tier is still haiku 4.5, which is the one already measured; fable 5, sonnet 5 and opus 5 are all runnable but none is the small tier this design asked for. It ran on sonnet 5 instead, and the entry below says so wherever it matters.
 
 ### exp-010-claude5 — 2026-08-25
-Question: Q9. Model: sonnet (claude-sonnet-5). Cells: 440 run / 436 usable, n=20 per arm. Cost: $40.68, plus $3.94 of baseline pilots.
+Question: Q9. Model: sonnet (claude-sonnet-5). Cells: 440 run / 436 usable, n=20 per arm. Cost: $40.68, plus $3.93 of baseline pilots.
 
 **Two harness changes came first, and the first one matters to every number in this file.**
 
@@ -145,7 +151,7 @@ Result per contrast (baseline 0.00 in every intent below):
 - **Q6 verb strength — NULL, replicated.** `q6-docs-sync` strong 1.00 / prefer 1.00; `q6-spec-name` strong 1.00 / prefer 1.00. On haiku 4.5 "prefer" halved compliance.
 - **Q1 framing — the bare prohibition still costs something, in one intent of two.** `q1-console-log`: prohibition 0.60 [0.40, 0.80], prohibition-alt 1.00, positive 1.00. `q1-spec-name`: all three 1.00. Every arm is CONFIRMED+ as lift over baseline; the separation between them survives only where the banned action is the household default.
 
-**Read every line above as a ceiling result.** Lift was 1.00 in 11 of 12 non-baseline arms. What this measures is that on this tier, once a rule is present at all, it is followed — not that a badly placed or softly worded rule became a good one. Nothing here says what happens to a rule competing with a second rule, a longer session, or a task the model would rather do another way.
+**Read every line above as a ceiling result.** Lift was 1.00 in 13 of 14 non-baseline arms. What this measures is that on this tier, once a rule is present at all, it is followed — not that a badly placed or softly worded rule became a good one. Nothing here says what happens to a rule competing with a second rule, a longer session, or a task the model would rather do another way.
 
 Decision: Q9 is RESOLVED for position and verb strength on this tier — NULL in two intents each — and stays OPEN on the stall leg, which replicated once. Engine change made, and only the one the data pays for: in `assay/scripts/models/sonnet5.js`, `weights.F1` 0.6 → 0.3 and `weights.F5` 1.5 → 0.5, both relabelled `experiment-supported` and citing this experiment; `weights.F2` relabelled too and left at 1.0. Every other constant in that column is still `profile-inferred`, and haiku45, opus5 and fable5 are untouched — they were not measured. `RUBRIC_VERSION` is 3.
 
@@ -180,11 +186,11 @@ Question: Q10. Model: sonnet. 3 intents × 1 task × 3 arms × n=20 = **180 cell
 - Findings, costs, and dead ends all get logged here — this file is the lab notebook and the loop's working memory.
 - Session scope (user, 2026-07-18): all experiments on haiku; each RESOLVED verdict gets one confirming sonnet run before synthesis. Standing budget $50 total — pause and ask before crossing it. Designs over 60 cells are auto-approved while the budget holds. Budget extended to $70 by the user on 2026-07-19 at the $44.84 checkpoint, to fund the Q7 replication and the sonnet spot-check pass.
 - Surprise (exp-001): haiku's baseline already avoids `//` comments ~80% of the time on small fresh-file tasks — comment-style intents are weakly anti-default on haiku and should not be reused. Strongest anti-default pattern so far: task nudges toward a ubiquitous builtin (console.log, new Error) while the fixture ships a helper the rule points to.
-- Harness change (2026-07-22, roadmap 052): `--max-turns` is gone from `claude --help` on the installed CLI (v2.1.216) and silently did nothing on this harness's cells. `runClaude`'s turn cap became `--max-budget-usd`, and the `maxTurns` config knob — the top-level default and the per-experiment JSON override — was renamed `maxBudgetUsd`. Public API and result-record shape are unchanged. Specs written before the change still carry a `"maxTurns"` key that is no longer read, so exp-001 through exp-009 run at the harness default; the three `exp-010-*` specs set `maxBudgetUsd` themselves, at 0.35. Verified: `node --test harness.test.js` 10/10, and no test asserted the old flag. Live smoke: one baseline cell through the fixed harness, isolated via `RULE_LAB_DIR` so nothing under `results/` was touched, came back `ok:true valid:true compliance:1`, `turns:2`, `costUsd:0.064`, spawned with `--max-budget-usd 0.2` and no `--max-turns` anywhere in the process args.
+- Harness change (2026-07-22, roadmap 052): `--max-turns` is gone from `claude --help` on the installed CLI (v2.1.216) and silently did nothing on this harness's cells. `runClaude`'s turn cap became `--max-budget-usd`, and the `maxTurns` config knob — the top-level default and the per-experiment JSON override — was renamed `maxBudgetUsd`. Public API and result-record shape are unchanged. Every spec still carries a `"maxTurns"` key that is no longer read. exp-001 through exp-009 run at the harness default, 0.25 in `harness.js`; the `exp-010-*` and `exp-011-*` specs set `maxBudgetUsd` themselves, at 0.35. Verified: `node --test harness.test.js` 10/10, and no test asserted the old flag. Live smoke: one baseline cell through the fixed harness, isolated via `RULE_LAB_DIR` so nothing under `results/` was touched, came back `ok:true valid:true compliance:1`, `turns:2`, `costUsd:0.064`, spawned with `--max-budget-usd 0.2`, the value that one smoke run used, and no `--max-turns` anywhere in the process args.
 
 ## Synthesis
 
-All eight core questions RESOLVED with replication on haiku and a sonnet spot-check pass. 1,200+ cells, $67.00 total, 2026-07-18/19.
+All eight original questions, Q1 to Q8, RESOLVED with replication on haiku and a sonnet spot-check pass. 1,530 cells, $67.00 total, 2026-07-18/19. Q9 and Q10 came later and are not part of this synthesis: exp-010 found position and verb strength NULL on sonnet 5, and exp-011 is still a design.
 
 **The master finding: rule wording is a small-model lever.** On haiku, structure decides whether a rule works at all. On sonnet, every anti-default rule we tested hit 1.00 compliance in every wording — and three of our haiku intents stopped being anti-default because sonnet already does the right thing unruled. Rule hygiene matters most where cheap models run: bulk pipelines, subagents, headless automation.
 

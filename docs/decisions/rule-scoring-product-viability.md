@@ -1,6 +1,6 @@
 ---
 type: adr
-summary: "Why the Jev-backed rule-scoring app ships free instead of as a subscription, what separates it from the existing CLAUDE.md linters, and the case for publishing the rule-lab benchmark; read before any pricing or positioning decision."
+summary: "Why the Jev-backed rule-scoring app ships free instead of as a subscription, what separates it from the existing CLAUDE.md linters, and why the rule-lab benchmark was published here; read before any pricing or positioning decision."
 related_files:
   - "docs/knowledge/jev-commercial-licensing.md"
   - "docs/knowledge/f3-trigger-distance-criteria.md"
@@ -9,7 +9,30 @@ related_files:
 
 # Should the rule-scoring web app be sold as a subscription?
 
-## Decision needed
+## Outcome
+
+**Decided and executed on 2026-09-20.** The tool shipped free. `rule-lab` is
+published in [research/](../../research), and the repository is public at
+[github.com/V-Songbird/disregard](https://github.com/V-Songbird/disregard).
+
+The sections below are the analysis as it was argued, so parts of it read as a
+proposal. What shipped is narrower than what it proposed:
+
+| Proposed below | What shipped |
+| --- | --- |
+| A verdict, a grade and tips | Nine named findings and **no grade**. The page supplies every sentence. |
+| Four per-model verdicts from one call | Not built. With no grade there are no weights to re-apply. |
+| Take a whole file and report which lines are rules | In part. `is_rule` ships as the `not_a_rule` finding on one pasted line. Whole-file extraction was not built. |
+| A contributor submits a model profile file | A contributor submits cells and an `analysis.json` from the harness. See [CONTRIBUTING.md](../../CONTRIBUTING.md). |
+| Seven factors | Five: F1, F2, F3, F7 and F8. F4 and F5 need a whole file. |
+
+Passages that name `assay`, its suite of 348 tests, its `SCOPE.md`, its model
+profiles or a project `CLAUDE.md` describe the retired assay plugin in the
+`slag` repository, where this research started. None of that is in this
+repository. The global `CLAUDE.md` in the head-to-head is the maintainer's own
+user-scope file, which is not here either.
+
+## Decision needed at the time
 
 Ship a web app: one text box, paste a rule, get back a verdict plus tips
 ("this should be a hook, because…"). Free tier scores one rule at a time. Paid
@@ -68,7 +91,7 @@ recurs and where a subscription would have made sense.
 
 ## The actual differentiator
 
-Two claims come out of the assay research that **no competitor makes**, because
+Five claims come out of the assay research that **no competitor makes**, because
 no competitor has the measurements. Every tool above is static and local —
 AgentLinter states it "runs 100% locally" and none mentions a model.
 
@@ -119,7 +142,9 @@ of mandates.
 
 Every competitor is static and local. A regex will grade *"This project started
 in 2024"* as a rule and score it. The `is_rule` Noul returned 0.88–0.97 on all
-six probe rules, correctly. **No local linter can make this distinction**, and it
+six probe rules, correctly, but all six were rules. The labelled measurement
+came later: 15 of 16 with a margin of +0.06, which is thin. See
+[is-rule-and-primitive-criteria.md](../knowledge/is-rule-and-primitive-criteria.md). **No local linter can make this distinction**, and it
 is the one users can verify instantly against their own file.
 
 ### 4. Failure modes with names, not style notes
@@ -187,10 +212,12 @@ So the contribution ask is concrete and small:
 
 #### What a contributor actually submits
 
-One file under `scripts/models/<id>.js` plus one line in `index.js`:
-`weights` for F1–F7, `thresholds` (eight keys), and an `evidence` block naming
-the experiment, the date, the sample, the limits, and the level of **each
-constant individually**. Reviewable in a single PR diff.
+The cells and the `analysis.json` the harness writes under
+`research/rule-lab/results/<exp>/`, from a spec copied to a new id for the new
+model, plus an entry in `research/rule-lab/FINDINGS.md`. The commands and the
+floor a measurement has to clear are in [CONTRIBUTING.md](../../CONTRIBUTING.md).
+The earlier plan, a model profile file with weights and thresholds, belonged to
+assay and was dropped with the grade.
 
 #### Why this is the moat
 
@@ -199,38 +226,40 @@ for a reader to update them. Ours are **2,020 paid cells with confidence
 intervals** — a UI can be copied in an afternoon; that corpus cannot. And every
 contributed column makes the asset larger without costing us anything.
 
-#### The one decision this needs
+#### The one decision this needed
 
-`rule-lab/README.md:3` describes itself as *"Local-only research harness
-(gitignored under `docs/`, never published, never shipped with a plugin)."*
-Publishing it **reverses a standing decision** the owner made. That is theirs to
-make; nothing here does it. Two things to settle first:
+The harness used to describe itself as local-only research, never published.
+Publishing it **reversed a standing decision** the owner had made, and the owner
+made it on 2026-09-20. Two things were settled first:
 
-1. `results/` contains real session transcripts from this machine. Publish the
-   aggregates and the specs; audit the raw cells before any of them ship.
-2. Contributed numbers change what the product tells people. A contribution
-   policy needs a floor — n per arm, ≥2 intents, anti-default baselines below
-   0.5 — which `README.md:33` already states as the house rules for authoring an
-   experiment. That section is the contribution guide, nearly as written.
+1. `results/` contains real session output from the owner's machine, so the raw
+   cells were audited before they shipped. The result is below.
+2. Contributed numbers change what the product tells people, so a contribution
+   needs a floor: n per arm, at least two intents, anti-default baselines below
+   0.5. Those are the house rules in
+   [research/rule-lab/README.md](../../research/rule-lab/README.md), and
+   [CONTRIBUTING.md](../../CONTRIBUTING.md) carries them as the contribution guide.
 
 **The harness was audited on 2026-09-20,** while it still sat in `slag` under a
 blanket-ignored `/docs/*`. It is now [research/rule-lab/](../../research/rule-lab).
-The corpus is exactly **2,020 cells** across 12 experiment specs, and
+The corpus is exactly **2,020 cells** across the 12 experiment specs that have
+been run, and
 `harness.test.js` passes 10 of 10 with no API calls, as part of this
 repository's own check.
 
-Point 1 above came back **clean**. Every cell is a flat JSON record of 17 fields
-whose only free text is `responseTail`, and a scan of all 2,020 found no
-absolute filesystem path, no username, no email address and no home-directory or
-`localhost` reference. Nothing was found that needs redacting before the raw
-cells ship. The scan looked for those patterns only; it is not a review of what
+Point 1 above came back **clean enough to ship**. Every cell is a flat JSON
+record whose only free text is `responseTail`, and a scan of all 2,020 found no
+username, no email address and no home-directory or `localhost` reference. Two
+exp-001 cells carry a `fixtureDir` field with a temp path,
+`X:\Temp\rule-lab-…`, left by a `--keep` run. It names no person and was left
+in place. The scan looked for those patterns only; it is not a review of what
 the response text says.
 
 **It lives here now.** Reversed by the owner on 2026-09-20, the same day the
 earlier recommendation was written. That recommendation rested on this
 repository having no remote and on assay's model profiles being the
-contribution target. The first is temporary — this repo is to be published. The
-second is the coupling being removed, not a reason to keep it.
+contribution target. The first was temporary, and the repository is public now.
+The second is the coupling that was removed, not a reason to keep it.
 
 So `rule-lab` sits at [research/rule-lab/](../../research/rule-lab), with the
 rubric it shares beside it. `harness.test.js` runs as part of this
@@ -253,12 +282,13 @@ Four claims that are specific, checkable, and true:
 | Claim | Backed by |
 | --- | --- |
 | *"Always try to X" is weaker than "X".* | Hedge dominance: 0.20 against 0.85 |
-| *Half your CLAUDE.md isn't rules.* | `is_rule`, 0.88–0.97 on the probe |
-| *This rule is fine for Opus and invisible to Haiku.* | Position and verb force measured **null** on Sonnet 5, strong on Haiku 4.5 |
+| *Half your CLAUDE.md isn't rules.* | `is_rule`, 15 of 16 on labelled lines, margin +0.06 |
+| *This rule is fine for Sonnet 5 and invisible to Haiku.* | Position and verb force measured **null** on Sonnet 5, strong on Haiku 4.5 |
 | *Delete this rule and write a hook.* | F8, 4 of 4 exact; hook routing at confidence 1.00 |
 
 And one claim no competitor can make at all: **it says when it does not know.**
-Every finding carries its evidence level, unmeasured levers are never scored, and
+The research page says what was measured and on which model, unmeasured levers
+are never scored, and
 a rule in Spanish is set aside by name rather than silently mis-scored on English
 word lists. Every other tool asserts best practices as if they were laws.
 
@@ -400,9 +430,10 @@ answer inside it, and the fact that the answer is measured — see below.
 
 | Item | Figure |
 | --- | --- |
-| Measured per-rule inference | ~880 input tokens ≈ **$0.000037** |
-| 40-rule `CLAUDE.md` (one request per rule) | ~35k tokens ≈ **$0.0015** |
-| Break-even on a $3/month subscription | ~2,000 whole-file scans per user per month |
+| Measured per-rule inference, in the first probe | ~880 input tokens ≈ **$0.000037** |
+| Measured per-rule inference, as shipped | ~2,570 input tokens ≈ **$0.0001** |
+| 40-rule `CLAUDE.md` (one request per rule), as shipped | ~100k tokens ≈ **$0.004** |
+| Break-even on a $3/month subscription, as shipped | ~700 whole-file scans per user per month |
 
 Inference cost will never be why this fails.
 
@@ -483,8 +514,11 @@ argument for the findings-first UI rather than against shipping.
 
 ## What to do instead
 
-1. **Ship the free single-rule tool.** Cost is ~$0.00004 per use. Lead with the
-   four-model comparison; it is the screenshot that travels.
+Items 1 to 4 are done, as the Outcome section records. Item 5 is the one still
+open.
+
+1. **Ship the free single-rule tool.** Cost is about $0.0001 per use. The
+   four-model comparison proposed here was not built.
 2. **Fix F3 and the injection check first.** Cheap, and they are the only things
    that make the output wrong rather than merely limited.
 3. **Publish the research.** The extracted rubric — measured levers, honest
@@ -530,7 +564,7 @@ this repository's to make.
 - **CI/build-gate tier as the monetisable shape.** Rejected: claudelint already
   ships CI plus SARIF, free. Correct instinct, occupied.
 - **Competing on breadth of rules.** Rejected: 116 and 90 rules already exist.
-  Our count is 7 factors. Breadth is lost; depth of evidence is not.
+  Ours is five factors and nine findings. Breadth is lost; depth of evidence is not.
 - **Selling the grade.** Rejected on honesty grounds, not competitive ones — see
   above. This holds even if the market empties out.
 - **Scoring only pasted rule-like statements, ignoring whole files.** Rejected as

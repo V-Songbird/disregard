@@ -28,25 +28,35 @@ the gate, not a person.
 and the honest reading of the existing data is that results differ by tier — so
 a missing column is a genuine hole, not a formality.
 
-Replicating one factor costs $3 to $12. A full column is about $41. Cells run
-against your own logged-in Claude Code, so you spend your own credits.
+Replicating one factor cost $3 to $12 on the small tier, and a mid-tier cell
+costs about three times as much. The three decisive contrasts on a mid-tier
+model, 440 cells, cost about $41. Cells run against your own logged-in Claude
+Code, so you spend your own credits.
+
+**A new model needs its own spec.** Results are stored by experiment id, not by
+model. Re-running an existing id with `--model` and `--resume` runs nothing,
+because every cell file already exists, and without `--resume` it overwrites
+the tracked cells. Copy the spec to a new id and set `"id"` and `"model"` in
+the copy, the way `exp-009-sonnet-spotcheck` and `exp-010-claude5` did.
+Replace `<m>` with your model's name.
 
 ```bash
 cd research/rule-lab
 node harness.js list
-node harness.js run --exp exp-001-framing --dry-run     # cell matrix, spends nothing
-node harness.js run --exp exp-001-framing --limit 1     # one live cell
-node harness.js run --exp exp-007-position --model <m> --resume
-node harness.js analyze --exp exp-007-position
+cp experiments/exp-007-position.json experiments/exp-007-position-<m>.json
+node harness.js run --exp exp-007-position-<m> --dry-run     # cell matrix, spends nothing
+node harness.js run --exp exp-007-position-<m> --limit 1     # one live cell
+node harness.js run --exp exp-007-position-<m> --resume      # the rest, resumable
+node harness.js analyze --exp exp-007-position-<m>
 ```
 
 **Run `--dry-run` first, every time.** It prints the cell count. Then smoke one
 cell with `--limit 1`. A full experiment is hundreds of real sessions and there
 is no undo on money already spent.
 
-**A reviewed translation.** The six interface locales in
-[public/i18n.js](public/i18n.js) were machine-translated and the page says so on
-every one of them. A native speaker's pass would let a locale drop that line.
+**A reviewed translation.** Five of the six interface locales in
+[public/i18n.js](public/i18n.js) were machine-translated from English, and the
+page says so on each of the five. A native speaker's pass would let a locale drop that line.
 
 ## The floor a measurement has to clear
 
@@ -91,7 +101,8 @@ say so in the pull request rather than quietly relabelling it.
   so it runs unchanged on other hosts. Keep it that way.
 - **`TYPESAFE_API_KEY` never goes in a committed file.** Local runs read
   `.dev.vars`; start from [.dev.vars.example](.dev.vars.example).
-- **Every eval harness except `det-eval.js` spends real money per run.** Read
+- **Four of the six eval harnesses spend real money per run.** Only
+  `det-eval.js` and `lang-eval.js` are free. Read
   [eval/README.md](eval/README.md) first.
 
 ## Reporting a problem

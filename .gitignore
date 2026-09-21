@@ -39,23 +39,10 @@ credentials.json
 # ==============================================================================
 # 3. Agent Workspace & Execution Artifacts
 # ==============================================================================
-# Ephemeral plans generated during Plan Mode (keep folder via .gitkeep)
-tasks/plans/*
-!tasks/plans/.gitkeep
-
-# Throwaway spikes and exploratory prototypes
-labs/spikes/*
-!labs/spikes/.gitkeep
-labs/**/*.log
-labs/**/.ipynb_checkpoints/
 *.log
 
-# Evaluation outputs and run telemetry (keep fixtures and scenarios)
-evals/results/
-evals/runs/
-evals/logs/
-benchmarks/results/
-benchmarks/runs/
+# eval/results/ and research/rule-lab/results/ are tracked on purpose: they are
+# the evidence the documents quote.
 
 # Temporary conversational scratchpads
 scratchpad.md

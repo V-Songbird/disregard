@@ -1,9 +1,12 @@
 ---
 type: knowledge
-summary: "Which TypeSafe contract terms permit selling a product built on Jev, and the clauses that constrain a public rule-scoring app; read before pricing, launching, or writing user-facing legal copy."
+summary: "Which TypeSafe contract terms permit selling a product built on Jev, and the clauses that constrain a public rule-scoring app; read before changing what is sent to Jev, what is stored, or the privacy and terms pages."
 related_files:
+  - "public/privacy.html"
+  - "public/terms.html"
+  - "lib/analyze.js"
+  - "api/score.js"
   - "docs/decisions/rule-scoring-product-viability.md"
-  - "docs/knowledge/f3-trigger-distance-criteria.md"
 ---
 
 # Selling a product built on Jev — what the TypeSafe terms actually allow
@@ -74,8 +77,8 @@ the arbitration notice — unrelated.
 > disclaims ownership of Output. TypeSafe hereby assigns to Customer all of its
 > right, title, and interest, if any, in the Output."*
 
-A paid public web app serving anonymous End Users is precisely the Customer
-Application shape §2.2 describes. Nothing conditions it on the model alias used.
+A public web app serving anonymous End Users, paid or free, is precisely the
+Customer Application shape §2.2 describes. Disregard shipped free. Nothing conditions it on the model alias used.
 
 ---
 
@@ -92,10 +95,10 @@ This is the clause that decides whether the app is legitimate. A thin passthroug
 — visitor writes a question and criteria, we forward it to Jev, we return the raw
 answer — **is** offering the Services as a standalone service.
 
-Our design is not that. The app supplies its own rubric (the assay factor set),
-computes F1/F2/F7 deterministically in our own code, composes a weighted grade
-with our own weights, and emits tips from our own table. Jev answers two bounded
-questions inside a product that is mostly ours.
+Our design is not that. The app runs its own language screen, computes F1, F2
+and F7 deterministically in our own code, turns six bounded Jev answers into
+nine named findings, and renders every sentence from our own strings in
+`public/i18n.js`. No grade is composed, and the raw Jev body is never returned.
 
 **Keep it that way.** Do not expose raw question/criteria authoring to End Users,
 do not return the raw Jev response body, and do not let the UI become a generic
@@ -143,9 +146,9 @@ box does.
 > End Users… as though such acts and omissions were Customer's own."*
 
 Every rule a visitor pastes becomes our Input. We warrant we had the right to
-send it. **Required before launch:** a terms page and a privacy notice stating
-that submitted text is transmitted to a third-party processor, plus the §4.1
-facts below. Without that notice we cannot honestly make the §5 representation.
+send it. **Done:** `public/terms.html` and `public/privacy.html` state that
+submitted text is transmitted to a third-party processor, plus the §4.1 facts
+below. Without that notice we could not honestly make the §5 representation.
 
 ### 5. §4.1 — the license we grant over submitted text
 
@@ -185,9 +188,11 @@ ships to the browser, and no End User is ever pointed at the console.
 > Customer… for the purpose of identifying Customer as a licensee or customer…"*
 
 Asymmetric, and easy to trip. **We may not put TypeSafe's name or logo on the
-landing page without prior consent**; they may put ours on theirs. Either ask
-them for written consent (they will almost certainly want the logo placement) or
-describe the model generically.
+landing page as a brand without prior consent**; they may put ours on theirs.
+
+What ships names TypeSafe only as the processor that receives the text, which is
+the disclosure §5 and the DPA require. There is no logo and no "Powered by"
+line. No consent request or reply is recorded in this repository.
 
 ### 8. §9.3 and §6 — no SLA, and instant suspension
 
@@ -199,15 +204,17 @@ describe the model generically.
 > §2.4, §5 or payment breach, or if our actions risk harm to other customers or
 > to service integrity. Prior notice only *"where practicable"*.
 
-Do not promise uptime to paying users. Degrade gracefully when the API is
-unavailable — and note that our deterministic half (F1/F2/F7 and the tips table)
-still works with no API at all, which makes a genuine fallback mode cheap.
+Do not promise uptime, and `public/terms.html` does not. No fallback is built:
+when Jev is unavailable the endpoint answers `upstream`, before F1, F2 or F7 are
+computed. The deterministic half needs no API, so a fallback mode stays cheap to
+add.
 
 ### 9. §2.3(j) — usage limits live in the Order, not the docs
 
 Exceeding *"Usage Limits set forth in the Order"* is itself a breach and a
 suspension trigger. Published rate limits are 1,200 req/min and 250k tok/s, but
-the binding numbers are whatever the Order says. Rate-limit our own endpoint.
+the binding numbers are whatever the Order says. **Not done:** the endpoint has
+no rate limit of its own. Only the upstream 429 is surfaced, as `rate_limited`.
 
 ---
 
@@ -231,22 +238,24 @@ does exist. So the missing AUP may be an oversight rather than a policy that was
 withdrawn.
 
 We are therefore contractually bound to a policy we cannot read, which is exactly
-the kind of term a public app accepting anonymous free-text input needs to see
-before launch. **Action: email TypeSafe for the current AUP text and record the
-reply here.** Until then, assume the usual prohibitions (illegal content, abuse,
-harassment, automated decisions about people) apply and design the input
-moderation accordingly.
+the kind of term a public app accepting anonymous free-text input needs to see.
+**Status: the app launched on 2026-09-20 with the AUP still unread, and no reply
+from TypeSafe is recorded here.** The only input moderation is the injection
+screen and the 2000-character cap. **Action: email TypeSafe for the current AUP
+text and record the reply here.** Until then, assume the usual prohibitions
+(illegal content, abuse, harassment, automated decisions about people) apply.
 
 ---
 
 ## Draft notice for the app
 
-**Shipped as `public/privacy.html`**, with the terms page below as
-`public/terms.html`, both linked from under the input box. Neither has been
-reviewed by a lawyer. The draft below is the source text.
+**Shipped as `public/privacy.html`**, with the terms page as
+`public/terms.html`. Both are linked from the footer of the page. The line under
+the input box says the rule is sent to TypeSafe and links the privacy page.
+Neither has been reviewed by a lawyer. The draft below is the source text of the privacy page.
 
-The obligation is smaller than it sounds. Five facts, one short page, linked from
-under the input box. Everything in it is traceable to a clause above.
+The obligation is smaller than it sounds. Five facts, one short page. Everything
+in it is traceable to a clause above.
 
 > **What happens to what you paste here**
 >
@@ -310,5 +319,5 @@ rubric rests on, and it belongs in front of the user rather than in a footer.
 
 - [rule-scoring-product-viability.md](../decisions/rule-scoring-product-viability.md)
   — whether the product these terms permit is worth selling. Its *Where the
-  supporting research lives* section explains why the earlier rubric and probe
-  documents cannot be linked from this repository.
+  supporting research lives* section says where the rubric, the probe, the field
+  guide and the harness now live in this repository.
