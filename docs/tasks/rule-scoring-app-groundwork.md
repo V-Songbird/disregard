@@ -229,9 +229,9 @@ repo was moved with the rename; anything outside it was not checked.
 
 ## Where things live
 
-This project moved out of `Slag` on 2026-09-20 and is now **Disregard**, at
-`D:\Projects\Songbird\Disregard`. Only `docs/` and `eval/` came across;
-`Slag/docs/collet-plugin.md` stayed behind because it belongs to that repo.
+This project moved out of `Slag` on 2026-09-20 and is now **Disregard**, its own
+repository. Only `docs/` and `eval/` came across; `Slag/docs/collet-plugin.md`
+stayed behind because it belongs to that repo.
 
 **Disregard is a git repository as of 2026-09-20**, on `main`, first commit
 `db63860`. Identity is set per-repository, not globally.

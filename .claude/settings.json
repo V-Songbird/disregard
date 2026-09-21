@@ -12,7 +12,6 @@
   "skillListingBudgetFraction": 0.005,
   "skillListingMaxDescChars": 800,
   "autoMemoryEnabled": true,
-  "autoMemoryDirectory": "D:/Projects/Songbird/Disregard/.claude/memory",
   "permissions": {
     "deny": [
       "Read(./.env*)",

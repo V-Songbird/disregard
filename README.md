@@ -236,10 +236,15 @@ touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
 
 ## Support and license
 
-This repository has no public issue tracker and no `CONTRIBUTING.md`. The
-documents under `docs/` are the only route for questions about why a criteria
-string says what it says. Report anything security related to the address in
-[SECURITY.md](SECURITY.md), never in a public channel.
+[CONTRIBUTING.md](CONTRIBUTING.md) says what is worth contributing and the
+floor a measurement has to clear. The short version: the gap worth closing is
+model coverage in [research/rule-lab](research/rule-lab), and a full column
+costs about $41 on your own login.
+
+The documents under `docs/` are the route for questions about why a criteria
+string says what it says; each threshold has the document that measured it.
+Report anything security related to the address in [SECURITY.md](SECURITY.md),
+never in a public channel.
 
 **MIT**, in [LICENSE](LICENSE). The service's own terms and privacy notice are
 shipped with the page, at [terms](public/terms.html) and
