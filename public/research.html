@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research — Disregard</title>
+<meta name="description" content="The measurements behind Disregard: 2,020 paid cells testing whether how a rule is written changes what an agent actually does.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Research</h1>
+  <p class="lede">2,020 measured cells asking one question: does how you write a rule change what an agent actually does?</p>
+
+  <p>Every other tool that reads a CLAUDE.md hardcodes best practices. None of them
+  can tell you where the practice came from. This one can, because the practices were
+  measured rather than assumed — and because several of the things everyone repeats
+  turned out to be worth nothing.</p>
+
+  <h2>How it was measured</h2>
+
+  <p>A cell is one real session. The harness writes a temporary CLAUDE.md carrying one
+  variant of a rule, runs a headless Claude Code session against a task, then grades two
+  things separately: was the task even attempted, and was the rule followed. Runs are
+  pooled across repetitions, compared against the same task with no rule at all, and the
+  difference gets a bootstrapped 95% confidence interval.</p>
+
+  <p>Two rules of the house do most of the work. Only one property changes at a time,
+  every other word held as close to identical as possible. And every task is built so
+  that the model naturally breaks the rule when no rule is present — a task the model
+  would pass anyway measures nothing, and the analysis flags those and throws them out.</p>
+
+  <p>Eleven experiments, 2,020 cells, $111.61 at an average of $0.0553 a cell. The
+  earlier correlation study that preceded this one found that what the model tends to do
+  anyway outweighs the wording of a rule by roughly fifteen to one, which is why nothing
+  here measures compliance directly. It measures lift.</p>
+
+  <h2>What it found</h2>
+
+  <p>On a small-tier model, in order of measured effect:</p>
+
+  <ol>
+    <li><strong>Position.</strong> Put load-bearing rules at the top. Moving the same rule
+    to the bottom of the file cost between 35% and 85% of its effect.</li>
+    <li><strong>Concreteness.</strong> Name the exact path. "the API reference doc" scored
+    0.00; "docs/api.md" scored 0.60. Vague referents are ignored silently, not guessed at.</li>
+    <li><strong>Trigger clause.</strong> A duty about a distant file needs "When you do X".
+    Without one it ran between 0.00 and 0.65 and collapsed entirely in multi-step tasks.</li>
+    <li><strong>Verb strength.</strong> "Prefer" is half a rule — 0.45 to 0.60 against 1.00
+    for "always" or "never". Softening a verb has a price.</li>
+    <li><strong>Framing.</strong> Always pair a prohibition with its alternative. A bare
+    "never do X" on a task that needs X did not produce compliance; it produced a stall.
+    The model stopped and asked how to proceed, and half the runs failed outright. The same
+    rule naming an alternative stalled zero times.</li>
+  </ol>
+
+  <p>Two things everyone believes did not survive. Inline examples had no measurable effect
+  on compliance in three different task types. And distance between the rule and the work
+  did not decay anything on its own — weak wording did.</p>
+
+  <h2>The finding this tool is built on</h2>
+
+  <p>The rules that score worst are a specific kind: duties about a file you are not
+  currently editing. Update the changelog. Keep the docs in sync. On a small-tier model
+  those landed between 0.05 and 0.25 even when written perfectly.</p>
+
+  <p>A hook fires every time. That is the whole argument behind the verdict this tool
+  gives most often, and it is why "delete this rule and write a hook" is a measurement
+  rather than an opinion.</p>
+
+  <h2>What these numbers do not cover</h2>
+
+  <p>The effects above were measured on a small-tier model in 2026. When the three most
+  decisive contrasts were re-run on a mid-tier model, <strong>every structural effect
+  vanished</strong>. Position made no difference. Verb strength made no difference. That
+  tier followed any rule it was given, whatever shape it was in.</p>
+
+  <p>So the honest version is narrower than the headline: <em>the same rule is worth
+  different amounts depending on which model reads it.</em> Wording discipline buys the
+  most where models are smallest — subagents, cheap tiers, high-volume automation. No
+  result here was contradicted by the larger model; the effects simply stopped mattering.</p>
+
+  <p>Everything else is bounded too. One task family per intent. Spot checks on the larger
+  tier were small. Nothing was measured outside English.</p>
+
+  <h2>How to contribute</h2>
+
+  <p>The gap worth closing is model coverage, and closing it is cheap. Replicating one
+  factor on a model nobody has measured costs $3 to $12. A full column — every contrast,
+  twenty repetitions per arm — costs about $41. Cells run against your own logged-in
+  Claude Code, so you spend your own credits and nothing here bills you.</p>
+
+  <p>The harness ships with the source, along with every cell ever run and the notebook
+  that records what each experiment decided and why. It takes a dry run that prints the
+  cell matrix without spending anything, and a single-cell smoke test, both of which you
+  should use before launching a real run.</p>
+
+  <p>A contribution is held to the same floor as the existing work: at least two distinct
+  rule intents, tasks the model fails without the rule, and a declared sample size. A
+  result that does not replicate across intents is an open question, not a finding. That
+  standard is what makes the numbers worth citing, including the ones that say a popular
+  belief is worth nothing.</p>
+
+  <p class="promise"><a href="/">Back to Disregard</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+</main>
+</body>
+</html>

@@ -6,7 +6,10 @@ has to follow it. It answers what a local linter cannot: whether the line is a
 rule at all, and whether it should stop being prose and become a hook, a skill
 or a subagent.
 
-Try it on [the live service](https://disregard-score.victor-villegas.workers.dev/).
+Try it on [the live service](https://disregard-score.victor-villegas.workers.dev/),
+and read [what was measured](https://disregard-score.victor-villegas.workers.dev/research)
+to get there — 2,020 paid cells testing whether a rule's wording changes what an
+agent does. The harness and every cell are in [research/](research/).
 
 **It scores one line, not a file, and English only.** Anything over 2000
 characters is rejected, and another language is handed back unscored, because

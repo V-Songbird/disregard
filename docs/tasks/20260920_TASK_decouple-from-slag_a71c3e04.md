@@ -58,6 +58,14 @@ Every remaining mention of assay in this repository is one of three things, all
 intended: history in a comment, the field guide's own subject, or text inside a
 labelled case.
 
+## Left open by this task
+
+**The research page cannot link to the source yet.** [public/research.html](../../public/research.html)
+explains the method, the findings and what a contribution costs, and then has to
+say the harness "ships with the source" rather than naming a URL, because this
+repository still has no remote. When it gets one, that page and this note both
+want one line each. Nothing else on it goes stale.
+
 ## Not to be touched
 
 **The labelled corpora keep their text verbatim.** Three fixtures name assay or

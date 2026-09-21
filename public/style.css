@@ -26,6 +26,7 @@ body {
 }
 main { max-width: 46rem; margin: 0 auto; }
 h1 { font-size: 1.9rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2.25rem 0 .5rem; }
 .topbar { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .25rem; }
 .picker { margin: 0; display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--muted); }
 .picker label { font-weight: 400; margin: 0; }
