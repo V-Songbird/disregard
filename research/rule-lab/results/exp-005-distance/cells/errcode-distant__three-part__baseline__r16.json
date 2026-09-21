@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__baseline__r16",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:09:52.869Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.0371631,
+  "durationMs": 17820,
+  "responseTail": ": Uses `Math.max` and `Math.min` to constrain the value within the range.\n\n2. **`formatBytes(n)`** in src/util.js: Converts bytes to KB, MB, or GB as appropriate, formatting with one decimal place.\n\n3. **`loadSettings(filePath)`** in src/settings.js: Reads the JSON file synchronously, applies the default settings `{ theme: \"dark\", autosave: true }` for missing keys, and throws descriptive errors for missing files or malformed JSON.\n\nAll three functions are exported from their respective modules."
+}

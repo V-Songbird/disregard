@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r3",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 3,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:48:15.517Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.042780399999999996,
+  "durationMs": 21981,
+  "responseTail": "Done. `loadSettings(filePath)` now:\n- Reads the file synchronously with proper error handling for missing files\n- Parses JSON with clear error messages for malformed JSON\n- Merges user settings with defaults ({ theme: \"dark\", autosave: true })\n- Throws `AppError` with machine-readable codes (SETTINGS_NOT_FOUND, SETTINGS_READ_ERROR, SETTINGS_PARSE_ERROR)\n- Is exported from the module"
+}

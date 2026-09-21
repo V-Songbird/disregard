@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__baseline__r14",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:14:20.550Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0362596,
+  "durationMs": 18003,
+  "responseTail": "\n\n1. **`clamp(n, min, max)`** in `src/num.js` — returns n limited to the range [min, max] using early returns.\n\n2. **`formatBytes(n)`** in `src/util.js` — formats byte counts using B, KB, MB, or GB with one decimal place, with thresholds at 1000-unit boundaries.\n\n3. **`slugify(title)`** in `src/text.js` — lowercases, trims, replaces runs of spaces with dashes, and strips non-alphanumeric characters except dashes using regex.\n\nAll functions are exported and follow the project's style conventions."
+}

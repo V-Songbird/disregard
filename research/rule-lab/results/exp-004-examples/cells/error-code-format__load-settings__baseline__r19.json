@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r19",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:00:59.137Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.036413299999999996,
+  "durationMs": 21396,
+  "responseTail": " implemented `loadSettings(filePath)` with the following features:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** (`{ theme: \"dark\", autosave: true }`) applied for missing keys via object spread\n- **Clear error messages** for missing files and invalid JSON\n- **Exported** as a named export\n\nThe function returns an object where settings from the file override defaults, and missing keys get the default values."
+}

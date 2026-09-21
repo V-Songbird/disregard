@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r1",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:04:52.342Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032340400000000005,
+  "durationMs": 21855,
+  "responseTail": "Done. The function:\n- Reads the file synchronously with `fs.readFileSync()`\n- Catches missing files (ENOENT) with a clear error message\n- Catches malformed JSON with a clear error message\n- Merges the parsed data with defaults (`theme: \"dark\"`, `autosave: true`), allowing file values to override\n- Exports via CommonJS"
+}

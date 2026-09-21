@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r7",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 7,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:22:22.330Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0894248,
+  "durationMs": 15388,
+  "responseTail": "All 3 tests pass. Added `src/num.spec.js` with below/inside/above range cases for `clamp`."
+}

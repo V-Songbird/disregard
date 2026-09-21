@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__example__r3",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "example",
+  "rep": 3,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:56:38.448Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0378857,
+  "durationMs": 18055,
+  "responseTail": "Done. `clamp` is implemented and exported from src/num.js, and documented in docs/api.md."
+}

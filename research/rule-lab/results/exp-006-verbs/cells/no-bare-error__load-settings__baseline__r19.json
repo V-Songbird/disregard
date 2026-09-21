@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r19",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:40.282Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030827800000000002,
+  "durationMs": 15351,
+  "responseTail": "Done. The `loadSettings(filePath)` function is now implemented and exported. It reads the file synchronously, parses JSON, applies the defaults `{ theme: \"dark\", autosave: true }` for any missing keys, and throws clear errors for missing files or malformed JSON."
+}

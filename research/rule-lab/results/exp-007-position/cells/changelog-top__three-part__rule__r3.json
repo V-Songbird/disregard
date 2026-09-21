@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__rule__r3",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 3,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:18:34.586Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0531791,
+  "durationMs": 29607,
+  "responseTail": "/num.js — returns n constrained to [min, max] using early returns\n2. **`formatBytes(n)`** in src/util.js — formats byte counts as human-readable strings (B, KB, MB, GB) with one decimal place\n3. **`slugify(title)`** in src/text.js — lowercase, trim, replace space runs with dashes, strip non-alphanumeric/dash characters\n\nEach function follows the project style: two-space indents, double quotes, early returns, and no unnecessary complexity. I've also updated CHANGELOG.md to document the additions."
+}

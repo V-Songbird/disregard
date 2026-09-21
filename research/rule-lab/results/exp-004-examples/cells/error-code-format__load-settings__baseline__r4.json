@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r4",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:44.771Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031954300000000005,
+  "durationMs": 16967,
+  "responseTail": "Done. The `loadSettings` function:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Throws a clear error if the file doesn't exist or can't be read\n- Throws a clear error if JSON parsing fails\n- Merges parsed settings with defaults (`{ theme: \"dark\", autosave: true }`), with parsed values taking precedence\n- Exports as `{ loadSettings }` from the module"
+}

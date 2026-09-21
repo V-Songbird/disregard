@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__rule__r15",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 15,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:13:39.947Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.049867400000000006,
+  "durationMs": 29534,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n- **formatBytes(n)** in src/util.js — formats byte counts with B/KB/MB/GB units and one decimal place\n- **slugify(title)** in src/text.js — converts to lowercase, trims, replaces spaces with dashes, and strips non-alphanumeric characters\n- **fetchUsers(baseUrl)** in src/api.js — fetches users from the API, logs the count using the log() function from logger.js, and returns the array"
+}

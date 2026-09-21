@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r6",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:00:20.224Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0333587,
+  "durationMs": 13138,
+  "responseTail": "gs.js` with the following features:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **JSON parsing** with clear error messages for malformed JSON\n- **Default values** applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- **Clear error handling** with specific messages for missing files and read failures\n- **Export** of the function from the module\n\nThe function merges user-provided settings with defaults, ensuring all expected keys are present even if the file is incomplete."
+}

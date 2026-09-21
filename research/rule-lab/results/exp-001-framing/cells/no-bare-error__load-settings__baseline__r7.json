@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r7",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:20:08.977Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031336600000000006,
+  "durationMs": 14598,
+  "responseTail": "Done. The `loadSettings` function is implemented with:\n- Synchronous file reading via `fs.readFileSync()`\n- JSON parsing with error handling for malformed JSON\n- Default values applied for missing keys (theme: \"dark\", autosave: true)\n- Clear error messages for missing files and invalid JSON\n- Proper export from the module"
+}

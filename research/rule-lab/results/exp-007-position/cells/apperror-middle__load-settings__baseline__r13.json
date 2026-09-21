@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__baseline__r13",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:01:17.883Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0327569,
+  "durationMs": 16907,
+  "responseTail": "s** (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- **Throws clear errors** for:\n  - Missing files: `Settings file not found: {path}`\n  - Read failures: `Failed to read settings file: {error}`\n  - Malformed JSON: `Invalid JSON in settings file: {error}`\n  - Non-object values: `Settings file must contain a JSON object`\n- **Exports** the function from the module\n\nThe implementation follows your project's code style (two-space indentation, double quotes, early returns, under 40 lines)."
+}

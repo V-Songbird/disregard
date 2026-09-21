@@ -1,0 +1,39 @@
+{
+  "id": "changelog-trigger-distant__three-part__rule__r4",
+  "intent": "changelog-trigger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 4,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:28:44.837Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.0396271,
+  "durationMs": 22312,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n- **`clamp(n, min, max)`** in src/num.js — constrains n to the inclusive range [min, max]\n- **`formatBytes(n)`** in src/util.js — formats bytes as human-readable (B, KB, MB, GB) with one decimal place\n- **`slugify(title)`** in src/text.js — lowercases, trims, replaces spaces with dashes, and strips non-alphanumeric characters\n\nCHANGELOG.md updated with all three additions."
+}

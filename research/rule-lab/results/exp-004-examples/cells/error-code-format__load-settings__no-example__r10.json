@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r10",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 10,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:02:06.702Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0325197,
+  "durationMs": 17350,
+  "responseTail": "Done. The function:\n- Reads the file synchronously with `fs.readFileSync()`\n- Catches missing files (`ENOENT`) and malformed JSON separately, throwing errors with uppercase snake-case error codes per project conventions\n- Merges the parsed settings with defaults, so missing keys use `theme: \"dark\"` and `autosave: true`\n- Exports as `loadSettings` from the module"
+}

@@ -1,0 +1,63 @@
+{
+  "id": "exp-003-concreteness",
+  "question": "Q3",
+  "hypothesis": "A rule that names exact identifiers and paths produces more compliance than the same rule stated with abstract references, because the model does not have to resolve the referent itself.",
+  "model": "haiku",
+  "reps": 20,
+  "maxTurns": 12,
+  "timeoutMs": 300000,
+  "intents": [
+    {
+      "id": "logger-helper",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/logger.js": "\"use strict\";\n// Project logging helper — writes structured lines to stderr.\nfunction log(message, data) {\n  process.stderr.write(JSON.stringify({ ts: Date.now(), message, data }) + \"\\n\");\n}\nmodule.exports = { log };\n",
+        "src/api.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-api\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "concrete": "- Never use `console.log` in src/ files — call `log()` from `src/logger.js` instead.",
+        "abstract": "- Never write directly to the console in src/ files — use the project's logging helper instead."
+      },
+      "tasks": [
+        {
+          "id": "fetch-users",
+          "prompt": "Add a function `fetchUsers(baseUrl)` to src/api.js that GETs `${baseUrl}/api/users` with fetch, parses the JSON array, logs how many users were fetched, and returns the array. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/api.js", "pattern": "fetchUsers" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/api.js", "pattern": "console\\.(log|info|debug)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docs-sync",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "concrete": "- List every exported src/ function in docs/api.md.",
+        "abstract": "- List every exported src/ function in the API reference doc."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    }
+  ]
+}

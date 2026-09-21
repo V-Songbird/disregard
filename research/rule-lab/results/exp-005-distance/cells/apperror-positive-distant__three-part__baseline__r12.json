@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r12",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 12,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:24:48.769Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0451103,
+  "durationMs": 22426,
+  "responseTail": " **clamp(n, min, max)** — returns n bounded to [min, max] using nested Math.min/max\n2. **formatBytes(n)** — divides by 1024 repeatedly until finding the right unit (B, KB, MB, GB), formats with one decimal place\n3. **loadSettings(filePath)** — reads the file synchronously, parses JSON with error handling, merges with defaults `{ theme: \"dark\", autosave: true }`, and throws AppError with clear messages for missing or malformed files\n\nAll three functions are exported from their respective modules."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r8",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:49:31.269Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0442525,
+  "durationMs": 26337,
+  "responseTail": "s(filePath)` in src/settings.js:\n\n- **File reading**: synchronous with `fs.readFileSync`\n- **JSON parsing**: catches malformed JSON and throws `AppError(\"SETTINGS_PARSE_ERROR\", ...)`\n- **Error handling**: distinguishes between missing files (`ENOENT` → `SETTINGS_NOT_FOUND`) and other read errors (`SETTINGS_READ_ERROR`)\n- **Defaults**: merges `{ theme: \"dark\", autosave: true }` with parsed values (parsed values take precedence)\n- **Export**: exported as a named export following the module pattern"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r20",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 20,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:52:54.271Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.040780300000000005,
+  "durationMs": 24617,
+  "responseTail": "ror handling for missing files and malformed JSON\n- **Default values** applied for missing keys (`theme: \"dark\"`, `autosave: true`) using `Object.assign`\n- **Clear error signals** via `AppError` with specific codes and messages\n- **Export** from the module\n\nThe function handles three error cases:\n- File not found (ENOENT) → `AppError` with code `SETTINGS_FILE_NOT_FOUND`\n- File read fails → `AppError` with code `SETTINGS_READ_ERROR`\n- JSON parse fails → `AppError` with code `SETTINGS_PARSE_ERROR`"
+}

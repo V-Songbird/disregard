@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r8",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 8,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:21:06.045Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0411928,
+  "durationMs": 25455,
+  "responseTail": "s(filePath)` that:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Parses it as JSON with proper error handling\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys using spread operator merging\n- Throws `AppError` with clear, machine-readable codes for missing files (\"FILE_NOT_FOUND\") or malformed JSON (\"INVALID_JSON\")\n- Exports the function from the module\n\nThe implementation follows the project guideline to throw `AppError` instead of the built-in `Error` class."
+}

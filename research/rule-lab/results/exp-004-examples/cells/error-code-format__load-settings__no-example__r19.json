@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r19",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 19,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:02:31.982Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.039590600000000004,
+  "durationMs": 20493,
+  "responseTail": "gs(filePath)` in src/settings.js with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** applied for missing keys (theme: \"dark\", autosave: true)\n- **Clear error messages** with uppercase snake-case codes (FILE_NOT_FOUND, FILE_READ_ERROR, INVALID_JSON) per the project error convention\n- **Exported** from the module\n\nThe function merges defaults with the parsed settings, allowing file values to override defaults."
+}

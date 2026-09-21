@@ -1,0 +1,33 @@
+{
+  "id": "q7-docs-top__clamp__rule__r16",
+  "intent": "q7-docs-top",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 16,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:35:50.080Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.10310280000000001,
+  "durationMs": 21722,
+  "responseTail": "Added `clamp(n, min, max)` to `src/num.js` and exported it, and updated `docs/api.md` with the new export as required by the project's CLAUDE.md rule. No tests added, per your instruction."
+}

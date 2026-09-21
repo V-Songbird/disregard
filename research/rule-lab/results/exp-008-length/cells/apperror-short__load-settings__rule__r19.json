@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r19",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 19,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:05:36.793Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030882299999999998,
+  "durationMs": 15136,
+  "responseTail": "features:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- **Clear error messages**:\n  - File not found: `\"Settings file not found: {filePath}\"`\n  - Invalid JSON: `\"Settings file contains invalid JSON: {filePath}\"`\n- **Exported** from the module\n\nThe function merges defaults with loaded settings so that loaded values take precedence over defaults."
+}

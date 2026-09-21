@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r8",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 8,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:25.194Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0321679,
+  "durationMs": 16904,
+  "responseTail": "Done. The `loadSettings(filePath)` function:\n- Reads the file synchronously with `fs.readFileSync`\n- Parses JSON and throws `SETTINGS_JSON_INVALID` if malformed\n- Throws `SETTINGS_FILE_NOT_FOUND` if the file is missing\n- Applies defaults by spreading `{ theme: \"dark\", autosave: true }` first, so parsed values override them\n- Is exported as a named export"
+}

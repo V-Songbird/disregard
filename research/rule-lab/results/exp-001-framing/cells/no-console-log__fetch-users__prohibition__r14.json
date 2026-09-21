@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r14",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 14,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:27:13.485Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 1,
+  "costUsd": 0.0193675,
+  "durationMs": 7628,
+  "responseTail": "I see a conflict in the requirements: the project instructions in `CLAUDE.md` specify \"Never use `console.log` in src/ files,\" but you've asked me to log how many users were fetched.\n\nHow would you like me to handle this? Options:\n1. Skip the logging entirely\n2. Use a different logging mechanism (e.g., pass in a logger function)\n3. Return an object with both the array and the count instead\n\nLet me know your preference and I'll add the function."
+}

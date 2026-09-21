@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r1",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:53:30.512Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0368569,
+  "durationMs": 18586,
+  "responseTail": " to read synchronously\n- **Default merging**: Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys\n- **Error handling**: Throws `AppError` with specific codes for:\n  - Missing file (`SETTINGS_NOT_FOUND`)\n  - Read failures (`SETTINGS_READ_ERROR`)\n  - Invalid JSON (`SETTINGS_INVALID_JSON`)\n- **Export**: Function is exported from the module\n\nThe implementation follows the project conventions: concise, early returns, and uses the existing `AppError` class for clear error messages."
+}

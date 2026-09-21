@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r17",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 17,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:48:37.505Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0370165,
+  "durationMs": 18209,
+  "responseTail": "ng `fs.readFileSync`\n- Parses it as JSON with clear error handling\n- Merges the parsed settings with defaults `{ theme: \"dark\", autosave: true }` so missing keys use defaults\n- Throws `AppError` with specific codes (`ENOENT`, `READ_ERROR`, `INVALID_JSON`) for file missing, read failures, and malformed JSON\n- Exports it from the module\n\nThe function follows the project's style guide: no `else` chains, under 40 lines, and uses the standard `AppError` for failures as specified in the project notes."
+}

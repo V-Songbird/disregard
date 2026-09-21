@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r2",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:28:30.256Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.1031494,
+  "durationMs": 15153,
+  "responseTail": "Added `tests/num.test.js` with three cases (below, inside, above range) for `clamp`. All pass; `src/num.js` untouched."
+}

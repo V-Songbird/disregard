@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r13",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 13,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:48.820Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0387274,
+  "durationMs": 21372,
+  "responseTail": "gs(filePath)` in `src/settings.js` with:\n\n- Synchronous file reading with `fs.readFileSync()`\n- JSON parsing with error handling for malformed JSON\n- Default values (`{ theme: \"dark\", autosave: true }`) applied via spread operator\n- Clear `AppError` exceptions for missing files and parse errors\n- Export as a named function following the project's lowerCamelCase convention\n\nThe function merges loaded settings over defaults, so missing keys get the default values while provided keys override them."
+}

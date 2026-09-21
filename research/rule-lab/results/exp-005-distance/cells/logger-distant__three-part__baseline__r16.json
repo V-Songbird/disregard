@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r16",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:07:23.447Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.043645,
+  "durationMs": 23191,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n- **formatBytes(n)** converts byte counts to human-readable format (B, KB, MB, GB) with one decimal place\n- **slugify(title)** converts text to URL-friendly slugs with lowercase, dashes for spaces, and only alphanumeric+dash characters\n- **fetchUsers(baseUrl)** fetches users from the API endpoint, logs the count, and returns the array"
+}

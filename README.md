@@ -165,7 +165,7 @@ they cover, in `lib/`.
 node --test --test-reporter=dot
 ```
 
-Expected output, all of it: 47 dots and nothing else. A failed test prints its
+Expected output, all of it: 57 dots and nothing else. A failed test prints its
 assertion instead.
 
 ```text
@@ -174,7 +174,7 @@ assertion instead.
 .......
 ```
 
-Drop `--test-reporter=dot` to see every test name and the `# pass 47` summary.
+Drop `--test-reporter=dot` to see every test name and the `# pass 57` summary.
 
 The labelled sets and their harnesses live in `eval/`. One of them is free and
 the rest spend real money per run. Read
@@ -213,6 +213,7 @@ set rather than promoting a guard back.
 | [worker.js](worker.js) | The Cloudflare entry point, and the only ESM file here. |
 | [public/](public/) | The page. No framework, no build. `i18n.js` holds six locales. |
 | [eval/](eval/) | Labelled sets and harnesses. |
+| [research/](research/) | The rule-lab harness, its 2,020 measured cells, and the F3/F8 rubric. |
 | [docs/](docs/) | Why each criteria string says what it says, and what it measured at. |
 
 The handler is written against the Web standard `Request` to `Response` and
@@ -224,7 +225,7 @@ touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
 - **Enforceability has no labelled set of its own.** It gates one finding,
   `could_be_a_hook`.
 - **The six interface translations are unmeasured.** They need a native reader,
-  not a harness.
+  not a harness, and the page says so in each of them.
 - **Scope and position are not scored and cannot be.** Both need the whole file,
   and this scores one pasted line.
 - **A clean result is not a prediction that an agent will follow the rule.** It

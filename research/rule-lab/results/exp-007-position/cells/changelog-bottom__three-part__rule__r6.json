@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r6",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 6,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:15:03.097Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0362139,
+  "durationMs": 20392,
+  "responseTail": "in, max)`** in src/num.js — uses early returns to constrain a number within the inclusive range.\n\n2. **`formatBytes(n)`** in src/util.js — divides by 1024 progressively through units (B, KB, MB, GB) and formats with one decimal place.\n\n3. **`slugify(title)`** in src/text.js — chains string operations to lowercase, trim, replace space runs with dashes, and strip non-word characters except dashes.\n\nAll follow the project's code style: two-space indent, early returns, functions well under 40 lines."
+}

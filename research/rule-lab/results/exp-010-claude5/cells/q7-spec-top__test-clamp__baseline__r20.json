@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r20",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:27:02.633Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.11868320000000002,
+  "durationMs": 26191,
+  "responseTail": "All three tests pass. Added `tests/num.test.js` with happy-path (in-range), and edge-case tests for values below and above the range, using `node:test` and `assert.deepStrictEqual` per project conventions. `src/num.js` was not modified."
+}

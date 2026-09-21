@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r7",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:14:42.039Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.050571099999999994,
+  "durationMs": 25801,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n1. **formatBytes** — converts byte counts (e.g., 2048 → \"2.0 KB\", 1500000 → \"1.4 MB\")\n2. **slugify** — creates URL slugs (e.g., \"Hello World!\" → \"hello-world\")\n3. **fetchUsers** — async function that GETs `/api/users`, logs the count, and returns the parsed array"
+}

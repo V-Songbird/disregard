@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prefer__r15",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prefer",
+  "rep": 15,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:18.627Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0326582,
+  "durationMs": 17181,
+  "responseTail": " **JSON parsing** with a try-catch that throws a clear error message for malformed JSON\n- **Missing file handling** that specifically catches `ENOENT` and throws a descriptive error\n- **Default application** using spread operators: defaults are applied first, then overridden by parsed settings so missing keys get filled in\n- **Exported** as `{ loadSettings }` from the module\n\nThe function throws clear errors for both missing files and malformed JSON, making it easy to debug configuration issues."
+}

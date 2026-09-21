@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r11",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 11,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:02.528Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0332029,
+  "durationMs": 18371,
+  "responseTail": "Done. The `loadSettings(filePath)` function is now implemented and exported. It:\n\n- Reads the file synchronously with `fs.readFileSync()`\n- Provides clear error messages for missing files and malformed JSON via a custom `SettingsError` class\n- Applies the defaults `{ theme: \"dark\", autosave: true }` for any missing keys\n- Exports the function as a named export"
+}

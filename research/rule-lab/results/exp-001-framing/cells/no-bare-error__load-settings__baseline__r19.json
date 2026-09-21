@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r19",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:11.597Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031475600000000006,
+  "durationMs": 15299,
+  "responseTail": "nous file reading** using `fs.readFileSync()`\n- **JSON parsing** with proper error handling\n- **Default values** applied via nullish coalescing: `theme: 'dark'` and `autosave: true`\n- **Clear error messages** for:\n  - Missing files: `\"Settings file not found: <path>\"`\n  - Malformed JSON: `\"Invalid JSON in settings file: <path>\"`\n- **Export** as a named function from the module\n\nThe function preserves any additional properties from the parsed JSON while ensuring the required defaults are present."
+}

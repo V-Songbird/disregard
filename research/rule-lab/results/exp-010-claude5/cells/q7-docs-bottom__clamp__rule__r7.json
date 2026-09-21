@@ -1,0 +1,33 @@
+{
+  "id": "q7-docs-bottom__clamp__rule__r7",
+  "intent": "q7-docs-bottom",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 7,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:33:40.504Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.11096419999999999,
+  "durationMs": 14507,
+  "responseTail": "Added `clamp(n, min, max)` to `src/num.js`, exported it, and listed it in `docs/api.md` per the project's docs requirement. No tests added, as requested."
+}

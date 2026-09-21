@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__baseline__r18",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:38:03.262Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.09822220000000001,
+  "durationMs": 18624,
+  "responseTail": "All 3 tests pass. Added `src/num.test.js` with below/inside/above range cases for `clamp`; `src/num.js` was left untouched."
+}

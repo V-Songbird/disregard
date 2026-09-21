@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__example__r2",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "example",
+  "rep": 2,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:00:20.197Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0336477,
+  "durationMs": 19759,
+  "responseTail": "sing** with error handling for malformed JSON\n- **Default merging** that applies `{ theme: \"dark\", autosave: true }` to missing keys (using `Object.assign` so parsed values take precedence)\n- **Clear error messages** following the project's pattern:\n  - `E_FILE_NOT_FOUND: settings file missing` when file doesn't exist\n  - `E_FILE_READ_ERROR: [details]` for other read failures\n  - `E_INVALID_JSON: settings file is malformed JSON` for parse failures\n- **Exported** as a named export from the module"
+}

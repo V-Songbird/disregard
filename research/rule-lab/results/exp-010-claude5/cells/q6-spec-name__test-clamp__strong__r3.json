@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__strong__r3",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "strong",
+  "rep": 3,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:30:39.953Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.136465,
+  "durationMs": 32710,
+  "responseTail": "All 3 tests pass. Added `src/num.spec.js` with tests for below-range, in-range, and above-range values.\n\nNote: bare `node --test` doesn't discover `*.spec.js` by default (Node's built-in glob looks for `*.test.js` etc.) — run it explicitly with `node --test src/num.spec.js` or `node --test \"**/*.spec.js\"`, since your project has no `package.json` test script configuring that pattern."
+}

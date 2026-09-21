@@ -211,13 +211,12 @@ repo was moved with the rename; anything outside it was not checked.
 ## Open decisions
 
 1. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
-   harness that lets strangers add model columns for ~$41 each. Its README calls
-   itself *"never published"*, so publishing reverses a standing decision.
-   **The audit is done.** The harness sits outside this repo at
-   `D:/Projects/Personal/SoftwareDevelopment/slag/docs/research/rule-lab`, its
-   2,020 cells carry no path, username, email or `localhost` reference, and
-   `node --test harness.test.js` passes 10 of 10. Nothing needs redacting.
-   Only the owner's reversal is left.
+   harness that lets strangers add model columns for ~$41 each. **The audit is
+   done and the harness is in this repository**, at `research/rule-lab/`: its
+   2,020 cells carry no path, username, email or `localhost` reference, so
+   nothing needs redacting. What is left is not a decision about the harness but
+   about this repository, which is to be published and has no remote yet. See
+   [the decoupling note](20260920_TASK_decouple-from-slag_a71c3e04.md).
 2. **What to measure next.** Everything the app decides now has a labelled set
    behind it. What is left with none is the **six interface translations**, which
    need a native speaker rather than a harness. **Settled on 2026-09-20:** the
@@ -246,12 +245,10 @@ come across: both need a whole file and a corpus, which this app does not have.
 The upstream copies stay uncommitted in `slag`, and assay is still being
 retired; nothing here depends on them any more.
 
-One thing still lives outside this folder and is needed:
-
-- **The earlier research** — `writing-rules-for-ai.md` (the extracted rubric) and
-  `jev-rule-scoring-feasibility.md` (the first Jev probe) — in that same repo
-  under `docs/`, which it gitignores by design. They are local-only and will
-  never be in anyone's history. Copy them here if they matter.
+**Nothing this app needs lives outside this folder any more.** On 2026-09-20 the
+harness, the rubric and the two research documents were all copied in — see
+[the decoupling note](20260920_TASK_decouple-from-slag_a71c3e04.md) for what
+moved and what was deliberately left behind.
 
 ## Naming
 

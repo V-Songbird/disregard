@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r12",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 12,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:52:43.840Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.038868099999999996,
+  "durationMs": 21878,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Distinguishes file-not-found errors from other read errors\n- Parses JSON and catches malformed content\n- Applies defaults (`theme: \"dark\"`, `autosave: true`) for any missing keys\n- Throws `AppError` with specific error codes for clear context\n- Is exported from the module\n\nThe defaults are merged so that parsed values override them, allowing partial configurations."
+}

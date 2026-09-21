@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r20",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 20,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:23:41.544Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.1495166,
+  "durationMs": 30682,
+  "responseTail": "All 3 tests pass. Directory-level discovery seems to have an unrelated quirk on this environment, but running the file directly confirms it works fine — that's a pre-existing environment issue, not something introduced by the new test.\n\nAdded `tests/num.spec.js` with three tests for `clamp`: below range, inside range, and above range. `src/num.js` was not modified."
+}

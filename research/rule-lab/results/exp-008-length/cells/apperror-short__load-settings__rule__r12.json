@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r12",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 12,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:03:47.301Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031784900000000005,
+  "durationMs": 16769,
+  "responseTail": "emented `loadSettings(filePath)` in src/settings.js with:\n\n- Synchronous file reading using `fs.readFileSync`\n- JSON parsing with clear error messages for malformed JSON\n- Specific error handling for missing files (\"Settings file not found: {path}\")\n- Default values applied via object spread: `{ ...DEFAULTS, ...settings }`\n- Named export as `{ loadSettings }`\n\nThe function will throw descriptive errors for missing files, invalid JSON, or read failures, and applies defaults only for missing keys."
+}

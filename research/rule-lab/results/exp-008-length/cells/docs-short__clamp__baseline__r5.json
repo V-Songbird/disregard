@@ -1,0 +1,33 @@
+{
+  "id": "docs-short__clamp__baseline__r5",
+  "intent": "docs-short",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:05:53.990Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028309900000000002,
+  "durationMs": 11332,
+  "responseTail": "Done. `clamp` limits a number to an inclusive range: it returns `min` if `n` is below, `max` if `n` is above, or `n` itself if it's within bounds."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__baseline__r17",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:41.141Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0282865,
+  "durationMs": 10914,
+  "responseTail": "Done. I've added `fetchUsers(baseUrl)` to src/api.js — it fetches from `${baseUrl}/api/users`, logs the count, and returns the parsed array."
+}

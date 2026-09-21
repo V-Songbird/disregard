@@ -1,0 +1,33 @@
+{
+  "id": "q8-long__clamp__baseline__r5",
+  "intent": "q8-long",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:24:09.867Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.11550649999999998,
+  "durationMs": 9381,
+  "responseTail": "Added `clamp` to `src/num.js` and exported it."
+}

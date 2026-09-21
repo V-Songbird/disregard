@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r8",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 8,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:21:54.733Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.040772199999999995,
+  "durationMs": 22143,
+  "responseTail": "ilePath)` with:\n\n- Synchronous file reading with `fs.readFileSync()`\n- JSON parsing with error handling for malformed JSON\n- Default application for missing keys using `Object.assign()`\n- Clear error messages: `TypeError` for missing files, `SyntaxError` for malformed JSON\n- Exported as a named export from the module\n\nThe function merges parsed settings with defaults (`{ theme: \"dark\", autosave: true }`), so any missing keys use their default values while explicit settings override the defaults."
+}

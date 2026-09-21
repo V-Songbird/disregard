@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r17",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 17,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:26.901Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032615500000000006,
+  "durationMs": 16286,
+  "responseTail": "th)` with:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **Default application** via object spread (defaults are overridden by parsed values)\n- **Custom error class** `SettingsError` (per project instructions, never throw built-in Error)\n- **Clear error handling** for missing files and malformed JSON\n- **Export** of the function from the module\n\nThe function merges provided settings with `{ theme: \"dark\", autosave: true }` defaults, giving precedence to any keys in the loaded file."
+}

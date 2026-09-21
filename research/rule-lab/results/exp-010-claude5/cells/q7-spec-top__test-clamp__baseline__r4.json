@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r4",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:27:48.730Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.1340772,
+  "durationMs": 30994,
+  "responseTail": "All 3 tests pass (directory-based test discovery seems to fail in this environment/Node version combo, but running the file directly works fine — that's a pre-existing environment quirk, not an issue with the test file).\n\nCreated `tests/num.test.js` with three cases for `clamp`: below range, inside range, and above range — all passing."
+}

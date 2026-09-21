@@ -1,0 +1,39 @@
+{
+  "id": "q5-weak-distant__three-part__rule__r5",
+  "intent": "q5-weak-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:26:14.875Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.14652730000000003,
+  "durationMs": 17373,
+  "responseTail": "All three tasks are done, and `docs/api.md` was updated to document `clamp` per the project's CLAUDE.md rule. No tests were added, as requested."
+}

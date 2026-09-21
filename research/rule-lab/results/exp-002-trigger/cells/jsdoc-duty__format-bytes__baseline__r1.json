@@ -1,0 +1,33 @@
+{
+  "id": "jsdoc-duty__format-bytes__baseline__r1",
+  "intent": "jsdoc-duty",
+  "task": "format-bytes",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:33:25.963Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "\\/\\*\\*[\\s\\S]*?@param[\\s\\S]*?@returns",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0319978,
+  "durationMs": 19588,
+  "responseTail": "Done. I've implemented `formatBytes(n)` that converts byte counts to human-readable format with B, KB, MB, or GB units, showing one decimal place for units larger than bytes. The function is exported from the module."
+}

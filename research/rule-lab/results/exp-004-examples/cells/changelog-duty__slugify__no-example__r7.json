@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__no-example__r7",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "no-example",
+  "rep": 7,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:54:13.517Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0274169,
+  "durationMs": 10864,
+  "responseTail": "Done. Implemented `slugify(title)` with the steps in order (lowercase, trim, space-runs to dashes, strip non-word characters) and exported it from the module."
+}

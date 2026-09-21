@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__positive__r2",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "positive",
+  "rep": 2,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:05:57.697Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0296666,
+  "durationMs": 13021,
+  "responseTail": "implemented `parseConfig(filePath)` with:\n\n- **Synchronous file reading** via `fs.readFileSync()`\n- **JSON parsing** with clear error messages for malformed JSON\n- **Default values** applied via nullish coalescing for `retries` (3) and `timeoutMs` (5000)\n- **Error handling** that distinguishes between missing files, read failures, and parse errors\n- **Export** added to module.exports\n\nThe function preserves any other config properties from the file while ensuring the defaults are always present."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r1",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:16:58.869Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.1217474,
+  "durationMs": 20235,
+  "responseTail": "All three tests pass. Created `tests/num.test.js` with three `node:test` cases for `clamp`: below-range, in-range, and above-range values, using `assert.deepStrictEqual` per the project's testing conventions. `src/num.js` was left unchanged."
+}

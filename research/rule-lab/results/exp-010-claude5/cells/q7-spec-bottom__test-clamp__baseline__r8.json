@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r8",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:26:40.779Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.11667159999999999,
+  "durationMs": 18637,
+  "responseTail": "All three tests pass. The earlier `node --test tests/` directory-mode failure appears to be an environment quirk (fnm/node path resolution against a bare directory arg), not a test issue — running the file directly works fine.\n\nAdded `tests/num.test.js` with three cases for `clamp`: below range, inside range, above range."
+}

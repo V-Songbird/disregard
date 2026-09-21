@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__rule__r10",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:22:34.936Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0455554,
+  "durationMs": 25023,
+  "responseTail": "nctions have been implemented:\n\n1. **`clamp(n, min, max)`** in src/num.js: Returns n clamped to the range [min, max] using Math.max and Math.min.\n\n2. **`formatBytes(n)`** in src/util.js: Converts byte counts to human-readable format (B, KB, MB, GB) with one decimal place for values ≥ 1024 bytes.\n\n3. **`loadSettings(filePath)`** in src/settings.js: Reads and parses a JSON settings file, applies defaults for missing keys, and throws AppError with clear messages for missing files or malformed JSON."
+}

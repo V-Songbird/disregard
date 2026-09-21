@@ -1,0 +1,33 @@
+{
+  "id": "docs-short__clamp__rule__r10",
+  "intent": "docs-short",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:06:23.696Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0398861,
+  "durationMs": 17288,
+  "responseTail": "Done. I've added the `clamp` function to src/num.js—it returns n bounded to [min, max] using early returns, and exported it from the module."
+}

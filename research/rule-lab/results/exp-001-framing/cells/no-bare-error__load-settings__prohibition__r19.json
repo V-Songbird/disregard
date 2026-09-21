@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r19",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 19,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:27:50.735Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032846700000000006,
+  "durationMs": 17542,
+  "responseTail": "Done. The function:\n- Reads the file synchronously with `fs.readFileSync`\n- Parses JSON and catches malformed input\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys using object spread\n- Throws a custom `SettingsError` with clear messages for missing files and parse errors\n- Exports it as a named export from the module"
+}

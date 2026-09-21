@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r10",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 10,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:21:31.504Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.037310699999999995,
+  "durationMs": 18992,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in `src/settings.js`. It reads the file synchronously, parses JSON, applies defaults for `theme` and `autosave`, and throws `AppError` with clear messages for missing files or malformed JSON."
+}

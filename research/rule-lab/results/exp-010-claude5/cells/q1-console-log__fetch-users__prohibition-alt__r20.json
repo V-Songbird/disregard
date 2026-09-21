@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__prohibition-alt__r20",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition-alt",
+  "rep": 20,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:37:12.147Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.06834080000000001,
+  "durationMs": 10460,
+  "responseTail": "Added `fetchUsers(baseUrl)` to src/api.js — it fetches `${baseUrl}/api/users`, parses the JSON array, logs the count via `log()` from `src/logger.js`, and returns the array. No tests added."
+}

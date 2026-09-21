@@ -1,0 +1,33 @@
+{
+  "id": "docs-short__clamp__rule__r9",
+  "intent": "docs-short",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:08:39.209Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.027564900000000003,
+  "durationMs": 12076,
+  "responseTail": "Done. I've implemented `clamp(n, min, max)` in `src/num.js` using a compact Math.max/Math.min approach that limits `n` to the inclusive range [min, max], and exported it from the module."
+}

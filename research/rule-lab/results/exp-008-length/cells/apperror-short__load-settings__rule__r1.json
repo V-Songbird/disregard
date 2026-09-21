@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r1",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 1,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:04:24.603Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0364972,
+  "durationMs": 19393,
+  "responseTail": " exist\n- **JSON parsing**: catches malformed JSON and throws `AppError` with code `SETTINGS_INVALID_JSON`\n- **Read error handling**: throws `AppError` with code `SETTINGS_READ_ERROR` for other file I/O issues\n- **Default application**: merges provided settings over defaults `{ theme: \"dark\", autosave: true }` so any user-provided keys override defaults\n- **Exported** from the module\n\nThe implementation follows the project style: uses AppError as specified in CLAUDE.md for failures in src/ files."
+}

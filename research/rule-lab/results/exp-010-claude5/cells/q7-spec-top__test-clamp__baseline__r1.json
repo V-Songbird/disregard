@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r1",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:29:17.116Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.132797,
+  "durationMs": 31479,
+  "responseTail": "All 3 tests pass. (The `tests/` directory-glob form fails on this Node build/environment, but pointing at the file directly works fine — that's an environment quirk, not an issue with the test file.)\n\nAdded `tests/num.test.js` covering `clamp` for below-range, in-range, and above-range values, per the project's testing conventions."
+}

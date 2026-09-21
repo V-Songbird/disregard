@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__baseline__r10",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:18:36.770Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0357539,
+  "durationMs": 17323,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n- **`clamp(n, min, max)`** in `src/num.js` — uses early returns to keep it simple\n- **`formatBytes(n)`** in `src/util.js` — divides by 1024 in a loop, formats with `toFixed(1)` for one decimal place\n- **`slugify(title)`** in `src/text.js` — chains: lowercase → trim → replace space runs with dashes → strip non-alphanumeric except dashes\n\nAll follow the project's code style (two-space indents, double quotes, semicolons, early returns)."
+}

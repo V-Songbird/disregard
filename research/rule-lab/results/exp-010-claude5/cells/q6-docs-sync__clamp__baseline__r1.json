@@ -1,0 +1,33 @@
+{
+  "id": "q6-docs-sync__clamp__baseline__r1",
+  "intent": "q6-docs-sync",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:24:30.441Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0657258,
+  "durationMs": 8071,
+  "responseTail": "Added and exported `clamp(n, min, max)` in src/num.js:2-8."
+}

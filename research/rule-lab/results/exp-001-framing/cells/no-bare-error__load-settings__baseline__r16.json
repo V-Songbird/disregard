@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r16",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:30.949Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0377097,
+  "durationMs": 16409,
+  "responseTail": "Done. `loadSettings(filePath)` is implemented with:\n- Synchronous file reading via `fs.readFileSync()`\n- Separate error handling for missing files (\"Settings file not found\") and malformed JSON (\"Settings file contains malformed JSON\")\n- Default values applied for `theme` and `autosave` when not in the file\n- Exported as a named export from the module"
+}

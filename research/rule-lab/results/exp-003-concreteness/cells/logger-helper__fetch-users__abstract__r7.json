@@ -1,0 +1,33 @@
+{
+  "id": "logger-helper__fetch-users__abstract__r7",
+  "intent": "logger-helper",
+  "task": "fetch-users",
+  "variant": "abstract",
+  "rep": 7,
+  "exp": "exp-003-concreteness",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:43:12.702Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0324631,
+  "durationMs": 13968,
+  "responseTail": "Done. I've added the `fetchUsers(baseUrl)` function that fetches the users API endpoint, parses the JSON, logs the count using the project's logger, and returns the array. The function is exported as part of the module."
+}

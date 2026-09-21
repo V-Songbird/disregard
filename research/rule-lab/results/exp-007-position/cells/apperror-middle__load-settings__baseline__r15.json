@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__baseline__r15",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:01:11.770Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0344153,
+  "durationMs": 19340,
+  "responseTail": "ynchronous file reading** using `fs.readFileSync`\n- **Error handling** for missing files (ENOENT) and read failures with clear error messages\n- **JSON parsing** with error handling for malformed JSON\n- **Default application** ({ theme: \"dark\", autosave: true }) that allows provided values to override defaults\n- **Proper export** as a named function\n\nThe function reads the file, parses it, merges with defaults (with provided values taking precedence), and throws descriptive errors on any failure."
+}

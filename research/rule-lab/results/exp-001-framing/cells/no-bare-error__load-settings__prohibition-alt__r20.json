@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r20",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 20,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:27.857Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0364319,
+  "durationMs": 17972,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n- Reads the file synchronously with `fs.readFileSync`\n- Throws `AppError` with code `FILE_NOT_FOUND` if the file is missing\n- Throws `AppError` with code `INVALID_JSON` if the JSON is malformed\n- Applies defaults `{ theme: \"dark\", autosave: true }` for missing keys\n- Exports the function as a named export"
+}

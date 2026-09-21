@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r16",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 16,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:47:47.665Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031533500000000006,
+  "durationMs": 15633,
+  "responseTail": "Done. The `loadSettings` function now:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- Throws a descriptive error if the file is missing (`ENOENT`)\n- Throws a descriptive error if JSON parsing fails\n- Exports from the module\n\nThe defaults spread first, then the parsed settings override them, so any keys in the file take precedence."
+}

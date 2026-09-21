@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r16",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 16,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:13:31.140Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0441206,
+  "durationMs": 23776,
+  "responseTail": "Done. All three functions are now exported:\n- **`clamp(n, min, max)`** in `src/num.js` — returns n constrained to [min, max]\n- **`formatBytes(n)`** in `src/util.js` — formats bytes as a human-readable string with B/KB/MB/GB and one decimal place\n- **`slugify(title)`** in `src/text.js` — lowercases, trims, converts space runs to dashes, and strips non-alphanumeric-dash characters"
+}

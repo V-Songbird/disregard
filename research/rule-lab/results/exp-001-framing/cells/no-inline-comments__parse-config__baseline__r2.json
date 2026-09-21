@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__baseline__r2",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:10:23.306Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.03834610000000001,
+  "durationMs": 16680,
+  "responseTail": "Done. The `parseConfig` function is now implemented and exported from `src/config.js`. It reads the file synchronously, parses JSON, applies defaults for missing keys (`retries: 3`, `timeoutMs: 5000`), and throws clear errors for missing or malformed files."
+}

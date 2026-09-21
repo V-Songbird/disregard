@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__example__r10",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "example",
+  "rep": 10,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:55:40.501Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0287762,
+  "durationMs": 13661,
+  "responseTail": "Done. Added `slugify(title)` to src/text.js that lowercases, trims, replaces space runs with dashes, and removes non-alphanumeric characters except dashes. Exported as a named export."
+}

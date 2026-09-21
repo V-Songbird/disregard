@@ -1,0 +1,33 @@
+{
+  "id": "docs-top__clamp__rule__r5",
+  "intent": "docs-top",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:00:15.802Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028842700000000002,
+  "durationMs": 14687,
+  "responseTail": "Done. Added `clamp(n, min, max)` to `src/num.js` with early returns for out-of-bounds values, exported from the module."
+}

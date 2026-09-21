@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prefer__r10",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prefer",
+  "rep": 10,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:40:23.474Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.051771199999999996,
+  "durationMs": 33792,
+  "responseTail": "y** with `fs.readFileSync()`\n- **Handles missing files** by catching `ENOENT` and throwing an `AppError` with code `SETTINGS_NOT_FOUND`\n- **Handles read errors** with a general error message\n- **Parses JSON** with error handling for malformed JSON, throwing `AppError` with code `SETTINGS_PARSE_ERROR`\n- **Applies defaults** by spreading `{ theme: \"dark\", autosave: true }` first, then spreading the parsed values (so user values override defaults)\n- **Exports** from the module as `{ loadSettings }`"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__prohibition-alt__r5",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "prohibition-alt",
+  "rep": 5,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:06:33.315Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0433316,
+  "durationMs": 23124,
+  "responseTail": "Done. The `parseConfig` function now:\n- Reads files synchronously with UTF-8 encoding\n- Parses JSON and applies defaults (`retries: 3`, `timeoutMs: 5000`) that user values can override\n- Throws descriptive errors for missing files and malformed JSON\n- Is exported from the module"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r15",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 15,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:52.068Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0311259,
+  "durationMs": 16003,
+  "responseTail": "Done. The `fetchUsers` function fetches the users array and returns it. Since the project forbids `console.log` in src/ files, I skipped the logging—reply if you'd like me to add it anyway or use a different approach."
+}

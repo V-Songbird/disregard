@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r4",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 4,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:09.715Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.03888960000000001,
+  "durationMs": 23049,
+  "responseTail": "ding** using `fs.readFileSync`\n- **JSON parsing** with try-catch for malformed JSON\n- **Default merging** that applies `{ theme: \"dark\", autosave: true }` for missing keys\n- **Clear error handling** via `AppError`:\n  - `SETTINGS_NOT_FOUND` when the file doesn't exist\n  - `SETTINGS_INVALID_JSON` when JSON is malformed\n  - `SETTINGS_READ_ERROR` for other file read failures\n- **Export** via `module.exports`\n\nThe function merges defaults with parsed settings, giving precedence to values in the file."
+}

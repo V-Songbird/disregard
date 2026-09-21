@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r9",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 9,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:22:07.507Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.10744000000000001,
+  "durationMs": 21031,
+  "responseTail": "All 3 tests pass. Created `tests/num.test.js` with happy-path and edge-case coverage for `clamp` (below range, inside range, above range), following the project's `node:test` conventions."
+}

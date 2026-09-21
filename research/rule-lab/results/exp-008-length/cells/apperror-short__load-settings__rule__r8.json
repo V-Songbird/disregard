@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r8",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:06.851Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0419195,
+  "durationMs": 22153,
+  "responseTail": "Done. The `loadSettings` function:\n- Reads the file synchronously with `fs.readFileSync`\n- Throws `AppError` with code `FILE_NOT_FOUND` if the file is missing\n- Throws `AppError` with code `FILE_READ_ERROR` for other read issues\n- Parses JSON and throws `AppError` with code `INVALID_JSON` if it's malformed\n- Merges parsed settings with defaults (`{ theme: \"dark\", autosave: true }`)\n- Exported as a named export from the module"
+}

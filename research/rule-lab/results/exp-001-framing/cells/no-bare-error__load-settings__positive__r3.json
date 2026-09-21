@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__positive__r3",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "positive",
+  "rep": 3,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:15:22.303Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0297701,
+  "durationMs": 12611,
+  "responseTail": "Done. Implemented `loadSettings(filePath)` in src/settings.js that reads and parses a settings file, applies defaults ({ theme: \"dark\", autosave: true }), and throws AppError with clear codes for missing files or malformed JSON."
+}

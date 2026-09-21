@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r2",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 2,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:00:45.426Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.04707130000000001,
+  "durationMs": 26338,
+  "responseTail": " the JSON content and catches malformed JSON with a clear error message\n- Distinguishes between file-not-found and other read errors\n- Applies the default settings (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- Throws `AppError` with descriptive codes and messages (`SETTINGS_NOT_FOUND`, `SETTINGS_READ_ERROR`, `SETTINGS_INVALID_JSON`)\n- Exports the function as a named export\n\nThe function merges user settings over defaults so that any keys provided in the file override the defaults."
+}

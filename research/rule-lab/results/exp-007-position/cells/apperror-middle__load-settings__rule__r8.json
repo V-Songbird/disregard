@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r8",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:53:21.588Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0384969,
+  "durationMs": 20706,
+  "responseTail": "js`. It:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Parses it as JSON, catching malformed JSON with a clear error\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys using spread operator merge\n- Throws `AppError` with machine-readable codes for missing files (`SETTINGS_NOT_FOUND`) and read/parse failures\n- Exports the function from the module\n\nThe function signature matches the project's error handling convention using `AppError` with a code and message."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "q4-examples__load-settings__no-example__r5",
+  "intent": "q4-examples",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:29:38.159Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.1230894,
+  "durationMs": 17511,
+  "responseTail": "Implemented `loadSettings(filePath)` in `src/settings.js`: it reads the file synchronously, throws `SETTINGS_FILE_NOT_FOUND:` if the file can't be read and `SETTINGS_INVALID_JSON:` if parsing fails (matching the project's error-code convention), then merges parsed values over `{ theme: \"dark\", autosave: true }` defaults and exports the function."
+}

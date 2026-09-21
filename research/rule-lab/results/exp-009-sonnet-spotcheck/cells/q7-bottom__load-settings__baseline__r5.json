@@ -1,0 +1,39 @@
+{
+  "id": "q7-bottom__load-settings__baseline__r5",
+  "intent": "q7-bottom",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:23:39.576Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.1426062,
+  "durationMs": 17701,
+  "responseTail": "`loadSettings` is implemented in src/settings.js:6, reading the file synchronously, merging parsed JSON over the `{ theme: \"dark\", autosave: true }` defaults, and throwing an `AppError` (from src/errors.js) with a clear message and code for missing files or malformed JSON. No tests added, per your request."
+}

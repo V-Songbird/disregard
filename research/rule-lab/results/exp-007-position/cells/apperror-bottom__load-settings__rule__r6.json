@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r6",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 6,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:49:07.440Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032100000000000004,
+  "durationMs": 15303,
+  "responseTail": "r malformed JSON\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys using object spread\n- Throws clear, descriptive errors:\n  - \"Settings file not found\" when the file doesn't exist\n  - \"Failed to read settings file\" for other read errors\n  - \"Invalid JSON in settings file\" for parse errors\n- Exports the function as part of the module's public surface\n\nThe implementation follows your project's conventions: const-by-default, early error handling, and focused function scope."
+}

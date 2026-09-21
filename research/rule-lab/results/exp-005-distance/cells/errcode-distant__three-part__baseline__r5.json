@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__baseline__r5",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:10:27.923Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0391401,
+  "durationMs": 21237,
+  "responseTail": "r GB with one decimal place, calculating the appropriate unit dynamically\n3. **`loadSettings(filePath)`** in src/settings.js — reads and parses JSON synchronously, applies defaults (`{ theme: \"dark\", autosave: true }`), and throws descriptive errors for missing or malformed files\n\nEach is exported from its module. All implementations handle edge cases: clamp preserves numeric type, formatBytes uses threshold comparison, and loadSettings distinguishes between file-not-found and JSON parse errors."
+}

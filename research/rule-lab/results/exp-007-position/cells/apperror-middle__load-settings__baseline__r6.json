@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__baseline__r6",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:48:30.815Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.045293200000000006,
+  "durationMs": 22287,
+  "responseTail": "ead** using `fs.readFileSync()`\n- **Error handling** for missing files (ENOENT) and file read failures, throwing `AppError` with machine-readable codes\n- **JSON parsing** with clear error messages for malformed JSON\n- **Default values** applied via object spread: `{ theme: \"dark\", autosave: true }` are overridden by any settings present in the file\n- **Export** as a named export from the module\n\nThe function uses the existing `AppError` class for consistent error handling throughout the project."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__positive__r14",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "positive",
+  "rep": 14,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:24:30.701Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.03955480000000001,
+  "durationMs": 19658,
+  "responseTail": "Done. The `loadSettings` function now:\n- Reads files synchronously with `fs.readFileSync`\n- Throws `AppError` with code `SETTINGS_FILE_NOT_FOUND` if the file doesn't exist\n- Throws `AppError` with code `SETTINGS_READ_ERROR` for other file-read issues\n- Throws `AppError` with code `SETTINGS_PARSE_ERROR` if JSON is malformed\n- Applies the default values (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- Is exported as a named export from the module"
+}

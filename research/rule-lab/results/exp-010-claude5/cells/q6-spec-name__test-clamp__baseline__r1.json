@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__baseline__r1",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:28:55.435Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.08812999999999999,
+  "durationMs": 13209,
+  "responseTail": "Added `test/num.test.js` with three cases (below, inside, above range) using `node:test`/`node:assert`. All 3 tests pass; `src/num.js` untouched."
+}

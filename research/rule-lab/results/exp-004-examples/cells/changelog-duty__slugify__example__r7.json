@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__example__r7",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "example",
+  "rep": 7,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:54:39.850Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0281164,
+  "durationMs": 10778,
+  "responseTail": "Done. `slugify` is now implemented in `src/text.js` and exported from the module."
+}

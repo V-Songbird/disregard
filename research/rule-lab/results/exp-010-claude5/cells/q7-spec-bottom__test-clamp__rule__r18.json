@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r18",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 18,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:25:16.914Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.09435700000000001,
+  "durationMs": 20147,
+  "responseTail": "Created `tests/num.spec.js` with three cases (below, inside, above range) and all pass."
+}

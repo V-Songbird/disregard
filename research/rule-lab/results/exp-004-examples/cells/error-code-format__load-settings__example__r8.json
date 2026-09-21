@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__example__r8",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "example",
+  "rep": 8,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:16.674Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0326788,
+  "durationMs": 17178,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in src/settings.js. It:\n\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses the JSON, throwing `E_INVALID_JSON` if malformed\n- Throws `E_NOT_FOUND` if the file is missing\n- Merges parsed settings with defaults (`{ theme: \"dark\", autosave: true }`), with user settings taking precedence\n- Exports the function from the module"
+}

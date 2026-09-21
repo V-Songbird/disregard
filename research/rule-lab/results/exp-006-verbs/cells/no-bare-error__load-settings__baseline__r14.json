@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r14",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:13.140Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0444185,
+  "durationMs": 27137,
+  "responseTail": "Done. The `loadSettings(filePath)` function:\n- Reads the file synchronously using `fs.readFileSync`\n- Catches file-not-found errors and uses `AppError` with code `SETTINGS_NOT_FOUND`\n- Catches JSON parse errors and throws `AppError` with code `SETTINGS_PARSE_ERROR`\n- Merges user settings over defaults (`{ theme: \"dark\", autosave: true }`) so any missing keys get default values\n- Exports as `module.exports = { loadSettings }`"
+}

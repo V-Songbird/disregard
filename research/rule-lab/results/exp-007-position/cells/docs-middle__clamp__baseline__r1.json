@@ -1,0 +1,33 @@
+{
+  "id": "docs-middle__clamp__baseline__r1",
+  "intent": "docs-middle",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:59:53.451Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0297817,
+  "durationMs": 12447,
+  "responseTail": "Done. Added `clamp(n, min, max)` to `src/num.js` — returns `n` limited to the range [min, max] using nested Math.max/Math.min, and exported it from the module."
+}

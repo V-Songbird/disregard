@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r9",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:37:38.989Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.1311278,
+  "durationMs": 24265,
+  "responseTail": "All 3 tests pass (directory-glob invocation seems to have an unrelated quirk on this Node build, but running the file directly confirms correctness).\n\nAdded `tests/num.spec.js` with three `node:test` cases for `clamp` — below range, in range, above range — using `assert.deepStrictEqual` per the project conventions. `src/num.js` untouched."
+}

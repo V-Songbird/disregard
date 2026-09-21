@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r2",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 2,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:06:39.526Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029654600000000003,
+  "durationMs": 14432,
+  "responseTail": "`loadSettings(filePath)` in `src/settings.js`:\n\n- **Synchronous file reading** with `fs.readFileSync`\n- **JSON parsing** with error handling for malformed input\n- **Default values** applied via spread operator (`{ ...DEFAULTS, ...parsed }`)\n- **Clear error messages** distinguishing between missing files and invalid JSON\n- **Exported** as a named export from the module\n\nThe defaults `{ theme: \"dark\", autosave: true }` are applied to any missing keys, and file values take precedence over defaults."
+}

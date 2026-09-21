@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r4",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 4,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:10:17.176Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 2,
+  "costUsd": 0.027775900000000003,
+  "durationMs": 15334,
+  "responseTail": "The file is currently a stub. Before I add the function, should I include the logging despite the project rule against `console.log` in src/, or would you prefer to skip the logging part?"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r5",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:04:19.504Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029457599999999997,
+  "durationMs": 13322,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Error handling** for missing files (ENOENT) and malformed JSON with clear messages\n- **Default application** via spread operator: defaults are overridden by any parsed settings, so only missing keys get defaults\n- **Module export** as a named export\n\nThe function throws descriptive errors when the file is missing or JSON is invalid, and returns the merged settings object."
+}

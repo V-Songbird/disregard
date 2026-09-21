@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__positive__r5",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "positive",
+  "rep": 5,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:06:56.443Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0396993,
+  "durationMs": 19790,
+  "responseTail": "Done. I've implemented `parseConfig(filePath)` in src/config.js with synchronous file reading, JSON parsing, default values applied for missing keys (retries: 3, timeoutMs: 5000), and clear error handling for missing or malformed files. The function is exported as a named export."
+}

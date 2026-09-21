@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r18",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:20:23.807Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0387329,
+  "durationMs": 20265,
+  "responseTail": "`clamp(n, min, max)`** in src/num.js — uses `Math.max` and `Math.min` to constrain the value to [min, max]\n2. **`formatBytes(n)`** in src/util.js — divides by 1024 iteratively and formats with one decimal place (except for bytes)\n3. **`loadSettings(filePath)`** in src/settings.js — synchronously reads and parses JSON, applies defaults for `theme` (\"dark\") and `autosave` (true), and throws `AppError` with specific codes for missing files or parse errors\n\nAll three are exported from their modules."
+}

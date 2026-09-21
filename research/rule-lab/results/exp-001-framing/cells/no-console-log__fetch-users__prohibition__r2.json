@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r2",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 2,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:06:08.471Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0396508,
+  "durationMs": 21941,
+  "responseTail": "Done. I've added the `fetchUsers(baseUrl)` function to `src/api.js` that fetches the users array, logs the count using the project's structured logger (avoiding `console.log` per the project rules), and exports it."
+}

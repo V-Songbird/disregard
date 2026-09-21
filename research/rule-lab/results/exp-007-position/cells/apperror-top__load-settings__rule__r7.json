@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r7",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 7,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:02:42.649Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0389841,
+  "durationMs": 20660,
+  "responseTail": ":\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Error handling** for missing files (ENOENT) and other read failures\n- **JSON parsing** with clear error messages for malformed JSON\n- **Default values** applied via object spread: `{ theme: \"dark\", autosave: true }`\n- **AppError exceptions** with descriptive error codes for clarity\n- **Proper export** from the module\n\nThe function applies defaults first, then merges in parsed values, so any keys in the JSON file override the defaults."
+}

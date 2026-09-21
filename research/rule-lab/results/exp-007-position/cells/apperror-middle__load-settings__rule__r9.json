@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r9",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:59:46.657Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0383057,
+  "durationMs": 22730,
+  "responseTail": "Done. The `loadSettings(filePath)` function:\n\n- **Reads synchronously** via `fs.readFileSync()`\n- **Handles missing files** with an `AppError` (code: `SETTINGS_NOT_FOUND`)\n- **Handles malformed JSON** with an `AppError` (code: `SETTINGS_INVALID_JSON`)  \n- **Applies defaults** (`theme: \"dark\"`, `autosave: true`) for missing keys using spread\n- **Exports** as a named export following the project's module pattern\n\nIt uses the project's `AppError` convention for clear, machine-readable failures."
+}

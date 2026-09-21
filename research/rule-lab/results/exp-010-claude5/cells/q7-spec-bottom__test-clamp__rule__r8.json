@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r8",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:33:19.831Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.1567236,
+  "durationMs": 40666,
+  "responseTail": ". The `node --test tests/` auto-discovery glob doesn't match `.spec.js` files in this Node version — that's a pre-existing project/tooling quirk, not something introduced by this test file, so I've left it as is per instructions not to touch anything outside the test.\n\nAdded `tests/num.spec.js` with three `node:test` cases for `clamp`: below range (clamps to min), inside range (unchanged), and above range (clamps to max). Verified by running `node --test tests/num.spec.js` directly — all 3 pass."
+}

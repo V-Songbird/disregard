@@ -1,0 +1,39 @@
+{
+  "id": "q1-bare-error__load-settings__baseline__r5",
+  "intent": "q1-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-010-pilot",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:13:02.422Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.08331700000000002,
+  "durationMs": 12562,
+  "responseTail": "Implemented `loadSettings(filePath)` in `src/settings.js`, using the existing `AppError` type for missing-file and malformed-JSON cases, and merging defaults (`theme: \"dark\"`, `autosave: true`) with the parsed content."
+}

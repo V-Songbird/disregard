@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r5",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 5,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:36:19.429Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.03687580000000001,
+  "durationMs": 19754,
+  "responseTail": "s.readFileSync`\n- Parses as JSON with dedicated error handling for malformed JSON\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys\n- Throws `AppError` with clear, machine-readable codes:\n  - `SETTINGS_FILE_NOT_FOUND` if the file doesn't exist\n  - `SETTINGS_READ_ERROR` for other file read failures\n  - `SETTINGS_PARSE_ERROR` for invalid JSON\n- Exported from the module\n\nThe function merges loaded settings with defaults, so any keys present in the file override the defaults."
+}

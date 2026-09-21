@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r13",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 13,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:36.810Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0357695,
+  "durationMs": 17936,
+  "responseTail": "Done. The `loadSettings()` function now:\n- Reads the file synchronously with `fs.readFileSync`\n- Parses JSON and merges with defaults (`{ theme: \"dark\", autosave: true }`)\n- Throws `AppError` with code `SETTINGS_NOT_FOUND` if the file doesn't exist\n- Throws `AppError` with code `SETTINGS_PARSE_ERROR` if JSON is malformed\n- Exports as a named export following project conventions"
+}

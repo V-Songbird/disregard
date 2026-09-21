@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__prohibition__r15",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 15,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:20:37.925Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.07993220000000001,
+  "durationMs": 17301,
+  "responseTail": "Added `fetchUsers(baseUrl)` to `src/api.js:1`, which fetches `${baseUrl}/api/users`, parses the JSON array, logs the count via the existing `src/logger.js` helper (since `console.log` is disallowed in `src/`), and returns the array. Exported from the module; no tests added."
+}

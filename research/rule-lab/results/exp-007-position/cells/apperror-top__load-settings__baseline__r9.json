@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r9",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 9,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:47:30.174Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0340954,
+  "durationMs": 17485,
+  "responseTail": "ator: applies `{ theme: \"dark\", autosave: true }` for any missing keys\n- **Clear error messages** for:\n  - Missing file: `\"Settings file not found: [path]\"`\n  - JSON parsing failure: `\"Invalid JSON in settings file: [error message]\"`\n  - Other read errors: `\"Failed to read settings file: [error message]\"`\n- **Exported** as a named export from the module\n\nThe function merges defaults with parsed settings, so any keys in the file override the defaults while missing keys inherit the default values."
+}

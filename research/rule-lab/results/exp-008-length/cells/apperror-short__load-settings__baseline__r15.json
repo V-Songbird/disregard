@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r15",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:39.252Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0320984,
+  "durationMs": 16830,
+  "responseTail": " with the following features:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **Default values** applied for missing keys: `{ theme: \"dark\", autosave: true }`\n- **Clear error messages** for missing files and malformed JSON\n- **Proper merging** of parsed settings with defaults (parsed values take precedence)\n- **Exported** from the module as `{ loadSettings }`\n\nThe function distinguishes between ENOENT (file not found) and other read errors, and wraps JSON parsing errors with context."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__baseline__r14",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:24:06.077Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0659132,
+  "durationMs": 10068,
+  "responseTail": "Added `fetchUsers(baseUrl)` to `src/api.js`, exported alongside the existing empty exports object."
+}

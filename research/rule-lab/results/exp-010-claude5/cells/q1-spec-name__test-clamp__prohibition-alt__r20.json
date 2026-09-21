@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r20",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 20,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:22:05.782Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.14189,
+  "durationMs": 35110,
+  "responseTail": "→ unchanged, above range → `max`), verified with:\n\n```\nnode --test src/num.spec.js\n```\n→ 3/3 pass. `src/num.js` was left untouched.\n\nNote: bare `node --test` (no path) finds 0 files, since Node's default test-runner glob doesn't match `*.spec.js` — only `*.test.js`/`*-test.js`/files under a `test/` dir. Since the project convention requires `.spec.js` naming, you'll need to invoke it explicitly (as above) or add a `test` script/glob in `package.json` if you want bare `node --test` to pick it up."
+}

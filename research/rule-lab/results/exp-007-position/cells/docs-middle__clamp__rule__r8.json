@@ -1,0 +1,33 @@
+{
+  "id": "docs-middle__clamp__rule__r8",
+  "intent": "docs-middle",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:51:44.297Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030129100000000006,
+  "durationMs": 12631,
+  "responseTail": "Done. I've added the `clamp` function to `src/num.js` that returns n limited to the inclusive range [min, max], and exported it from the module."
+}

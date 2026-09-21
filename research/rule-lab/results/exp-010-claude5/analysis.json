@@ -1,0 +1,220 @@
+{
+  "exp": "exp-010-claude5",
+  "generatedAt": "2026-08-26T05:38:54.622Z",
+  "cells": 440,
+  "usable": 436,
+  "intents": {
+    "q1-console-log": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "prohibition": {
+          "n": 20,
+          "mean": 0.6,
+          "lift": 0.6,
+          "ci95": [
+            0.4,
+            0.8
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prohibition-alt": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "positive": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q1-spec-name": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "prohibition": {
+          "n": 18,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prohibition-alt": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "positive": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q6-docs-sync": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "strong": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prefer": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q6-spec-name": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "strong": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prefer": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q7-docs-top": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q7-docs-bottom": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q7-spec-top": {
+      "baseline": {
+        "n": 19,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "q7-spec-bottom": {
+      "baseline": {
+        "n": 19,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    }
+  }
+}

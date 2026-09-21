@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r8",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:35:08.547Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.132782,
+  "durationMs": 27655,
+  "responseTail": "No test script configured, and Node's default `node --test` glob doesn't pick up `.spec.js` files — it only runs when the path is given explicitly (as I just verified). That's just how this project's convention works; I won't add scripts or rename files since that wasn't asked.\n\nCreated `src/num.spec.js` with three `node:test` cases for `clamp` (below range, inside range, above range). Verified with `node --test src/num.spec.js` — all 3 pass. `src/num.js` was left unchanged."
+}

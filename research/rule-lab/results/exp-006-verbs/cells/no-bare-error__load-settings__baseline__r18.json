@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r18",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:35.813Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0342449,
+  "durationMs": 19475,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` with:\n- Synchronous file reading using `fs.readFileSync()`\n- JSON parsing with clear error messages for malformed JSON\n- A specific error for missing files\n- Default values applied for `theme` and `autosave` that are overridden by parsed values\n- Proper module export"
+}

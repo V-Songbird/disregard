@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r12",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 12,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:13:55.175Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.045502600000000004,
+  "durationMs": 25370,
+  "responseTail": "ns.\n\n2. **`formatBytes(n)`** in src/util.js — formats byte counts as B, KB, MB, or GB with one decimal place, using tiered thresholds at 1024-byte boundaries.\n\n3. **`slugify(title)`** in src/text.js — lowercases, trims, converts space runs to dashes, and strips all non-alphanumeric and non-dash characters in a single chain.\n\nAll follow the project's style guidelines: two-space indentation, double quotes, semicolons, and functions under 40 lines. Each is exported in its module's `module.exports`."
+}

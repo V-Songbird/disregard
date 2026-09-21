@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r11",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 11,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:38:19.370Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0319338,
+  "durationMs": 21302,
+  "responseTail": "ented `loadSettings(filePath)` with:\n\n- Synchronous file reading via `fs.readFileSync`\n- JSON parsing with error handling\n- Default values (`theme: \"dark\"`, `autosave: true`) applied for any missing keys\n- Clear error messages for missing files (\"Settings file not found: {path}\") and malformed JSON (\"Invalid JSON in settings file: {details}\")\n- Exported from the module as `{ loadSettings }`\n\nThe function merges defaults with parsed settings, so any keys present in the file override the defaults."
+}

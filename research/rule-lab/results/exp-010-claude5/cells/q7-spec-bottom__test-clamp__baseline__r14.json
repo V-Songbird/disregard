@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r14",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:24:13.007Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.15016839999999998,
+  "durationMs": 29427,
+  "responseTail": "All 3 tests pass (directory-argument invocation appears to have an environment-specific quirk, but the test file itself runs cleanly).\n\nAdded `tests/num.test.js` with three `node:test` cases for `clamp` — below range, inside range, and above range — using `assert.deepStrictEqual` per the project's testing conventions. `src/num.js` was not modified."
+}

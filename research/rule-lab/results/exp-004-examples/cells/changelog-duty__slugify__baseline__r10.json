@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__baseline__r10",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:57:32.601Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.027705,
+  "durationMs": 12658,
+  "responseTail": "Done. I've added the `slugify` function to src/text.js that lowercases, trims, replaces space runs with dashes, and removes non-alphanumeric/dash characters. It's exported from the module."
+}

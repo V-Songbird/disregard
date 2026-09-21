@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r18",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 18,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:02:58.166Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.03321260000000001,
+  "durationMs": 18156,
+  "responseTail": "The `loadSettings(filePath)` function is now implemented in src/settings.js with:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **Error handling** for missing files (FILE_NOT_FOUND) and read failures (FILE_READ_ERROR)\n- **JSON parsing** with INVALID_JSON error for malformed content\n- **Default values** applied via object spread: `{ theme: \"dark\", autosave: true }`\n- **Error codes** in uppercase snake-case format per project conventions\n- **Export** as a named export from the module"
+}

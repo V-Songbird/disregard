@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r15",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:12:19.458Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.04440500000000001,
+  "durationMs": 22874,
+  "responseTail": "All three functions are now implemented and exported:\n\n1. **`formatBytes(n)`** in `src/util.js` — Converts bytes to B, KB, MB, or GB with one decimal place\n2. **`slugify(title)`** in `src/text.js` — Lowercases, trims, replaces space runs with dashes, strips non-alphanumeric and non-dash characters\n3. **`fetchUsers(baseUrl)`** in `src/api.js` — Fetches users from `/api/users`, logs the count, and returns the array\n\nDone."
+}

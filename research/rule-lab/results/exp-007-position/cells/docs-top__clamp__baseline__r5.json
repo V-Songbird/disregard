@@ -1,0 +1,33 @@
+{
+  "id": "docs-top__clamp__baseline__r5",
+  "intent": "docs-top",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:01:29.703Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028869300000000004,
+  "durationMs": 11791,
+  "responseTail": "Done. Added `clamp(n, min, max)` to `src/num.js` with early returns for the boundary conditions, exported from the module."
+}

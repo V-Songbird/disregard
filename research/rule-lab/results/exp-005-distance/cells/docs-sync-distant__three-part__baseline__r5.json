@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-distant__three-part__baseline__r5",
+  "intent": "docs-sync-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:17:22.215Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0329821,
+  "durationMs": 14361,
+  "responseTail": "Done. Task 1: `formatBytes` now throws TypeError for non-numbers or negative values. Task 2: `slugify` collapses consecutive dashes. Task 3: `clamp` implemented and exported."
+}

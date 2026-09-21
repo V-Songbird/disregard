@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r18",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:25.985Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0320247,
+  "durationMs": 18779,
+  "responseTail": "tings(filePath)` with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** ({ theme: \"dark\", autosave: true }) applied for missing keys via the spread operator\n- **Clear error messages** for missing files and invalid JSON\n- **Proper export** as a named export from the module\n\nThe function merges the parsed JSON with defaults, so any keys in the file override the defaults, while missing keys get the default values."
+}

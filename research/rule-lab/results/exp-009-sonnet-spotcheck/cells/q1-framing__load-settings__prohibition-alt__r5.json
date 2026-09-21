@@ -1,0 +1,39 @@
+{
+  "id": "q1-framing__load-settings__prohibition-alt__r5",
+  "intent": "q1-framing",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:25:22.669Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.11961669999999999,
+  "durationMs": 13139,
+  "responseTail": "Implemented `loadSettings` in src/settings.js: reads the file synchronously, throws `AppError` (with codes `SETTINGS_NOT_FOUND` / `SETTINGS_INVALID_JSON`) on read or parse failure, and merges parsed JSON over the `{ theme: \"dark\", autosave: true }` defaults."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r7",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 7,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:55:12.101Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.04613840000000001,
+  "durationMs": 29370,
+  "responseTail": "c`\n- Parses it as JSON with error handling\n- Applies default settings `{ theme: \"dark\", autosave: true }` for missing keys\n- Throws `AppError` with clear messages for missing files (`SETTINGS_NOT_FOUND`) or malformed JSON (`SETTINGS_PARSE_ERROR`)\n- Follows the project's conventions: `\"use strict\"`, two-space indentation, double quotes, and uses the `AppError` type from `src/errors.js`\n\nThe function spreads defaults first, then the parsed config, so any user-provided values override the defaults."
+}

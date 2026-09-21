@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r3",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:25:34.990Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.1507888,
+  "durationMs": 30996,
+  "responseTail": "All three tests pass (targeting the file directly worked around a directory-arg quirk on this Node/Windows setup). `src/num.js` was untouched.\n\nAdded `tests/num.test.js` with three `node:test` cases for `clamp`: below range → clamps to min, inside range → unchanged, above range → clamps to max."
+}

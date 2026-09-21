@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__prohibition__r2",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 2,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:21:31.561Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0913458,
+  "durationMs": 15485,
+  "responseTail": "Added `fetchUsers(baseUrl)` to `src/api.js:5-11`, exported it, and used the project's existing `src/logger.js` helper for the count log since `console.log` is disallowed in `src/`. No tests added."
+}

@@ -1,7 +1,7 @@
 "use strict";
-// The labelled set: every worked example in assay/references/rubrics.md that
-// carries an explicit F3 target, plus its rubric level. These are the only F3
-// cases anywhere with a stated ground truth.
+// The labelled set: every worked example in research/rubrics.md that carries an
+// explicit F3 target, plus its rubric level. These are the only F3 cases
+// anywhere with a stated ground truth.
 const LABELLED = [
   { id: "getProjectCommands", level: 4, target: 0.95, text: "Use `getProjectCommands(project)` not `.database.commands`" },
   { id: "barrel-imports",     level: 4, target: 0.95, text: "Each test file must import from the module it tests, not from barrel exports" },

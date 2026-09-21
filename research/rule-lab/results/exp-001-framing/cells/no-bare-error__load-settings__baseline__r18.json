@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r18",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:23:52.937Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031618900000000005,
+  "durationMs": 15827,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **File not found handling** — specific error message for missing files (ENOENT)\n- **JSON parsing with error handling** — catches malformed JSON and includes the parse error\n- **Default application** — merges defaults (`theme: \"dark\"`, `autosave: true`) with loaded settings, allowing the file to override defaults\n- **Named export** — available as `{ loadSettings }` from the module"
+}

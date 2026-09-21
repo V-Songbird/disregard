@@ -1,0 +1,33 @@
+{
+  "id": "jsdoc-duty__format-bytes__no-trigger__r6",
+  "intent": "jsdoc-duty",
+  "task": "format-bytes",
+  "variant": "no-trigger",
+  "rep": 6,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:35:13.563Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "\\/\\*\\*[\\s\\S]*?@param[\\s\\S]*?@returns",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030617199999999997,
+  "durationMs": 14838,
+  "responseTail": "Done. The `formatBytes` function converts byte counts to human-readable strings with B, KB, MB, or GB units at one decimal place—1536 bytes formats as \"1.5 KB\"."
+}

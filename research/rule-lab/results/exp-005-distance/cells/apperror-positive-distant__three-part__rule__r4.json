@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__rule__r4",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 4,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:20:50.068Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.048409299999999995,
+  "durationMs": 28103,
+  "responseTail": "`clamp(n, min, max)`** in `src/num.js` — returns n limited to the inclusive range [min, max]\n2. **`formatBytes(n)`** in `src/util.js` — formats byte counts as human-readable strings with one decimal place (B, KB, MB, GB using 1000-byte units)\n3. **`loadSettings(filePath)`** in `src/settings.js` — reads and parses JSON file, applies defaults for `theme` and `autosave`, and throws `AppError` with clear codes for missing files or malformed JSON\n\nAll three are exported from their respective modules."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r10",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:20:30.630Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0357261,
+  "durationMs": 19183,
+  "responseTail": "e inclusive range [min, max] using early returns.\n- **`formatBytes(n)`** in src/util.js: Formats byte counts as B, KB, MB, or GB with one decimal place using conditional returns for each threshold.\n- **`slugify(title)`** in src/text.js: Converts titles to URL slugs by trimming, lowercasing, replacing space runs with dashes, and stripping non-alphanumeric/dash characters.\n\nAll functions are exported and follow the project's code style (two-space indentation, const, early returns, under 40 lines)."
+}

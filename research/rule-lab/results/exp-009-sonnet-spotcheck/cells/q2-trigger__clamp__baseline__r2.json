@@ -1,0 +1,33 @@
+{
+  "id": "q2-trigger__clamp__baseline__r2",
+  "intent": "q2-trigger",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:28:48.665Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.1066917,
+  "durationMs": 7750,
+  "responseTail": "Added `clamp` to `src/num.js`, exported via `module.exports`."
+}

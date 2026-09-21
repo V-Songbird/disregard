@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r5",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:04:44.001Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0318572,
+  "durationMs": 15829,
+  "responseTail": "ed `loadSettings(filePath)` with the following behavior:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Missing file handling** — catches ENOENT and throws: `Settings file not found: {filePath}`\n- **Malformed JSON handling** — catches parse errors and throws: `Invalid JSON in settings file: {error}`\n- **Default merging** — applies defaults `{ theme: \"dark\", autosave: true }` for missing keys, with loaded settings taking precedence\n- **Named export** — available as `{ loadSettings }`"
+}

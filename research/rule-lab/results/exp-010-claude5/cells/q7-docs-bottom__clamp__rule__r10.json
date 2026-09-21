@@ -1,0 +1,33 @@
+{
+  "id": "q7-docs-bottom__clamp__rule__r10",
+  "intent": "q7-docs-bottom",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:33:31.658Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.09266320000000001,
+  "durationMs": 13667,
+  "responseTail": "Added `clamp` to `src/num.js` and documented it in `docs/api.md` (no tests, as requested)."
+}

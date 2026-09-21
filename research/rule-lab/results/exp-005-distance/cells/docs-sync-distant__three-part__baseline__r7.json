@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-distant__three-part__baseline__r7",
+  "intent": "docs-sync-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:16:10.475Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0336049,
+  "durationMs": 17945,
+  "responseTail": "Done. All three changes made:\n\n1. **src/util.js**: Added type and range validation to throw TypeError if n is negative or not a number\n2. **src/text.js**: Added dash-collapsing step (`.replace(/-+/g, \"-\")`) to collapse consecutive dashes\n3. **src/num.js**: Implemented and exported `clamp(n, min, max)` function"
+}

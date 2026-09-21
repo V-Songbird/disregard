@@ -12,8 +12,10 @@ characters max. The full picture is in [README.md](README.md).
 | Local server | `npx --yes wrangler dev` |
 | Deploy | `npx --yes wrangler deploy` |
 
-The check is the whole check: 47 tests, no key, no cost, three lines of output.
-Drop `--test-reporter=dot` to see every test name and the `# pass 47` summary.
+The check is the whole check: 57 tests, no key, no cost, three lines of output.
+Drop `--test-reporter=dot` to see every test name and the `# pass 57` summary.
+Ten of those are the research harness in [research/](research/), which runs
+here so it cannot rot unnoticed.
 There is no `package.json` and no build step, which is deliberate. The Node
 version is pinned in [.nvmrc](.nvmrc).
 
@@ -21,7 +23,8 @@ version is pinned in [.nvmrc](.nvmrc).
 
 [lib/](lib/) holds the scoring and its tests, [api/score.js](api/score.js) is
 the only server-side piece, [worker.js](worker.js) is the Cloudflare entry
-point, [public/](public/) is the page, [eval/](eval/) the labelled sets and
+point, [public/](public/) is the page, [eval/](eval/) the labelled sets,
+[research/](research/) the harness and rubric the thresholds came from, and
 [docs/](docs/) the reasoning behind every threshold. The per-file table is in
 [README.md](README.md#where-things-live).
 
@@ -50,5 +53,9 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
   promoting a guard back to a measurement.
 - **Every eval harness except `det-eval.js` spends real money per run.** Read
   [eval/README.md](eval/README.md) before running one.
+- **`research/rule-lab` spends real money too, and more of it.** Each cell is a
+  live `claude -p` session on the contributor's own login. The whole existing
+  corpus cost $111.61. Check the cell count with `--dry-run` and smoke one cell
+  with `--limit 1` before launching a run.
 - **Thresholds live in [lib/analyze.js](lib/analyze.js)** beside the document
   that measured them. Change the document in the same commit.

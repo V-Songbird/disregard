@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r12",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 12,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:26:59.420Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.13289399999999998,
+  "durationMs": 22032,
+  "responseTail": "All 3 tests pass. (Interesting: `node --test tests/` doesn't pick up the directory in this Bash/Git-Bash environment on Windows — it treats `tests` as a script path — but pointing directly at the file works fine, which is what matters for verification.)\n\nAdded `tests/num.test.js` covering below-range, in-range, and above-range cases for `clamp`, using `assert.deepStrictEqual` and sentence-style test names per project conventions. `src/num.js` was not modified."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r18",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 18,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:31:16.670Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.08853839999999999,
+  "durationMs": 15825,
+  "responseTail": "Added `test/num.spec.js` with three cases (below, inside, above range); all pass under `node --test`."
+}

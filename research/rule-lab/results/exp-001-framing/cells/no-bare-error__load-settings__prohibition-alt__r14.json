@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r14",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 14,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:23:52.965Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.034972,
+  "durationMs": 16159,
+  "responseTail": "formed JSON\n- **Default application** using `Object.assign` to merge defaults with parsed settings\n- **Clear error handling** using `AppError` with specific codes:\n  - `SETTINGS_NOT_FOUND` for missing files\n  - `SETTINGS_READ_ERROR` for file read failures\n  - `SETTINGS_INVALID_JSON` for malformed JSON\n- **Export** via `module.exports`\n\nThe function merges defaults (`{ theme: \"dark\", autosave: true }`) with the parsed file content, so missing keys use defaults while provided values override them."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__positive__r17",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "positive",
+  "rep": 17,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:36:04.955Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0694306,
+  "durationMs": 10585,
+  "responseTail": "Added `fetchUsers(baseUrl)` to `src/api.js:5-11`, which fetches `${baseUrl}/api/users`, logs the count via `log()`, and returns the parsed array. No tests added, as requested."
+}

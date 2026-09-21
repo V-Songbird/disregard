@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r20",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:40:36.084Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030364300000000004,
+  "durationMs": 15936,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` that:\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses JSON and merges with defaults `{ theme: \"dark\", autosave: true }`\n- Throws descriptive errors: `\"Settings file not found\"` for missing files and `\"Invalid JSON in settings file\"` for parse failures\n- Exports the function as a named export"
+}

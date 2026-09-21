@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r3",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 3,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:15:34.920Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.040790599999999996,
+  "durationMs": 21155,
+  "responseTail": "Done. The function:\n- Reads the file synchronously with `fs.readFileSync`\n- Throws `AppError` with code `SETTINGS_NOT_FOUND` if the file doesn't exist\n- Throws `AppError` with code `SETTINGS_PARSE_ERROR` if JSON parsing fails\n- Merges parsed settings with defaults (`{ theme: \"dark\", autosave: true }`), with parsed values overriding defaults\n- Exports it as a named export"
+}

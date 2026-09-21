@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r2",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:14:00.088Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0317017,
+  "durationMs": 22150,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` that:\n- Reads the file synchronously with `fs.readFileSync`\n- Parses as JSON and catches malformed JSON with a clear error message\n- Throws a specific error when the file is missing\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys by spreading defaults first, then the parsed settings\n- Exports the function from the module"
+}

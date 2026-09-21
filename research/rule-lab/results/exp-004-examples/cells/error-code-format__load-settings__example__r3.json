@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__example__r3",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "example",
+  "rep": 3,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:10.681Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029962600000000002,
+  "durationMs": 15507,
+  "responseTail": "lemented `loadSettings(filePath)` with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Default merging** via spread operator: `{ ...DEFAULTS, ...parsed }`\n- **Error handling** with proper error codes per project convention:\n  - `E_NOT_FOUND: settings file missing` when file doesn't exist\n  - `E_FILE_READ: failed to read settings file` for other I/O errors\n  - `E_INVALID_JSON: settings file contains invalid JSON` for parse failures\n- **Exported** from the module as `{ loadSettings }`"
+}

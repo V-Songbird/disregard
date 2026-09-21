@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r6",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:24:12.548Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.1081558,
+  "durationMs": 21839,
+  "responseTail": "All 3 tests pass. Created `tests/num.js` with tests for below-range, in-range, and above-range values for `clamp`, following the project's `node:test` conventions and sentence-style test names. Note: `node --test tests/` (directory form) fails to resolve in this Bash/Git-Bash environment, but `node --test tests/num.js` runs cleanly — worth using the file form or verifying the directory form in your actual PowerShell shell."
+}

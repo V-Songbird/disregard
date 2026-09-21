@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r13",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 13,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:28.405Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 1,
+  "costUsd": 0.0218175,
+  "durationMs": 12734,
+  "responseTail": "I notice the project's CLAUDE.md says \"Never use `console.log` in src/ files,\" but your request asks to log how many users were fetched. How would you like me to handle the count — should I return it in a separate property/structure, skip the logging, or override the guideline for this case?"
+}

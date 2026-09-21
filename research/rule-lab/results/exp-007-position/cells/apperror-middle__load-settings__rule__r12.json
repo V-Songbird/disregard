@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r12",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 12,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:56:24.765Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.039526900000000004,
+  "durationMs": 24803,
+  "responseTail": ")` in `src/settings.js` with:\n\n- Synchronous file reading via `fs.readFileSync()`\n- JSON parsing with error handling for malformed content\n- Default values applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- Clear `AppError` messages for missing files and JSON parse failures\n- Exported as a named export\n\nThe function follows your project's conventions: two-space indentation, double quotes, early-return error handling, and uses `AppError` from `src/errors.js` as specified in CLAUDE.md."
+}

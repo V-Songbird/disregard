@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r18",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 18,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:54:34.357Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.043475799999999995,
+  "durationMs": 23143,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n- Reads the file synchronously using `fs.readFileSync`\n- Throws `AppError` with code `SETTINGS_FILE_NOT_FOUND` if the file doesn't exist\n- Throws `AppError` with code `SETTINGS_READ_ERROR` for other read failures\n- Throws `AppError` with code `SETTINGS_INVALID_JSON` if JSON parsing fails\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- Exports the function as a named export"
+}

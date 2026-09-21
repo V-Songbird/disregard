@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__example__r14",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "example",
+  "rep": 14,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:54:27.714Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028251,
+  "durationMs": 12131,
+  "responseTail": "Done. Implemented `slugify` in src/text.js with the four transformations chained: lowercase, trim, replace space runs with dashes, and strip non-alphanumeric/dash characters. It's exported from the module."
+}

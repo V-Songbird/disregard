@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r19",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:26:10.544Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.12230400000000001,
+  "durationMs": 29070,
+  "responseTail": "All 3 tests pass. (Running `node --test tests/` with a trailing slash fails to resolve the directory on this Node/Windows setup — pointing at the file directly works fine, and CI presumably uses a glob or file list.)\n\nCreated `tests/num.test.js` with three `node:test` cases for `clamp`: below range, inside range, and above range, using `assert.deepStrictEqual` per the project conventions. `src/num.js` was not touched."
+}

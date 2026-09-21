@@ -1,0 +1,33 @@
+{
+  "id": "docs-short__clamp__baseline__r1",
+  "intent": "docs-short",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:05:25.314Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0269688,
+  "durationMs": 11473,
+  "responseTail": "Done. `clamp` is implemented and exported from the module. It returns n limited to the inclusive range [min, max]."
+}

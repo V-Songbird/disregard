@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r17",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 17,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:30:53.513Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.11847840000000001,
+  "durationMs": 22806,
+  "responseTail": "All 3 tests pass. Added `src/num.spec.js` with tests for `clamp` covering below-range, in-range, and above-range values, using `node:test`/`node:assert`. Note: bare `node --test` finds nothing since Node's default test glob doesn't match `*.spec.js` — run `node --test src/num.spec.js` explicitly, or add a `test` script to `package.json` pointing at it if you want plain `npm test` to work."
+}

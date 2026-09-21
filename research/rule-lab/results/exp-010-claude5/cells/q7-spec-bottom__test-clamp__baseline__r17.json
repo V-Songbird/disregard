@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r17",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:35:29.654Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.12104120000000002,
+  "durationMs": 30153,
+  "responseTail": "All three tests pass (directory-glob invocation appears to fail on this Node build regardless of test content, but running the file directly works fine).\n\nAdded `tests/num.test.js` with three `node:test` cases for `clamp`: below range, inside range, and above range, all using `assert.deepStrictEqual` per project conventions. `src/num.js` was left untouched."
+}

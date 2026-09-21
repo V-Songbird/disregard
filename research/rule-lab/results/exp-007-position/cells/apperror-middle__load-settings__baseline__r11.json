@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__baseline__r11",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 11,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:49:04.280Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.034365599999999996,
+  "durationMs": 17852,
+  "responseTail": "ttings(filePath)` in `src/settings.js`:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Parses as JSON with clear error handling for malformed JSON\n- Throws descriptive errors for missing files and parse failures\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys using spread operators\n- Exported as a named export from the module\n\nThe implementation follows the project's code style (two-space indentation, double quotes, early returns) and stays under 40 lines."
+}

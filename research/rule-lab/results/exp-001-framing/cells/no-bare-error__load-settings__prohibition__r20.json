@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r20",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 20,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:45.833Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.044710799999999995,
+  "durationMs": 33319,
+  "responseTail": "eading** using `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- **Clear error messages** using `SyntaxError`:\n  - Specific message for missing files\n  - Specific message for malformed JSON\n- **Exported** from the module\n\nThe function uses object spreading to merge defaults with loaded settings, so any keys present in the file override defaults, while missing keys get the default values."
+}

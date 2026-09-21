@@ -1,0 +1,160 @@
+{
+  "exp": "exp-007-position",
+  "generatedAt": "2026-07-19T03:21:12.400Z",
+  "cells": 320,
+  "usable": 320,
+  "intents": {
+    "docs-top": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.1,
+          "lift": 0.1,
+          "ci95": [
+            0,
+            0.25
+          ],
+          "verdict": "INCONCLUSIVE"
+        }
+      }
+    },
+    "docs-middle": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.1,
+          "lift": 0.1,
+          "ci95": [
+            0,
+            0.25
+          ],
+          "verdict": "INCONCLUSIVE"
+        }
+      }
+    },
+    "docs-bottom": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0,
+          "lift": 0,
+          "ci95": [
+            0,
+            0
+          ],
+          "verdict": "NULL"
+        }
+      }
+    },
+    "apperror-top": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.15
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 0.85,
+          "ci95": [
+            0.65,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "apperror-middle": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.25
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.85,
+          "lift": 0.6,
+          "ci95": [
+            0.35,
+            0.85
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "apperror-bottom": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.3
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.65,
+          "lift": 0.35000000000000003,
+          "ci95": [
+            0.04999999999999999,
+            0.6499999999999999
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "changelog-top": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "changelog-bottom": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.15,
+          "lift": 0.15,
+          "ci95": [
+            0,
+            0.3
+          ],
+          "verdict": "INCONCLUSIVE"
+        }
+      }
+    }
+  }
+}

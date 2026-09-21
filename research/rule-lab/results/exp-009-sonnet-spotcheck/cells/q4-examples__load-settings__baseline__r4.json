@@ -1,0 +1,39 @@
+{
+  "id": "q4-examples__load-settings__baseline__r4",
+  "intent": "q4-examples",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:23:17.749Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.1136533,
+  "durationMs": 10928,
+  "responseTail": "Implemented `loadSettings(filePath)` in `src/settings.js` — reads the file synchronously, parses JSON, merges with `{ theme: \"dark\", autosave: true }` defaults, and throws descriptive errors for missing files or malformed JSON."
+}

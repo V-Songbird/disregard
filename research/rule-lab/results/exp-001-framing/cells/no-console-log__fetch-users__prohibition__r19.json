@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r19",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 19,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:24:46.858Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0361958,
+  "durationMs": 23614,
+  "responseTail": "Done. I've added the `fetchUsers` function to src/api.js. It fetches from the users endpoint, parses the JSON, and returns the array. If you need the logging statement despite the project rule, just let me know and I can add `console.log` back."
+}

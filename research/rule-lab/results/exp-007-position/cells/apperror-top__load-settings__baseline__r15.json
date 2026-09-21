@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r15",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:02:34.908Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0321528,
+  "durationMs": 16248,
+  "responseTail": "Done. The `loadSettings` function is implemented and exported from the module. It reads the file synchronously, applies default values for missing keys, and throws clear errors for missing or malformed files."
+}

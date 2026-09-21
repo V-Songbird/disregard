@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__positive__r20",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "positive",
+  "rep": 20,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:55.401Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0306516,
+  "durationMs": 16509,
+  "responseTail": "Done. I've added the `fetchUsers(baseUrl)` function to src/api.js. It fetches from `${baseUrl}/api/users`, logs the count of users fetched, and returns the array. The function is async and uses the `log()` helper from src/logger.js as specified in the project notes."
+}

@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__baseline__r19",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:06:55.968Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.045250799999999994,
+  "durationMs": 27473,
+  "responseTail": "Done. I've implemented all three functions:\n\n1. **`clamp(n, min, max)`** in `src/num.js` — returns n clamped to [min, max] inclusive\n2. **`formatBytes(n)`** in `src/util.js` — formats byte counts with B/KB/MB/GB and one decimal place\n3. **`loadSettings(filePath)`** in `src/settings.js` — reads JSON file synchronously, applies defaults for `theme` and `autosave`, and throws clear errors on file/parse failures\n\nAll functions are exported from their respective modules."
+}

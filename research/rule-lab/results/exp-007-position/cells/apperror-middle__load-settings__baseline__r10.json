@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__baseline__r10",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:47:06.961Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.04440010000000001,
+  "durationMs": 24798,
+  "responseTail": "Done. `loadSettings` is now implemented and exported. It reads the file synchronously, parses it as JSON, applies the defaults (`{ theme: \"dark\", autosave: true }`), and throws clear `AppError` exceptions for missing files or malformed JSON."
+}

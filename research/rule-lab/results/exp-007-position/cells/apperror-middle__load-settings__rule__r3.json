@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r3",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 3,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:55:50.697Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0377904,
+  "durationMs": 22273,
+  "responseTail": "Done. The function reads the file synchronously, parses JSON with clear error handling for missing or malformed files, applies the defaults (`{ theme: \"dark\", autosave: true }`), and throws `AppError` with descriptive messages. Parsed settings override any defaults."
+}

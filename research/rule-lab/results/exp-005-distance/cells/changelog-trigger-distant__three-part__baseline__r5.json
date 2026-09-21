@@ -1,0 +1,39 @@
+{
+  "id": "changelog-trigger-distant__three-part__baseline__r5",
+  "intent": "changelog-trigger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:29:14.271Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0439857,
+  "durationMs": 25891,
+  "responseTail": "All three functions are now implemented and exported:\n\n1. **`clamp(n, min, max)`** in src/num.js — constrains n to the range [min, max]\n2. **`formatBytes(n)`** in src/util.js — formats byte counts as B, KB, MB, or GB with one decimal place\n3. **`slugify(title)`** in src/text.js — converts titles to URL-friendly slugs (lowercase, space-to-dash, alphanumeric+dash only)\n\nAll functions are properly exported from their modules."
+}

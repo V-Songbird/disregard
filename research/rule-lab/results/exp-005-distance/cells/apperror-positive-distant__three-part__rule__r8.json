@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__rule__r8",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:24:21.441Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.05059120000000001,
+  "durationMs": 28705,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n1. **`clamp(n, min, max)`** in `src/num.js` — returns n clamped to [min, max]\n2. **`formatBytes(n)`** in `src/util.js` — formats bytes as human-readable string (B/KB/MB/GB with one decimal place)\n3. **`loadSettings(filePath)`** in `src/settings.js` — reads JSON file synchronously, applies defaults ({ theme: \"dark\", autosave: true }), throws AppError on missing or malformed files"
+}

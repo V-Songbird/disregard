@@ -1,0 +1,64 @@
+{
+  "id": "exp-006-verbs",
+  "question": "Q6",
+  "hypothesis": "Softening a rule's modality from a hard imperative (never/always) to a preference (prefer) loses compliance on rules that are not already at ceiling.",
+  "model": "haiku",
+  "reps": 20,
+  "maxTurns": 12,
+  "timeoutMs": 300000,
+  "intents": [
+    {
+      "id": "docs-sync",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "strong": "- Always list every exported src/ function in docs/api.md.",
+        "prefer": "- Prefer to list every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "no-bare-error",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "strong": "- Never throw the built-in `Error` class in src/ files — throw `AppError` from `src/errors.js` instead.",
+        "prefer": "- Prefer throwing `AppError` from `src/errors.js` over the built-in `Error` class in src/ files."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "loadSettings" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "throw" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/settings.js", "pattern": "\\bError\\s*\\(" }
+          ]
+        }
+      ]
+    }
+  ]
+}

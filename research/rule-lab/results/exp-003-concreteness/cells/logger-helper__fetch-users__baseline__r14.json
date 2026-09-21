@@ -1,0 +1,33 @@
+{
+  "id": "logger-helper__fetch-users__baseline__r14",
+  "intent": "logger-helper",
+  "task": "fetch-users",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-003-concreteness",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:49:19.032Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0274694,
+  "durationMs": 11205,
+  "responseTail": "Done. The `fetchUsers` function is added to src/api.js and exported. It fetches from the endpoint, parses the JSON, logs the count, and returns the array."
+}

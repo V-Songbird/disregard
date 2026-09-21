@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__rule__r12",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 12,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:13:52.554Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0416526,
+  "durationMs": 21955,
+  "responseTail": " **`clamp(n, min, max)`** in src/num.js: uses `Math.max(min, Math.min(n, max))` to constrain the value\n- **`formatBytes(n)`** in src/util.js: loops through units (B, KB, MB, GB), dividing by 1024 as needed, and formats with one decimal place for non-byte values\n- **`slugify(title)`** in src/text.js: chains toLowerCase, trim, space-to-dash replacement, and strips all characters except letters, digits, and dashes\n\nAll three are exported and the CHANGELOG.md has been updated with the new functions."
+}

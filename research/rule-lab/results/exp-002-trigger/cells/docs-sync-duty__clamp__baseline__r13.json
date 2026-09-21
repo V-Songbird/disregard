@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync-duty__clamp__baseline__r13",
+  "intent": "docs-sync-duty",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:38:56.572Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.027876899999999996,
+  "durationMs": 11769,
+  "responseTail": "Done. Added `clamp(n, min, max)` to src/num.js — it returns n limited to [min, max] and is exported from the module."
+}

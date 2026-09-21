@@ -1,0 +1,39 @@
+{
+  "id": "q7-apperror-bottom__load-settings__baseline__r3",
+  "intent": "q7-apperror-bottom",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-010-pilot",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:13:19.333Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0883518,
+  "durationMs": 13091,
+  "responseTail": "Implemented `loadSettings(filePath)` in src/settings.js — it reads and JSON-parses the file, merges over `{ theme: \"dark\", autosave: true }` defaults, and throws an `AppError` (reused from src/errors.js) with a distinct code for a missing file (`SETTINGS_NOT_FOUND`) vs. malformed JSON (`SETTINGS_INVALID_JSON`)."
+}

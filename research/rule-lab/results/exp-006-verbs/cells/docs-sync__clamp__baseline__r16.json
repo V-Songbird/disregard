@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__baseline__r16",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:39:55.251Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.026819700000000002,
+  "durationMs": 10259,
+  "responseTail": "Done. The `clamp` function is implemented in src/num.js and exported—it returns n constrained to [min, max]."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__baseline__r13",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:54:27.174Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028135,
+  "durationMs": 11785,
+  "responseTail": "Done. The `slugify` function is implemented and exported from `src/text.js`. It converts the input to lowercase, trims it, replaces runs of spaces with single dashes, and removes any characters that aren't letters, digits, or dashes."
+}

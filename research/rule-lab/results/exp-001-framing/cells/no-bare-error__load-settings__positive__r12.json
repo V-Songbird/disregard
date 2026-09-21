@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__positive__r12",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "positive",
+  "rep": 12,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:24:13.412Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0329622,
+  "durationMs": 17284,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in src/settings.js with:\n\n- Synchronous file reading via `fs.readFileSync()`\n- JSON parsing with specific error handling\n- Defaults applied (`theme: \"dark\"`, `autosave: true`) that can be overridden by file contents\n- Clear error messages for missing files (ENOENT) and malformed JSON\n- Exported as a named export from the module"
+}

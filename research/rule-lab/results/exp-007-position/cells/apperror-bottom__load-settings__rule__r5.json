@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r5",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:58:23.898Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.044226800000000004,
+  "durationMs": 26753,
+  "responseTail": "ith:\n\n- **Synchronous file reading** via `fs.readFileSync`\n- **Error handling** for missing files (throws `AppError` with code `SETTINGS_NOT_FOUND`) and read failures\n- **JSON parsing** with clear error messages for malformed JSON (code `SETTINGS_PARSE_ERROR`)\n- **Default merging** via spread operator: user settings override `{ theme: \"dark\", autosave: true }`\n- **Module export** of the function\n\nThe function uses `AppError` from `src/errors.js` to signal failures as per the project conventions."
+}

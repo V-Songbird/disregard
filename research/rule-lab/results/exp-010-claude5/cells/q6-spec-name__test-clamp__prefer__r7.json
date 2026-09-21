@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__prefer__r7",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "prefer",
+  "rep": 7,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:23:51.021Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.12152059999999999,
+  "durationMs": 21523,
+  "responseTail": "No test script exists — good to note, but not part of what was asked. All 3 tests pass with `node --test \"src/**/*.spec.js\"`.\n\nAdded `src/num.spec.js` with three `node:test` cases for `clamp` (below range, inside range, above range). Verified with `node --test \"src/**/*.spec.js\"` — all pass. `src/num.js` was not modified."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "jsdoc-duty__format-bytes__baseline__r3",
+  "intent": "jsdoc-duty",
+  "task": "format-bytes",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:32:22.154Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "\\/\\*\\*[\\s\\S]*?@param[\\s\\S]*?@returns",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028710700000000002,
+  "durationMs": 12021,
+  "responseTail": "Done. I've implemented `formatBytes(n)` in src/util.js with byte-to-human-readable conversion using 1024-byte increments, one decimal place, and exported it from the module. The example you provided (1536 → \"1.5 KB\") works correctly."
+}

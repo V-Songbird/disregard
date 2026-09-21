@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r7",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 7,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:38:31.088Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0370002,
+  "durationMs": 22184,
+  "responseTail": "synchronously using `fs.readFileSync()`\n- Throws `AppError` with code `SETTINGS_FILE_NOT_FOUND` if the file is missing\n- Throws `AppError` with code `SETTINGS_JSON_INVALID` if JSON parsing fails\n- Applies the default settings `{ theme: \"dark\", autosave: true }` for any missing keys\n- Returns the merged settings object (parsed config overrides defaults)\n- Follows the project rule to throw `AppError` instead of the built-in `Error` class\n\nThe function is exported as a named export from the module."
+}

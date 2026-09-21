@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r20",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 20,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:39:01.281Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0368681,
+  "durationMs": 20143,
+  "responseTail": "implemented `loadSettings(filePath)` in `src/settings.js` with the following behavior:\n\n- **Synchronous file read** using `fs.readFileSync`\n- **Default values** applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- **Error handling** via `AppError`:\n  - `SETTINGS_FILE_NOT_FOUND` when file is missing\n  - `SETTINGS_JSON_MALFORMED` when JSON parsing fails\n- **Exported** from the module\n\nThe function merges loaded settings over defaults, so any key present in the file overrides the default."
+}

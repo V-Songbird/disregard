@@ -1,0 +1,66 @@
+{
+  "exp": "exp-003-concreteness",
+  "generatedAt": "2026-07-19T01:50:00.657Z",
+  "cells": 120,
+  "usable": 120,
+  "intents": {
+    "logger-helper": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "concrete": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "abstract": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "docs-sync": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "concrete": {
+          "n": 20,
+          "mean": 0.6,
+          "lift": 0.6,
+          "ci95": [
+            0.4,
+            0.8
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "abstract": {
+          "n": 20,
+          "mean": 0,
+          "lift": 0,
+          "ci95": [
+            0,
+            0
+          ],
+          "verdict": "NULL"
+        }
+      }
+    }
+  }
+}

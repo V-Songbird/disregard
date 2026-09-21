@@ -1,0 +1,33 @@
+{
+  "id": "q6-verbs__clamp__baseline__r2",
+  "intent": "q6-verbs",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:26:26.465Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.1071917,
+  "durationMs": 8833,
+  "responseTail": "Added `clamp(n, min, max)` to src/num.js, exported alongside the existing module exports."
+}

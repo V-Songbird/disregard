@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__example__r1",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "example",
+  "rep": 1,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:52:15.726Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0364157,
+  "durationMs": 16713,
+  "responseTail": "Done. I've implemented `clamp(n, min, max)` in `src/num.js` that returns n limited to [min, max], exported it, and updated `docs/api.md` to list it."
+}

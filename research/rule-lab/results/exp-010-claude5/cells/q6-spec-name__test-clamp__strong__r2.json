@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__strong__r2",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "strong",
+  "rep": 2,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:27:02.593Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.1199254,
+  "durationMs": 20427,
+  "responseTail": "All 3 tests pass. Note that plain `node --test` doesn't discover `.spec.js` files by default (Node's built-in patterns are `*.test.js`/`test.js`/etc.), so you'll need to run it with an explicit glob, e.g. `node --test \"src/**/*.spec.js\"`, or add a `\"test\"` script to package.json with that pattern."
+}

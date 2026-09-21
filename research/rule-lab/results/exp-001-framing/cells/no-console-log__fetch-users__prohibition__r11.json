@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r11",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 11,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:26:11.913Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 2,
+  "costUsd": 0.026088200000000002,
+  "durationMs": 12800,
+  "responseTail": "I notice there's a conflict: your CLAUDE.md says \"Never use `console.log` in src/ files\", but you're asking me to log how many users were fetched. \n\nWould you like me to:\n1. Skip the logging entirely\n2. Use a different logging approach\n3. Override the no-console.log rule for this function\n\nLet me know and I'll add the function accordingly."
+}

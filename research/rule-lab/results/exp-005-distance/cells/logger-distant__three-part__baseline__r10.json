@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r10",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:07:17.278Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.0436497,
+  "durationMs": 27624,
+  "responseTail": "yte counts to human-readable format (B, KB, MB, GB) with one decimal place by dividing by 1024 until the appropriate unit is reached.\n\n2. **slugify(title)** in src/text.js — lowercases, trims, replaces runs of spaces with dashes using `/\\s+/g`, and strips all non-word characters (except dashes) using `/[^\\w-]/g`.\n\n3. **fetchUsers(baseUrl)** in src/api.js — fetches from `${baseUrl}/api/users`, parses the JSON, logs the user count, and returns the array.\n\nAll three are exported from their modules."
+}

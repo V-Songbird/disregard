@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r15",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:26:15.368Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.12214,
+  "durationMs": 23028,
+  "responseTail": "All three tests pass (the directory-form invocation appears to have an unrelated environment quirk on this Windows/Git-Bash setup, but running the file directly works fine). Added `tests/num.test.js` with happy-path, below-range, and above-range cases for `clamp`, without touching `src/num.js`."
+}

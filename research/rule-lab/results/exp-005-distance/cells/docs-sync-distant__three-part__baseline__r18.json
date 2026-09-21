@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-distant__three-part__baseline__r18",
+  "intent": "docs-sync-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:18:06.791Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0337018,
+  "durationMs": 19335,
+  "responseTail": "Done. All three changes are in place:\n\n1. **formatBytes** (src/util.js:2-7) now validates that `n` is a non-negative number and throws a TypeError otherwise.\n2. **slugify** (src/text.js:2-4) now collapses runs of consecutive dashes into a single dash with `.replace(/-+/g, \"-\")` at the end.\n3. **clamp** (src/num.js:2-4) is implemented and exported, returning `n` clamped to the range `[min, max]`."
+}

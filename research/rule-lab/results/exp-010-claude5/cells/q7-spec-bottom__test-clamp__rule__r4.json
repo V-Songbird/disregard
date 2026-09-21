@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r4",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 4,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:24:57.190Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.11229720000000001,
+  "durationMs": 19721,
+  "responseTail": "All three tests pass (the earlier `node --test tests/` error was just Bash resolving the bare directory path oddly; running it against the file directly, or `node --test tests`, works fine).\n\nCreated `tests/num.spec.js` with three tests for `clamp`: a value below range, inside range, and above range, using `node:test` and `assert.deepStrictEqual`. `src/num.js` was not touched."
+}

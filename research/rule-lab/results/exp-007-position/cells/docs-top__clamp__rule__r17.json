@@ -1,0 +1,33 @@
+{
+  "id": "docs-top__clamp__rule__r17",
+  "intent": "docs-top",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 17,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:57:53.321Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029535000000000002,
+  "durationMs": 12940,
+  "responseTail": "Done. I've implemented `clamp(n, min, max)` in `src/num.js` with early returns, following the project's code style. It returns `n` if within [min, max], otherwise the nearest bound."
+}

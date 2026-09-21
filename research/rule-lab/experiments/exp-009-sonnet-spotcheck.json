@@ -1,0 +1,418 @@
+{
+  "id": "exp-009-sonnet-spotcheck",
+  "question": "spot-check",
+  "hypothesis": "The qualitative verdicts behind Q1-Q8 hold on sonnet: framing ranking, trigger effect, concreteness collapse, example null, distance pattern, verb softening, position gradient, and the length interaction.",
+  "model": "sonnet",
+  "reps": 5,
+  "maxTurns": 24,
+  "timeoutMs": 420000,
+  "intents": [
+    {
+      "id": "q1-framing",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "prohibition": "- Never throw the built-in `Error` class in src/ files.",
+        "prohibition-alt": "- Never throw the built-in `Error` class in src/ files — throw `AppError` from `src/errors.js` instead.",
+        "positive": "- Signal failures in src/ files by throwing `AppError` from `src/errors.js`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "loadSettings"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "throw"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/settings.js",
+              "pattern": "\\bError\\s*\\("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q2-trigger",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-trigger": "- List every exported src/ function in docs/api.md.",
+        "trigger": "- When you export a new function from src/, list it in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q3-concreteness",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "concrete": "- List every exported src/ function in docs/api.md.",
+        "abstract": "- List every exported src/ function in the API reference doc."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q4-examples",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-example": "- Every error message thrown in src/ files starts with an uppercase snake-case error code followed by a colon.",
+        "example": "- Every error message thrown in src/ files starts with an uppercase snake-case error code followed by a colon, e.g. `E_NOT_FOUND: settings file missing`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "loadSettings"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "throw"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q5-strong-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/logger.js": "\"use strict\";\n// Project logging helper — writes structured lines to stderr.\nfunction log(message, data) {\n  process.stderr.write(JSON.stringify({ ts: Date.now(), message, data }) + \"\\n\");\n}\nmodule.exports = { log };\n",
+        "src/api.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/text.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-api\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Never use `console.log` in src/ files — call `log()` from `src/logger.js` instead."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) Implement `formatBytes(n)` in src/util.js: format a byte count as a human-readable string using B, KB, MB, or GB with one decimal place. Export it. 2) Implement `slugify(title)` in src/text.js: lowercase, trim, replace runs of spaces with dashes, strip every character that is not a letter, digit, or dash. Export it. 3) Add `fetchUsers(baseUrl)` to src/api.js: GET `${baseUrl}/api/users` with fetch, parse the JSON array, log how many users were fetched, and return the array. Export it. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/util.js",
+              "pattern": "formatBytes"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/text.js",
+              "pattern": "slugify"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/api.js",
+              "pattern": "fetchUsers"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/api.js",
+              "pattern": "console\\.(log|info|debug)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q5-weak-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\nfunction formatBytes(n) {\n  const units = [\"B\", \"KB\", \"MB\", \"GB\"];\n  let i = 0;\n  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }\n  return n.toFixed(1) + \" \" + units[i];\n}\nmodule.exports = { formatBytes };\n",
+        "src/text.js": "\"use strict\";\nfunction slugify(title) {\n  return title.toLowerCase().trim().replace(/ +/g, \"-\").replace(/[^a-z0-9-]/g, \"\");\n}\nmodule.exports = { slugify };\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n- slugify(title) — turn a title into a URL slug.\n- formatBytes(n) — format a byte count as a human-readable string.\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- List every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) In src/util.js, make `formatBytes` throw a TypeError when n is negative or not a number (keep the export unchanged). 2) In src/text.js, make `slugify` also collapse runs of consecutive dashes into one dash (keep the export unchanged). 3) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/util.js",
+              "pattern": "TypeError"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q6-verbs",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "strong": "- Always list every exported src/ function in docs/api.md.",
+        "prefer": "- Prefer to list every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q7-top",
+      "claudeMd": "# Project notes\n\n{{RULE}}\n\n## Project overview\n\nThis is a small utility library consumed by a handful of internal services.\nIt ships as CommonJS; there is no build step and no transpiler.\nKeep the dependency count at zero — everything here is hand-rolled on purpose.\nThe public surface is deliberately tiny; most helpers stay private to their module.\nNode 22 is the only supported runtime. No browser support is planned.\n\n## Repository layout\n\n- `src/` — library modules, one concern per file.\n- `tests/` — `node:test` suites, one file per module.\n- `scripts/` — maintenance scripts, run with plain `node`.\n- `fixtures/` — sample data used by the test suites.\nFiles outside these directories are configuration and can be ignored day to day.\n\n## Commands\n\n- `node --test tests/` — run the full suite.\n- `node --test --test-name-pattern <re>` — run a subset.\n- `node scripts/bench.js` — micro-benchmarks for the hot paths.\n- `node scripts/lint-imports.js` — check import ordering.\nThere is no watch mode; re-run the suite manually after edits.\n\n## Code style\n\n- Two-space indentation, double quotes, semicolons on.\n- `const` by default; `let` only when reassignment is unavoidable.\n- Modules start with `\"use strict\";` even though CommonJS implies it in Node.\n- Keep functions under ~40 lines; extract a helper before nesting a third level.\n- Prefer early returns over `else` chains.\n- Destructure at the call boundary, not deep inside a function body.\n\n## Naming\n\n- Files are lower-kebab-case; exported symbols are lowerCamelCase.\n- Boolean-returning helpers start with `is`, `has`, or `can`.\n- Avoid abbreviations except `n` for counts in tight numeric helpers.\n- Private module-level helpers get a leading underscore only when a public sibling shares the name.\n\n## Testing conventions\n\n- Every exported function gets at least one happy-path and one edge-case test.\n- Use `assert.deepStrictEqual` over loose equality in all new tests.\n- Test names read as sentences: `it rounds half away from zero`.\n- Fixtures live in `fixtures/` and are loaded relative to the test file.\n- Never let a test depend on wall-clock time; inject clocks where needed.\n\n## Git conventions\n\n- Branch names: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`.\n- Commits are imperative mood, under 72 characters in the subject.\n- Squash-merge feature branches; keep main linear.\n- Rebase local work before opening a review; never force-push a shared branch.\n\n## Performance notes\n\n- The hot paths are the string helpers; avoid allocating in loops there.\n- Regexes used in hot paths are hoisted to module scope and reused.\n- Micro-optimizations need a benchmark diff from `scripts/bench.js` to land.\n- Prefer a single pass over chained array methods when the input can be large.\n\n## Dependency policy\n\n- Runtime dependencies are not accepted; the library stays zero-dependency.\n- Dev tooling beyond Node's built-ins needs a strong justification in review.\n- Vendored snippets carry a comment with their origin and license.\n\n## Review etiquette\n\n- Reviews focus on behavior and API shape, not formatting nits.\n- A single approving review is enough for helpers; API changes need two.\n- Leave the branch in a merge-ready state: suite green, no stray debug files.\n- Large mechanical renames go in their own commit so the interesting diff stays small.\n\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Signal failures in src/ files by throwing `AppError` from `src/errors.js`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "loadSettings"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "throw"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/settings.js",
+              "pattern": "\\bError\\s*\\("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q7-bottom",
+      "claudeMd": "# Project notes\n\n## Project overview\n\nThis is a small utility library consumed by a handful of internal services.\nIt ships as CommonJS; there is no build step and no transpiler.\nKeep the dependency count at zero — everything here is hand-rolled on purpose.\nThe public surface is deliberately tiny; most helpers stay private to their module.\nNode 22 is the only supported runtime. No browser support is planned.\n\n## Repository layout\n\n- `src/` — library modules, one concern per file.\n- `tests/` — `node:test` suites, one file per module.\n- `scripts/` — maintenance scripts, run with plain `node`.\n- `fixtures/` — sample data used by the test suites.\nFiles outside these directories are configuration and can be ignored day to day.\n\n## Commands\n\n- `node --test tests/` — run the full suite.\n- `node --test --test-name-pattern <re>` — run a subset.\n- `node scripts/bench.js` — micro-benchmarks for the hot paths.\n- `node scripts/lint-imports.js` — check import ordering.\nThere is no watch mode; re-run the suite manually after edits.\n\n## Code style\n\n- Two-space indentation, double quotes, semicolons on.\n- `const` by default; `let` only when reassignment is unavoidable.\n- Modules start with `\"use strict\";` even though CommonJS implies it in Node.\n- Keep functions under ~40 lines; extract a helper before nesting a third level.\n- Prefer early returns over `else` chains.\n- Destructure at the call boundary, not deep inside a function body.\n\n## Naming\n\n- Files are lower-kebab-case; exported symbols are lowerCamelCase.\n- Boolean-returning helpers start with `is`, `has`, or `can`.\n- Avoid abbreviations except `n` for counts in tight numeric helpers.\n- Private module-level helpers get a leading underscore only when a public sibling shares the name.\n\n## Testing conventions\n\n- Every exported function gets at least one happy-path and one edge-case test.\n- Use `assert.deepStrictEqual` over loose equality in all new tests.\n- Test names read as sentences: `it rounds half away from zero`.\n- Fixtures live in `fixtures/` and are loaded relative to the test file.\n- Never let a test depend on wall-clock time; inject clocks where needed.\n\n## Git conventions\n\n- Branch names: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`.\n- Commits are imperative mood, under 72 characters in the subject.\n- Squash-merge feature branches; keep main linear.\n- Rebase local work before opening a review; never force-push a shared branch.\n\n## Performance notes\n\n- The hot paths are the string helpers; avoid allocating in loops there.\n- Regexes used in hot paths are hoisted to module scope and reused.\n- Micro-optimizations need a benchmark diff from `scripts/bench.js` to land.\n- Prefer a single pass over chained array methods when the input can be large.\n\n## Dependency policy\n\n- Runtime dependencies are not accepted; the library stays zero-dependency.\n- Dev tooling beyond Node's built-ins needs a strong justification in review.\n- Vendored snippets carry a comment with their origin and license.\n\n## Review etiquette\n\n- Reviews focus on behavior and API shape, not formatting nits.\n- A single approving review is enough for helpers; API changes need two.\n- Leave the branch in a merge-ready state: suite green, no stray debug files.\n- Large mechanical renames go in their own commit so the interesting diff stays small.\n\n{{RULE}}\n\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Signal failures in src/ files by throwing `AppError` from `src/errors.js`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "loadSettings"
+            },
+            {
+              "type": "file_regex",
+              "path": "src/settings.js",
+              "pattern": "throw"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/settings.js",
+              "pattern": "\\bError\\s*\\("
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q8-long",
+      "claudeMd": "# Project notes\n\n{{RULE}}\n\n## Project overview\n\nThis is a small utility library consumed by a handful of internal services.\nIt ships as CommonJS; there is no build step and no transpiler.\nKeep the dependency count at zero — everything here is hand-rolled on purpose.\nThe public surface is deliberately tiny; most helpers stay private to their module.\nNode 22 is the only supported runtime. No browser support is planned.\n\n## Repository layout\n\n- `src/` — library modules, one concern per file.\n- `tests/` — `node:test` suites, one file per module.\n- `scripts/` — maintenance scripts, run with plain `node`.\n- `fixtures/` — sample data used by the test suites.\nFiles outside these directories are configuration and can be ignored day to day.\n\n## Commands\n\n- `node --test tests/` — run the full suite.\n- `node --test --test-name-pattern <re>` — run a subset.\n- `node scripts/bench.js` — micro-benchmarks for the hot paths.\n- `node scripts/lint-imports.js` — check import ordering.\nThere is no watch mode; re-run the suite manually after edits.\n\n## Code style\n\n- Two-space indentation, double quotes, semicolons on.\n- `const` by default; `let` only when reassignment is unavoidable.\n- Modules start with `\"use strict\";` even though CommonJS implies it in Node.\n- Keep functions under ~40 lines; extract a helper before nesting a third level.\n- Prefer early returns over `else` chains.\n- Destructure at the call boundary, not deep inside a function body.\n\n## Naming\n\n- Files are lower-kebab-case; exported symbols are lowerCamelCase.\n- Boolean-returning helpers start with `is`, `has`, or `can`.\n- Avoid abbreviations except `n` for counts in tight numeric helpers.\n- Private module-level helpers get a leading underscore only when a public sibling shares the name.\n\n## Testing conventions\n\n- Every exported function gets at least one happy-path and one edge-case test.\n- Use `assert.deepStrictEqual` over loose equality in all new tests.\n- Test names read as sentences: `it rounds half away from zero`.\n- Fixtures live in `fixtures/` and are loaded relative to the test file.\n- Never let a test depend on wall-clock time; inject clocks where needed.\n\n## Git conventions\n\n- Branch names: `feat/<slug>`, `fix/<slug>`, or `chore/<slug>`.\n- Commits are imperative mood, under 72 characters in the subject.\n- Squash-merge feature branches; keep main linear.\n- Rebase local work before opening a review; never force-push a shared branch.\n\n## Performance notes\n\n- The hot paths are the string helpers; avoid allocating in loops there.\n- Regexes used in hot paths are hoisted to module scope and reused.\n- Micro-optimizations need a benchmark diff from `scripts/bench.js` to land.\n- Prefer a single pass over chained array methods when the input can be large.\n\n## Dependency policy\n\n- Runtime dependencies are not accepted; the library stays zero-dependency.\n- Dev tooling beyond Node's built-ins needs a strong justification in review.\n- Vendored snippets carry a comment with their origin and license.\n\n## Review etiquette\n\n- Reviews focus on behavior and API shape, not formatting nits.\n- A single approving review is enough for helpers; API changes need two.\n- Leave the branch in a merge-ready state: suite green, no stray debug files.\n- Large mechanical renames go in their own commit so the interesting diff stays small.\n\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- List every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q8-short",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. CommonJS, zero dependencies, Node 22.\n\n## Commands\n\n- `node --test tests/` — run the full suite.\n- `node scripts/bench.js` — micro-benchmarks.\n\n## Style\n\n- Two-space indentation, double quotes, semicolons on.\n- `const` by default; prefer early returns over `else` chains.\n- Files are lower-kebab-case; exported symbols are lowerCamelCase.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- List every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/num.js",
+              "pattern": "clamp"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "docs/api.md",
+              "pattern": "clamp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

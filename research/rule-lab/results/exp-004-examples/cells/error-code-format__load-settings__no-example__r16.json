@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r16",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 16,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:13.613Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0319218,
+  "durationMs": 15488,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` that:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Handles missing files with `MISSING_SETTINGS_FILE` error\n- Handles JSON parse errors with `INVALID_SETTINGS_JSON` error  \n- Applies defaults `{ theme: \"dark\", autosave: true }` for missing keys (parsed settings override defaults)\n- Exports the function from the module\n\nError messages follow the project convention of uppercase snake-case codes followed by a colon."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__baseline__r14",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:42:48.548Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.026716900000000002,
+  "durationMs": 9779,
+  "responseTail": "Done. The `clamp` function is now implemented and exported. It uses `Math.max` and `Math.min` to constrain the value to the inclusive range [min, max]."
+}

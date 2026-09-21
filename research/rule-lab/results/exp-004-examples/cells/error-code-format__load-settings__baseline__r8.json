@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r8",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 8,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:00:39.964Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.038631399999999996,
+  "durationMs": 20891,
+  "responseTail": "oadSettings(filePath)` with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Clear error handling** for missing files (\"Settings file not found\") and malformed JSON (\"Invalid JSON in settings file\")\n- **Default values** applied for `theme: \"dark\"` and `autosave: true` when keys are missing\n- **Proper export** as a named export from the module\n\nThe function merges user-provided settings with defaults, so any provided keys override the defaults while missing keys retain their defaults."
+}

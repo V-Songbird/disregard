@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition-alt__r10",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition-alt",
+  "rep": 10,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:20:13.106Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0278765,
+  "durationMs": 10919,
+  "responseTail": "Done. Added `fetchUsers(baseUrl)` to src/api.js — it fetches from the users endpoint, parses the JSON response, logs the count using `log()` from src/logger.js, and returns the array."
+}

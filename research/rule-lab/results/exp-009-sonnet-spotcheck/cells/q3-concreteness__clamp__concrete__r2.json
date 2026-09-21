@@ -1,0 +1,33 @@
+{
+  "id": "q3-concreteness__clamp__concrete__r2",
+  "intent": "q3-concreteness",
+  "task": "clamp",
+  "variant": "concrete",
+  "rep": 2,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:23:55.225Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.15021859999999998,
+  "durationMs": 12854,
+  "responseTail": "Added `clamp(n, min, max)` to `src/num.js` and documented it in `docs/api.md`. No tests added, as requested."
+}

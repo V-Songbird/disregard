@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r14",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 14,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:15:57.389Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.045804899999999996,
+  "durationMs": 30429,
+  "responseTail": "Done. I've implemented all three functions:\n\n1. **`clamp(n, min, max)`** in src/num.js — constrains n to [min, max] using nested Math.max/min.\n2. **`formatBytes(n)`** in src/util.js — formats bytes with 1 decimal place, choosing B/KB/MB/GB based on magnitude.\n3. **`slugify(title)`** in src/text.js — lowercases, trims, replaces spaces with dashes, and strips non-alphanumeric characters.\n\nAll three are exported and follow the project's code style."
+}

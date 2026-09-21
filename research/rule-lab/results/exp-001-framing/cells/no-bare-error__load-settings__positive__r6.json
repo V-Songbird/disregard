@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__positive__r6",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "positive",
+  "rep": 6,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:18:54.538Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.04307420000000001,
+  "durationMs": 20759,
+  "responseTail": "Done. The `loadSettings` function now:\n- Reads the file synchronously using `fs.readFileSync`\n- Distinguishes between file-not-found errors and read failures with specific error codes\n- Parses JSON and throws a clear error if malformed\n- Applies defaults (`theme: \"dark\"`, `autosave: true`) for any missing keys using object spread\n- Exports the function from the module"
+}

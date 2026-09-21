@@ -1,0 +1,89 @@
+{
+  "id": "exp-004-examples",
+  "question": "Q4",
+  "hypothesis": "Appending a one-line inline example to a mid-compliance duty rule raises compliance, because the example shows exactly what a satisfying edit looks like.",
+  "model": "haiku",
+  "reps": 20,
+  "maxTurns": 12,
+  "timeoutMs": 300000,
+  "intents": [
+    {
+      "id": "error-code-format",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-example": "- Every error message thrown in src/ files starts with an uppercase snake-case error code followed by a colon.",
+        "example": "- Every error message thrown in src/ files starts with an uppercase snake-case error code followed by a colon, e.g. `E_NOT_FOUND: settings file missing`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "loadSettings" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "throw" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docs-sync",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-example": "- List every exported src/ function in docs/api.md.",
+        "example": "- List every exported src/ function in docs/api.md, e.g. `- slugify(title) — turn a title into a URL slug.`"
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "changelog-duty",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/text.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n## [1.0.0] - 2026-01-01\n- Initial release.\n",
+        "package.json": "{\n  \"name\": \"fixture-text\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-example": "- When you change a file in src/, note the change as a bullet under `## [Unreleased]` in CHANGELOG.md.",
+        "example": "- When you change a file in src/, note the change as a bullet under `## [Unreleased]` in CHANGELOG.md, e.g. `- Added retry handling to the fetch helper.`"
+      },
+      "tasks": [
+        {
+          "id": "slugify",
+          "prompt": "Implement `slugify(title)` in src/text.js: lowercase the string, trim it, replace runs of spaces with single dashes, and strip every character that is not a letter, digit, or dash. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/text.js", "pattern": "slugify" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "CHANGELOG.md", "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] " }
+          ]
+        }
+      ]
+    }
+  ]
+}

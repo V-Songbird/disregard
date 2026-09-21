@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r6",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 6,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:58.368Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0325051,
+  "durationMs": 16997,
+  "responseTail": "Done. I've implemented `loadSettings` in src/settings.js. The function:\n\n- Reads the file synchronously with error handling for missing files\n- Parses JSON with error catching for malformed input\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys\n- Throws clear errors starting with uppercase snake-case error codes as required by your project notes\n- Exports as a named export"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "q1-bare-error__load-settings__baseline__r3",
+  "intent": "q1-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-010-pilot",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:11:54.693Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0696086,
+  "durationMs": 10079,
+  "responseTail": "Implemented `loadSettings` in `src/settings.js:1` — reads the file synchronously, merges parsed JSON over the `{ theme: \"dark\", autosave: true }` defaults, and throws descriptive errors for missing files or malformed JSON. No tests added, per your request."
+}

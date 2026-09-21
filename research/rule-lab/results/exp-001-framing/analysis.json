@@ -1,0 +1,86 @@
+{
+  "exp": "exp-001-framing",
+  "generatedAt": "2026-07-19T01:29:18.631Z",
+  "cells": 180,
+  "usable": 170,
+  "intents": {
+    "no-console-log": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "prohibition": {
+          "n": 10,
+          "mean": 0.9,
+          "lift": 0.9,
+          "ci95": [
+            0.7,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prohibition-alt": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "positive": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "no-bare-error": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.1
+      },
+      "antiDefault": true,
+      "variants": {
+        "prohibition": {
+          "n": 20,
+          "mean": 1,
+          "lift": 0.9,
+          "ci95": [
+            0.75,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prohibition-alt": {
+          "n": 20,
+          "mean": 1,
+          "lift": 0.9,
+          "ci95": [
+            0.75,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "positive": {
+          "n": 20,
+          "mean": 0.55,
+          "lift": 0.45000000000000007,
+          "ci95": [
+            0.2,
+            0.7
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__positive__r11",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "positive",
+  "rep": 11,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:36.076Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0364635,
+  "durationMs": 15989,
+  "responseTail": "Done. The `loadSettings(filePath)` function:\n- Reads the file synchronously with proper encoding\n- Handles missing files with a clear `SETTINGS_NOT_FOUND` error\n- Handles read errors and malformed JSON with specific `AppError` codes\n- Applies defaults (`theme: \"dark\"` and `autosave: true`) using the nullish coalescing operator for any missing keys\n- Exports the function from the module"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition__r8",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:36:55.252Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.08077680000000001,
+  "durationMs": 18032,
+  "responseTail": "All 3 tests pass. Added `test/num-spec.js` covering below-range, in-range, and above-range cases for `clamp`; `src/num.js` was left unchanged."
+}

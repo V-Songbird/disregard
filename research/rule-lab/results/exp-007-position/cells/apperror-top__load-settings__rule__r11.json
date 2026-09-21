@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r11",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 11,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:56:50.860Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0491204,
+  "durationMs": 26342,
+  "responseTail": "implemented `loadSettings(filePath)` that:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Parses it as JSON and validates it's an object\n- Applies defaults (`theme: \"dark\"`, `autosave: true`) for any missing keys using object spread\n- Throws `AppError` with specific codes for:\n  - `SETTINGS_FILE_NOT_FOUND` when the file doesn't exist\n  - `SETTINGS_READ_ERROR` for other read failures\n  - `SETTINGS_PARSE_ERROR` for invalid JSON or non-object content\n- Exports the function from the module"
+}

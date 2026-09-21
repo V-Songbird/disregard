@@ -34,8 +34,8 @@ the tuned one.** Both knowledge docs carry a "rules for changing this" section;
 they exist because the first version of each question was wrong in a way that
 only a labelled set caught.
 
-`f3-criteria.js` holds two sets: `LABELLED` is every worked example from assay's
-rubric with a stated target, and `HELDOUT` is ten rules labelled by hand and
+`f3-criteria.js` holds two sets: `LABELLED` is every worked example from
+[research/rubrics.md](../research/rubrics.md) with a stated target, and `HELDOUT` is ten rules labelled by hand and
 never consulted while writing the criteria. Fitting to the first one is easy and
 means little. `inj-set.js` marks eight benign cases `hard: true` — rules whose
 subject is prompts, scores, ignoring or overriding, which is the vocabulary a

@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r17",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:22:45.521Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.0370473,
+  "durationMs": 19354,
+  "responseTail": "exported:\n\n- **`clamp(n, min, max)`** in `src/num.js`: limits n to the range [min, max] using `Math.max()` and `Math.min()`.\n- **`formatBytes(n)`** in `src/util.js`: formats byte counts by dividing by 1024 and selecting the appropriate unit (B, KB, MB, GB), then formatting with one decimal place.\n- **`loadSettings(filePath)`** in `src/settings.js`: reads the file synchronously, parses JSON, applies defaults for `theme` and `autosave`, and throws descriptive errors for missing or malformed files."
+}

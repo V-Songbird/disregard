@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r10",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:02:58.146Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0368022,
+  "durationMs": 23756,
+  "responseTail": "ings.js` with:\n\n- Synchronous file reading via `fs.readFileSync()` with separate error handling for missing files vs. read failures\n- JSON parsing with clear error messages for malformed JSON\n- Default application via object spread (`{ ...DEFAULTS, ...settings }`) so loaded values override defaults\n- `AppError` with machine-readable codes (`SETTINGS_NOT_FOUND`, `SETTINGS_READ_ERROR`, `SETTINGS_PARSE_ERROR`) following the project's error convention\n- Exported as `{ loadSettings }` from the module"
+}

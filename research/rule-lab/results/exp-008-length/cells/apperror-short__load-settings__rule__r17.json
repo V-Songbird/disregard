@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r17",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 17,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:06:33.573Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0320008,
+  "durationMs": 17393,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Throws a clear error if the file is missing (distinguishes `ENOENT` from other read errors)\n- Throws a clear error if JSON parsing fails\n- Applies defaults (`theme: \"dark\"`, `autosave: true`) for any missing keys using object spread\n- Exports as a named export"
+}

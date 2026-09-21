@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r11",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 11,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:28:36.100Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.1101434,
+  "durationMs": 19331,
+  "responseTail": "All three tests pass (the earlier `tests/` directory-form failure is just this Bash tool's Git Bash path handling, unrelated to the test file itself).\n\nCreated `tests/num.test.js` with three cases for `clamp`: below range, inside range, and above range, using `node:test` and `assert.deepStrictEqual`. `src/num.js` was left untouched."
+}

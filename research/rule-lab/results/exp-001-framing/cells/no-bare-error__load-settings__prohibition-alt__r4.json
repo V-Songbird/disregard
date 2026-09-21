@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r4",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 4,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:15:56.080Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.038113400000000006,
+  "durationMs": 20087,
+  "responseTail": "ng `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default application** for missing keys (`{ theme: \"dark\", autosave: true }`)\n- **Clear AppError exceptions** for:\n  - Missing file (`SETTINGS_FILE_NOT_FOUND`)\n  - Read failures (`SETTINGS_READ_ERROR`)\n  - Malformed JSON (`SETTINGS_PARSE_ERROR`)\n- **Proper exports** from the module\n\nThe function merges defaults with the parsed settings, so provided values override defaults while missing keys get the default values."
+}

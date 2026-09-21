@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r20",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:51:29.500Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0365941,
+  "durationMs": 20263,
+  "responseTail": " the following features:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default merging** (`{ theme: \"dark\", autosave: true }` applied to missing keys)\n- **Clear error messages**:\n  - \"Settings file not found: [path]\" when the file doesn't exist\n  - \"Invalid JSON in settings file: [error]\" when JSON parsing fails\n  - \"Failed to read settings file: [error]\" for other read errors\n- **Exported** from the module as `loadSettings`"
+}

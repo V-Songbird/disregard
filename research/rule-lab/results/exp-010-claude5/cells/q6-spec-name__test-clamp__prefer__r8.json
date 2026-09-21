@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__prefer__r8",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "prefer",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:29:08.510Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.08700020000000001,
+  "durationMs": 22226,
+  "responseTail": "Added `src/num.spec.js` with three tests for `clamp` (below range, in range, above range); all pass via `node --test`."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r13",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:27:28.095Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0317039,
+  "durationMs": 15076,
+  "responseTail": "Done. The `loadSettings(filePath)` function is now implemented with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Default application** for missing keys (theme: \"dark\", autosave: true)\n- **Clear error handling**:\n  - \"Settings file not found\" when the file doesn't exist\n  - \"Invalid JSON in settings file\" when parsing fails\n  - Specific error messages for other read failures\n- **Named export** from the module"
+}

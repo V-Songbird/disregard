@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__rule__r7",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 7,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:11:30.763Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.05014219999999999,
+  "durationMs": 27971,
+  "responseTail": "Done! I've implemented all three functions:\n\n1. **formatBytes(n)** — converts byte counts to human-readable format (B, KB, MB, GB) with one decimal place\n2. **slugify(title)** — converts titles to slugs (lowercase, trim, spaces→dashes, strips non-alphanumeric/dash chars)\n3. **fetchUsers(baseUrl)** — fetches users from `${baseUrl}/api/users`, logs the count using `log()` from logger.js, and returns the array\n\nEach function is exported from its respective module."
+}

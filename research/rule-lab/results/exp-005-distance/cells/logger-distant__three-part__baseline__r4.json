@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r4",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:11:38.596Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.040732500000000005,
+  "durationMs": 20645,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n1. **formatBytes(n)** in util.js — formats byte counts as B, KB, MB, or GB with one decimal place\n2. **slugify(title)** in text.js — converts titles to URL-safe slugs (lowercase, trim, spaces→dashes, strips non-alphanumeric)\n3. **fetchUsers(baseUrl)** in api.js — fetches and logs the number of users from the API endpoint"
+}

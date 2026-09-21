@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__rule__r4",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 4,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:00:44.646Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0419988,
+  "durationMs": 23970,
+  "responseTail": "lePath)` with:\n\n- Synchronous file reading via `fs.readFileSync()`\n- JSON parsing with error handling\n- Default values (`{ theme: \"dark\", autosave: true }`) applied via spread operator so file values take precedence\n- Clear `AppError` exceptions for missing files and malformed JSON\n- Proper export following the module convention\n\nThe function handles three error cases:\n- Missing file: `ERR_SETTINGS_NOT_FOUND`\n- JSON parse failure: `ERR_SETTINGS_MALFORMED`\n- Other read errors: `ERR_SETTINGS_READ`"
+}

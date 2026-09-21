@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__strong__r6",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "strong",
+  "rep": 6,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:25:55.476Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.1102646,
+  "durationMs": 19593,
+  "responseTail": "All 3 tests pass. Note: `node --test` alone doesn't auto-discover `*.spec.js` (Node's default glob is `*.test.js`), so run it explicitly with `node --test src/num.spec.js`, or point `node --test` at the directory/glob if you want auto-discovery configured project-wide."
+}

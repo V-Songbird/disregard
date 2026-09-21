@@ -1,0 +1,40 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r4",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:13:15.913Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0312681,
+  "durationMs": 16020,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` which:\n- Reads the file synchronously and throws a clear error if missing\n- Parses the JSON with error handling for malformed content\n- Merges parsed settings with defaults (`theme: \"dark\"` and `autosave: true`)\n- Exports it from the module",
+  "fixtureDir": "X:\\Temp\\rule-lab-yYipF5"
+}

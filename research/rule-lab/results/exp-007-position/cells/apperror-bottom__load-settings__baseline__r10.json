@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__baseline__r10",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:52:09.751Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0333649,
+  "durationMs": 17169,
+  "responseTail": "ettings(filePath)` in `src/settings.js`:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Parses it as JSON with error handling for malformed JSON\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys\n- Throws descriptive errors: missing file, read failures, or parse errors\n- Exports the function from the module\n\nThe implementation merges defaults with provided values, so any keys in the loaded file will override the defaults while missing keys retain their defaults."
+}

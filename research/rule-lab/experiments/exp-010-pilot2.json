@@ -1,0 +1,82 @@
+{
+  "id": "exp-010-pilot2",
+  "question": "Q9",
+  "hypothesis": "Two fresh intents are anti-default on a Claude-5 tier, so each contrast can have a second one.",
+  "model": "sonnet",
+  "reps": 5,
+  "maxTurns": 24,
+  "timeoutMs": 420000,
+  "maxBudgetUsd": 0.35,
+  "intents": [
+    {
+      "id": "spec-name",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nfunction clamp(n, min, max) {\n  return Math.min(max, Math.max(min, n));\n}\n\nmodule.exports = { clamp };\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null
+      },
+      "tasks": [
+        {
+          "id": "test-clamp",
+          "prompt": "Add a test for `clamp(n, min, max)` in src/num.js covering a value below the range, a value inside it, and a value above it. Use the built-in `node:test` runner. Do not change src/num.js.",
+          "valid": [
+            {
+              "type": "path_regex",
+              "pattern": "\\.(test|spec)\\.[cm]?js$"
+            }
+          ],
+          "graders": [
+            {
+              "type": "composite",
+              "op": "and",
+              "children": [
+                {
+                  "type": "path_regex",
+                  "pattern": "\\.spec\\.[cm]?js$"
+                },
+                {
+                  "type": "path_regex_absent",
+                  "pattern": "\\.test\\.[cm]?js$"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "module-header",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "// @module num\n\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null
+      },
+      "tasks": [
+        {
+          "id": "add-slugify",
+          "prompt": "Add a new module src/text.js exporting `slugify(s)`: lowercase the string, replace every run of non-alphanumeric characters with a single hyphen, and trim leading and trailing hyphens. Do not add tests and do not change src/num.js.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/text.js",
+              "pattern": "slugify"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex",
+              "path": "src/text.js",
+              "pattern": "^// @module text"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

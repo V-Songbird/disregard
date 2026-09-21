@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r12",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 12,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:28:19.840Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0326213,
+  "durationMs": 16232,
+  "responseTail": "/settings.js with the following behavior:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Parses JSON and applies defaults `{ theme: \"dark\", autosave: true }` for missing keys\n- Throws `AppError` (as required by project instructions) with clear messages for:\n  - Missing files: `\"Settings file not found: <path>\"`\n  - Malformed JSON: `\"Invalid JSON in settings file: <error>\"`\n  - Other read errors: `\"Failed to read settings file: <error>\"`\n- Exported as `{ loadSettings }` from the module"
+}

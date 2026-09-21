@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r17",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:55:04.707Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.033811400000000005,
+  "durationMs": 21581,
+  "responseTail": "ith:\n\n- **Synchronous file reading** via `fs.readFileSync` with UTF-8 encoding\n- **Separate error handling** for missing files (ENOENT) and other read failures with clear messages\n- **JSON parsing** with error wrapping for malformed JSON\n- **Default merging** that applies `{ theme: \"dark\", autosave: true }` for any missing keys\n- **Exported** as a named export from the module\n\nThe function follows your project's style: concise, early returns via try-catch, and clear error messages for debugging."
+}

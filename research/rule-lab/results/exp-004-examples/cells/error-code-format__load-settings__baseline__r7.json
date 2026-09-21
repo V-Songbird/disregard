@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r7",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:02:21.668Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0313408,
+  "durationMs": 15689,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` with:\n\n- **Synchronous file reading** via `fs.readFileSync()`\n- **Error handling** for missing files (\"Settings file not found\") and malformed JSON (\"Invalid JSON in settings file\")\n- **Default values** applied using object spread: `{ theme: \"dark\", autosave: true }` for any missing keys\n- **Validation** that the JSON parses to an object (not an array or null)\n- **Export** as `{ loadSettings }` from the module"
+}

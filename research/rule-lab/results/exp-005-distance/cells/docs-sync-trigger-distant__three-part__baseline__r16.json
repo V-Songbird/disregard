@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-trigger-distant__three-part__baseline__r16",
+  "intent": "docs-sync-trigger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:28:28.469Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.03977270000000001,
+  "durationMs": 12867,
+  "responseTail": "Done. All three changes are complete:\n\n1. ✅ `formatBytes` in src/util.js now throws a TypeError if n is not a number or is negative\n2. ✅ `slugify` in src/text.js now collapses consecutive dashes into one dash\n3. ✅ `clamp(n, min, max)` implemented and exported from src/num.js, returning n limited to [min, max]"
+}

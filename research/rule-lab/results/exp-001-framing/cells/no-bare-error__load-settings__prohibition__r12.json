@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r12",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 12,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:11.632Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0340977,
+  "durationMs": 18920,
+  "responseTail": "ngs(filePath)` that:\n\n- Reads the file synchronously using `fs.readFileSync`\n- Catches file-not-found errors and throws a clear `SettingsError` with the file path\n- Parses the JSON and catches malformed JSON, throwing a clear error with details\n- Applies defaults `{ theme: \"dark\", autosave: true }` for any missing keys (settings override defaults)\n- Exports the function from the module\n\nI used a custom `SettingsError` class instead of the built-in `Error` to comply with your project instruction."
+}

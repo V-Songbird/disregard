@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r9",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:00:05.905Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0457864,
+  "durationMs": 26076,
+  "responseTail": "N** with error handling for malformed JSON\n- **Applies defaults** of `{ theme: \"dark\", autosave: true }` for missing keys (file values override defaults)\n- **Throws clear errors**:\n  - `\"Settings file not found: {path}\"` when the file doesn't exist\n  - `\"Invalid JSON in settings file: {path}\"` when JSON is malformed\n- **Exported** from the module as a named export\n\nThe function handles any additional keys in the settings file beyond `theme` and `autosave`, preserving them in the returned object."
+}

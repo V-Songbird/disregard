@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r7",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 7,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:43.087Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0314488,
+  "durationMs": 17983,
+  "responseTail": "Done. `loadSettings(filePath)` now:\n- Reads and parses the file synchronously\n- Throws descriptive errors for missing files or malformed JSON\n- Applies defaults `{ theme: \"dark\", autosave: true }` for any missing keys\n- Is exported as a named export"
+}

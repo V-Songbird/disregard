@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r10",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:04:39.290Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0306941,
+  "durationMs": 13878,
+  "responseTail": "Done. The function:\n- Reads the file synchronously with `fs.readFileSync`\n- Catches file-not-found errors (ENOENT) and throws a clear message\n- Catches JSON parse errors and throws a clear message\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for any missing keys via object spread\n- Exports `loadSettings` from the module\n\nSettings passed in the file override defaults—user-provided values take precedence."
+}

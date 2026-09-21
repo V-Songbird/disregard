@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__rule__r15",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 15,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:20:50.077Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.0384226,
+  "durationMs": 20560,
+  "responseTail": "Done. I've implemented all three functions:\n\n1. **`clamp(n, min, max)`** in src/num.js — constrains n to the inclusive range [min, max]\n2. **`formatBytes(n)`** in src/util.js — formats byte counts with one decimal place (B, KB, MB, GB)\n3. **`loadSettings(filePath)`** in src/settings.js — reads and parses JSON, applies defaults for missing keys, throws AppError if the file is missing or JSON is malformed\n\nAll functions are exported from their respective modules."
+}

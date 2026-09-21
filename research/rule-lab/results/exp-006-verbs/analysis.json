@@ -1,0 +1,66 @@
+{
+  "exp": "exp-006-verbs",
+  "generatedAt": "2026-07-19T02:43:59.655Z",
+  "cells": 120,
+  "usable": 120,
+  "intents": {
+    "docs-sync": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "strong": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prefer": {
+          "n": 20,
+          "mean": 0.45,
+          "lift": 0.45,
+          "ci95": [
+            0.25,
+            0.65
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "no-bare-error": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.15
+      },
+      "antiDefault": true,
+      "variants": {
+        "strong": {
+          "n": 20,
+          "mean": 1,
+          "lift": 0.85,
+          "ci95": [
+            0.7,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "prefer": {
+          "n": 20,
+          "mean": 0.6,
+          "lift": 0.44999999999999996,
+          "ci95": [
+            0.2,
+            0.7000000000000001
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    }
+  }
+}

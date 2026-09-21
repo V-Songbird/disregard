@@ -1,0 +1,39 @@
+{
+  "id": "q4-examples__load-settings__baseline__r3",
+  "intent": "q4-examples",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:28:26.944Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.11400360000000001,
+  "durationMs": 11068,
+  "responseTail": "Implemented `loadSettings` in src/settings.js: it reads the file synchronously, throws a clear error on read failure or malformed JSON, merges parsed values over the `{ theme: \"dark\", autosave: true }` defaults, and exports the function."
+}

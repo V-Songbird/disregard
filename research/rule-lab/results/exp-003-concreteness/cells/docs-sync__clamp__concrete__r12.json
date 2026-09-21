@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__concrete__r12",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "concrete",
+  "rep": 12,
+  "exp": "exp-003-concreteness",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:45:32.352Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.026954,
+  "durationMs": 9153,
+  "responseTail": "Done. Added `clamp(n, min, max)` to `src/num.js` — it returns n constrained to [min, max] and is now exported from the module."
+}

@@ -1,0 +1,182 @@
+{
+  "id": "exp-005-distance",
+  "question": "Q5",
+  "hypothesis": "A rule's compliance decays when the rule-triggering subtask arrives after distractor subtasks, compared with the same rule and an immediate trigger. Immediate-trigger reference arms come from exp-003 (logger concrete, 1.00) and exp-004 (error-code no-example, 1.00), same rules, same graders, n=20 each.",
+  "model": "haiku",
+  "reps": 20,
+  "maxTurns": 24,
+  "timeoutMs": 420000,
+  "intents": [
+    {
+      "id": "logger-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/logger.js": "\"use strict\";\n// Project logging helper — writes structured lines to stderr.\nfunction log(message, data) {\n  process.stderr.write(JSON.stringify({ ts: Date.now(), message, data }) + \"\\n\");\n}\nmodule.exports = { log };\n",
+        "src/api.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/text.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-api\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Never use `console.log` in src/ files — call `log()` from `src/logger.js` instead."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) Implement `formatBytes(n)` in src/util.js: format a byte count as a human-readable string using B, KB, MB, or GB with one decimal place. Export it. 2) Implement `slugify(title)` in src/text.js: lowercase, trim, replace runs of spaces with dashes, strip every character that is not a letter, digit, or dash. Export it. 3) Add `fetchUsers(baseUrl)` to src/api.js: GET `${baseUrl}/api/users` with fetch, parse the JSON array, log how many users were fetched, and return the array. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/util.js", "pattern": "formatBytes" },
+            { "type": "file_regex", "path": "src/text.js", "pattern": "slugify" },
+            { "type": "file_regex", "path": "src/api.js", "pattern": "fetchUsers" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/api.js", "pattern": "console\\.(log|info|debug)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docs-sync-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\nfunction formatBytes(n) {\n  const units = [\"B\", \"KB\", \"MB\", \"GB\"];\n  let i = 0;\n  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }\n  return n.toFixed(1) + \" \" + units[i];\n}\nmodule.exports = { formatBytes };\n",
+        "src/text.js": "\"use strict\";\nfunction slugify(title) {\n  return title.toLowerCase().trim().replace(/ +/g, \"-\").replace(/[^a-z0-9-]/g, \"\");\n}\nmodule.exports = { slugify };\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n- slugify(title) — turn a title into a URL slug.\n- formatBytes(n) — format a byte count as a human-readable string.\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- List every exported src/ function in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) In src/util.js, make `formatBytes` throw a TypeError when n is negative or not a number (keep the export unchanged). 2) In src/text.js, make `slugify` also collapse runs of consecutive dashes into one dash (keep the export unchanged). 3) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/util.js", "pattern": "TypeError" },
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "apperror-positive-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Signal failures in src/ files by throwing `AppError` from `src/errors.js`."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. 2) Implement `formatBytes(n)` in src/util.js: format a byte count as a human-readable string using B, KB, MB, or GB with one decimal place. Export it. 3) Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "loadSettings" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "throw" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/settings.js", "pattern": "\\bError\\s*\\(" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docs-sync-trigger-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\nfunction formatBytes(n) {\n  const units = [\"B\", \"KB\", \"MB\", \"GB\"];\n  let i = 0;\n  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }\n  return n.toFixed(1) + \" \" + units[i];\n}\nmodule.exports = { formatBytes };\n",
+        "src/text.js": "\"use strict\";\nfunction slugify(title) {\n  return title.toLowerCase().trim().replace(/ +/g, \"-\").replace(/[^a-z0-9-]/g, \"\");\n}\nmodule.exports = { slugify };\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n- slugify(title) — turn a title into a URL slug.\n- formatBytes(n) — format a byte count as a human-readable string.\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- When you export a new function from src/, list it in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) In src/util.js, make `formatBytes` throw a TypeError when n is negative or not a number (keep the export unchanged). 2) In src/text.js, make `slugify` also collapse runs of consecutive dashes into one dash (keep the export unchanged). 3) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/util.js", "pattern": "TypeError" },
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "changelog-trigger-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/text.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n## [1.0.0] - 2026-01-01\n- Initial release.\n",
+        "package.json": "{\n  \"name\": \"fixture-text\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- When you change a file in src/, note the change as a bullet under `## [Unreleased]` in CHANGELOG.md."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. 2) Implement `formatBytes(n)` in src/util.js: format a byte count as a human-readable string using B, KB, MB, or GB with one decimal place. Export it. 3) Implement `slugify(title)` in src/text.js: lowercase, trim, replace runs of spaces with dashes, strip every character that is not a letter, digit, or dash. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" },
+            { "type": "file_regex", "path": "src/text.js", "pattern": "slugify" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "CHANGELOG.md", "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] " }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "errcode-distant",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "src/util.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "rule": "- Every error message thrown in src/ files starts with an uppercase snake-case error code followed by a colon."
+      },
+      "tasks": [
+        {
+          "id": "three-part",
+          "prompt": "Do these three tasks in order. 1) Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it. 2) Implement `formatBytes(n)` in src/util.js: format a byte count as a human-readable string using B, KB, MB, or GB with one decimal place. Export it. 3) Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" },
+            { "type": "file_regex", "path": "src/util.js", "pattern": "formatBytes" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "loadSettings" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "throw" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__rule__r18",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:22:58.041Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 12,
+  "costUsd": 0.052982,
+  "durationMs": 29329,
+  "responseTail": "Done! All three functions are implemented and exported:\n\n1. **`clamp(n, min, max)`** — constrains n to the range [min, max] using nested Math.min/max\n2. **`formatBytes(n)`** — divides by 1024 repeatedly, formatting each size tier (B, KB, MB, GB) with one decimal place\n3. **`loadSettings(filePath)`** — reads the file synchronously, parses JSON, merges with defaults ({ theme: \"dark\", autosave: true }), and throws AppError with specific codes for missing file or invalid JSON"
+}

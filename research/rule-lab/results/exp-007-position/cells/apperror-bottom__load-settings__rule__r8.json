@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__rule__r8",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 8,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:50:59.442Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0593062,
+  "durationMs": 33489,
+  "responseTail": ".readFileSync`\n- **Error handling** for missing files (ENOENT) and other read errors, both throwing descriptive `AppError` instances\n- **JSON parsing** with clear error messages for malformed JSON\n- **Default application** for missing keys (`theme: \"dark\"`, `autosave: true`) using object spread\n- **Export** from the module\n\nThe implementation follows your project conventions: zero dependencies, CommonJS, early error handling, and uses the existing `AppError` class for consistent error signaling."
+}

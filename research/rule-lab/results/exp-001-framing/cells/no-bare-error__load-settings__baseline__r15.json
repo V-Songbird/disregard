@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r15",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 15,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:25:43.189Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028990900000000003,
+  "durationMs": 12207,
+  "responseTail": "Done. The `loadSettings` function:\n- Reads the file synchronously and throws if missing\n- Parses JSON with a clear error message for malformed input\n- Merges parsed settings with defaults (`theme: \"dark\"`, `autosave: true`), where parsed values override defaults\n- Exported as a named export"
+}

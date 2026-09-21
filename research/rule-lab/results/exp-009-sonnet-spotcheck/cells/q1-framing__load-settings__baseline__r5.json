@@ -1,0 +1,39 @@
+{
+  "id": "q1-framing__load-settings__baseline__r5",
+  "intent": "q1-framing",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:22:48.506Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.1194867,
+  "durationMs": 13151,
+  "responseTail": "Implemented `loadSettings` in `src/settings.js`, reusing the existing `AppError` type for distinct not-found (`SETTINGS_NOT_FOUND`) and malformed-JSON (`SETTINGS_INVALID_JSON`) error codes, and merging parsed data over the `{ theme: \"dark\", autosave: true }` defaults."
+}

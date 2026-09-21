@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r18",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:08:02.566Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.043855,
+  "durationMs": 24404,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in `src/settings.js`. It:\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses JSON and throws `AppError` with code `\"SETTINGS_PARSE_ERROR\"` if malformed\n- Throws `AppError` with code `\"SETTINGS_FILE_NOT_FOUND\"` if the file is missing\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys\n- Exports the function via `module.exports`"
+}

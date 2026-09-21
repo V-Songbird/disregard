@@ -1,0 +1,39 @@
+{
+  "id": "changelog-trigger-distant__three-part__baseline__r16",
+  "intent": "changelog-trigger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:32:32.893Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0327718,
+  "durationMs": 16276,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n1. **`clamp(n, min, max)`** in src/num.js — constrains n to [min, max] using Math.max/min\n2. **`formatBytes(n)`** in src/util.js — converts bytes to human-readable format (B, KB, MB, GB) with one decimal place\n3. **`slugify(title)`** in src/text.js — lowercases, trims, replaces spaces with dashes, and strips non-alphanumeric characters except dashes"
+}

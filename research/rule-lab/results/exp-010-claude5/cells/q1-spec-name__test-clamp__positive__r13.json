@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__positive__r13",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "positive",
+  "rep": 13,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:35:42.785Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.11244800000000002,
+  "durationMs": 22164,
+  "responseTail": "All 3 tests pass when run directly. Note: bare `node --test` (with no path) doesn't auto-discover `*.spec.js` files by default — only `*.test.js` and similar patterns, or files under a `test/` directory. If you want plain `node --test` to pick this up, run `node --test src` (matches `.spec.js` inside directories) or add a `\"test\"` script to `package.json` like `\"node --test src\"`. Want me to add that script?"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r5",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 5,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:07.535Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031985200000000005,
+  "durationMs": 17652,
+  "responseTail": "Done. The `loadSettings` function now:\n- Reads the file synchronously with `fs.readFileSync`\n- Handles missing files with a `SETTINGS_FILE_NOT_FOUND` error\n- Handles read errors with a `SETTINGS_FILE_READ_ERROR` message\n- Parses JSON and throws `SETTINGS_PARSE_ERROR` for malformed JSON\n- Applies defaults (`theme: \"dark\"`, `autosave: true`) for any missing keys\n- Exports via `module.exports`"
+}

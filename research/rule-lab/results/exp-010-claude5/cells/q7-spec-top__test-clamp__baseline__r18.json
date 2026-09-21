@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r18",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:37:47.147Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.1251314,
+  "durationMs": 25392,
+  "responseTail": "All 3 tests pass (the directory-glob form `node --test tests/` seems to have an issue in this shell environment, but running the file directly works fine, and `node --test tests/` is the documented command that should work in a normal invocation).\n\nCreated `tests/num.test.js` with three cases for `clamp`: below range, inside range, and above range — using `node:test` and `assert.deepStrictEqual` per project conventions. `src/num.js` was not touched."
+}

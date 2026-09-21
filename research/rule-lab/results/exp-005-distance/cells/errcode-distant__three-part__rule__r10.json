@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__rule__r10",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 10,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:13:15.312Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.046582700000000005,
+  "durationMs": 24630,
+  "responseTail": "s — returns n constrained to the range [min, max]\n2. **`formatBytes(n)`** in src/util.js — formats byte counts as human-readable strings (B, KB, MB, GB) with one decimal place\n3. **`loadSettings(filePath)`** in src/settings.js — reads and parses JSON synchronously, applies default values for missing keys, throws clear errors with error codes for missing files or invalid JSON\n\nAll error messages follow the project convention of starting with an uppercase snake-case error code followed by a colon."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r12",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 12,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:27:58.920Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.1636542,
+  "durationMs": 31332,
+  "responseTail": "All three tests pass (the `tests/` directory-argument issue is an environment quirk with MSYS path translation, unrelated to the test file itself).\n\nAdded `tests/num.test.js` with three `node:test` cases for `clamp` — below range, inside range, and above range — using `assert.deepStrictEqual` per the project conventions. `src/num.js` was not modified."
+}

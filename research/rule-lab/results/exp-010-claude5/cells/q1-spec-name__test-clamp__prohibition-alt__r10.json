@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition-alt__r10",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition-alt",
+  "rep": 10,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:21:02.523Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.13271280000000002,
+  "durationMs": 35427,
+  "responseTail": "All 3 tests pass. Added `src/num.spec.js` with tests for below-range, in-range, and above-range values.\n\nNote: plain `node --test` (no args) won't discover this file by default since Node's built-in glob doesn't match `*.spec.js` — you'll need `node --test src/num.spec.js` or a glob like `node --test \"**/*.spec.js\"`, since there's no test script in `package.json` to configure that."
+}

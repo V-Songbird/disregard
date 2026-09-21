@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r14",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:05:19.418Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.041014999999999996,
+  "durationMs": 23267,
+  "responseTail": " the following features:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **JSON parsing** with error handling for malformed JSON\n- **Default values** applied for missing keys (theme: \"dark\", autosave: true)\n- **Clear error messages** for missing files and JSON parse errors using the existing `AppError` class\n- **Proper export** as a named export from the module\n\nThe function uses object spread to merge defaults with parsed settings, so any keys in the parsed file override the defaults."
+}

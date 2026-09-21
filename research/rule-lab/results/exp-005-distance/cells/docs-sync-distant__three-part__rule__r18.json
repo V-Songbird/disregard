@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-distant__three-part__rule__r18",
+  "intent": "docs-sync-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:18:29.192Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0521221,
+  "durationMs": 31882,
+  "responseTail": "All three tasks done:\n\n1. ✓ `formatBytes` now throws `TypeError` if `n` is not a number or is negative\n2. ✓ `slugify` now collapses runs of consecutive dashes into one dash\n3. ✓ `clamp(n, min, max)` implemented in src/num.js and exported"
+}

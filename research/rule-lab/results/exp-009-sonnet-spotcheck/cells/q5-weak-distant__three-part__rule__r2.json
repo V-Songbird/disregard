@@ -1,0 +1,39 @@
+{
+  "id": "q5-weak-distant__three-part__rule__r2",
+  "intent": "q5-weak-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 2,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:23:57.067Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.15985329999999998,
+  "durationMs": 22230,
+  "responseTail": "All three tasks are done: `formatBytes` now throws a `TypeError` for negative/non-number input, `slugify` collapses consecutive dashes, and `clamp(n, min, max)` is implemented and exported in `src/num.js`. I also added `clamp` to `docs/api.md` per the project's CLAUDE.md rule. No tests were added."
+}

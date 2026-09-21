@@ -1,0 +1,33 @@
+{
+  "id": "module-header__add-slugify__baseline__r4",
+  "intent": "module-header",
+  "task": "add-slugify",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-010-pilot2",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:15:16.485Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "^// @module text",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0661402,
+  "durationMs": 8529,
+  "responseTail": "Created `src/text.js` exporting `slugify(s)`, matching `src/num.js`'s style (`\"use strict\"` + `module.exports`)."
+}

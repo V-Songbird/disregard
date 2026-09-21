@@ -1,0 +1,39 @@
+{
+  "id": "q1-bare-error__load-settings__baseline__r2",
+  "intent": "q1-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-010-pilot",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:12:19.162Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.08231720000000001,
+  "durationMs": 13579,
+  "responseTail": "Implemented `loadSettings(filePath)` in `src/settings.js`, reusing the existing `AppError` type for clear, coded errors (`SETTINGS_NOT_FOUND`, `SETTINGS_INVALID_JSON`). Missing keys fall back to `{ theme: \"dark\", autosave: true }`. No tests added, per instructions."
+}

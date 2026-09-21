@@ -1,0 +1,30 @@
+{
+  "id": "q1-spec-name__test-clamp__prohibition__r4",
+  "intent": "q1-spec-name",
+  "task": "test-clamp",
+  "variant": "prohibition",
+  "rep": 4,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:22:59.167Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0806486,
+  "durationMs": 17190,
+  "responseTail": "Added `test/num.spec.js` with three cases (below, inside, above range) for `clamp`, avoiding the `.test.js` naming restriction. All 3 tests pass via `node --test`."
+}

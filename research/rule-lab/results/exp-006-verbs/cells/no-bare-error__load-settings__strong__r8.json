@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r8",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 8,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:08.857Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.034859299999999996,
+  "durationMs": 17930,
+  "responseTail": "lePath)` in src/settings.js with:\n\n- **Synchronous file reading** using `fs.readFileSync`\n- **Error handling** for missing files (throws `SETTINGS_NOT_FOUND`) and malformed JSON (throws `SETTINGS_PARSE_ERROR`)\n- **Default values** applied via object spread: `{ theme: \"dark\", autosave: true }`\n- **AppError** for all errors as required by your project guidelines\n- **Export** via `module.exports`\n\nThe function merges parsed settings with defaults, so any keys in the JSON file override the defaults."
+}

@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r10",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 10,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:19:39.163Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030189299999999995,
+  "durationMs": 14305,
+  "responseTail": "Done. I've added `fetchUsers(baseUrl)` to src/api.js—it fetches from the endpoint, parses the JSON, and returns the array.\n\nNote: I omitted the logging step because the project instructions forbid `console.log` in src/ files. If you want logging, let me know and I can adjust the constraint or add it elsewhere."
+}

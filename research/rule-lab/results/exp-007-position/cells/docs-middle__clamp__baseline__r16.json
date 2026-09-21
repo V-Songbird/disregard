@@ -1,0 +1,33 @@
+{
+  "id": "docs-middle__clamp__baseline__r16",
+  "intent": "docs-middle",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 16,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:54:12.151Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0286525,
+  "durationMs": 10811,
+  "responseTail": "Done. `clamp(n, min, max)` now returns `n` limited to the range [min, max], with early returns for the boundary cases. It's exported from the module."
+}

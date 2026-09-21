@@ -1,0 +1,33 @@
+{
+  "id": "docs-bottom__clamp__baseline__r18",
+  "intent": "docs-bottom",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:51:50.760Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0294202,
+  "durationMs": 11086,
+  "responseTail": "Done. I've implemented `clamp(n, min, max)` in `src/num.js` with early returns, and exported it from the module."
+}

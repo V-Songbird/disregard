@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r11",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 11,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:20:09.961Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.0429865,
+  "durationMs": 25303,
+  "responseTail": "Done. All three functions are now implemented and exported:\n\n1. **`clamp(n, min, max)`** — constrains n to the range [min, max]\n2. **`formatBytes(n)`** — formats byte counts with units (B, KB, MB, GB) to one decimal place\n3. **`slugify(title)`** — converts titles to URL-safe slugs by lowercasing, trimming, replacing spaces with dashes, and removing non-alphanumeric characters (except dashes)"
+}

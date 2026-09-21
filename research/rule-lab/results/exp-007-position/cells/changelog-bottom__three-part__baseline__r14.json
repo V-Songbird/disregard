@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__baseline__r14",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 14,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:12:47.253Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.036013,
+  "durationMs": 19870,
+  "responseTail": "x]` using early returns.\n- **`formatBytes(n)`** in `src/util.js` — divides by 1024 iteratively to find the right unit (B, KB, MB, GB) and formats with one decimal place using `toFixed(1)`.\n- **`slugify(title)`** in `src/text.js` — chains transformations to lowercase, trim, replace space runs with dashes, and strip all non-word/dash characters.\n\nAll functions follow the project's code style: two-space indentation, double quotes, early returns, under ~40 lines, and are exported from their modules."
+}

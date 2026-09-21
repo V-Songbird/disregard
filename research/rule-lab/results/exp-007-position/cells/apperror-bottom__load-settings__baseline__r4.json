@@ -1,0 +1,39 @@
+{
+  "id": "apperror-bottom__load-settings__baseline__r4",
+  "intent": "apperror-bottom",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:01:46.185Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.046128699999999995,
+  "durationMs": 23904,
+  "responseTail": "for malformed JSON\n- **Default values** merged in (`{ theme: \"dark\", autosave: true }`) — parsed settings override defaults\n- **Clear error throwing** using the project's `AppError` class with distinct error codes for different failure modes:\n  - `SETTINGS_NOT_FOUND` — file missing\n  - `SETTINGS_READ_ERROR` — file read failure\n  - `SETTINGS_INVALID_JSON` — malformed JSON\n- **Export** of the function from the module\n\nThe function returns a merged object with defaults applied for any missing keys."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r5",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:29:49.440Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.1348752,
+  "durationMs": 29204,
+  "responseTail": "All 3 tests pass (the directory-form invocation appears to be a quirk of this Node/Git-Bash combo, not an issue with the test file itself).\n\nAdded `tests/num.test.js` with three `node:test` cases for `clamp` (below range, in range, above range), verified green with `node --test tests/num.test.js`. `src/num.js` untouched."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__rule__r5",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:20:10.592Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.0410807,
+  "durationMs": 20034,
+  "responseTail": "- **`clamp(n, min, max)`** in src/num.js — uses `Math.max` and `Math.min` to limit the value to the inclusive range\n- **`formatBytes(n)`** in src/util.js — converts bytes to human-readable format with B, KB, MB, or GB units; returns integers without decimals for bytes, one decimal place for larger units\n- **`slugify(title)`** in src/text.js — lowercases, trims, replaces spaces with dashes, and strips all non-alphanumeric/dash characters\n\nAll three are exported and the changelog has been updated."
+}

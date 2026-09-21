@@ -1,0 +1,33 @@
+{
+  "id": "logger-helper__fetch-users__baseline__r10",
+  "intent": "logger-helper",
+  "task": "fetch-users",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-003-concreteness",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:48:52.428Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.027542599999999997,
+  "durationMs": 11445,
+  "responseTail": "Done. Added `fetchUsers(baseUrl)` to src/api.js — it fetches from the `/api/users` endpoint, logs the count, and returns the array. Exported via module.exports."
+}

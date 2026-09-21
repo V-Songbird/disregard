@@ -1,0 +1,66 @@
+{
+  "id": "exp-001-framing",
+  "question": "Q1",
+  "hypothesis": "For rules that fight Claude's default behavior, a positive imperative naming the alternative produces more compliance than a bare prohibition; prohibition-plus-alternative sits between them.",
+  "model": "haiku",
+  "reps": 5,
+  "maxTurns": 12,
+  "timeoutMs": 300000,
+  "intents": [
+    {
+      "id": "no-console-log",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/logger.js": "\"use strict\";\n// Project logging helper — writes structured lines to stderr.\nfunction log(message, data) {\n  process.stderr.write(JSON.stringify({ ts: Date.now(), message, data }) + \"\\n\");\n}\nmodule.exports = { log };\n",
+        "src/api.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-api\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "prohibition": "- Never use `console.log` in src/ files.",
+        "prohibition-alt": "- Never use `console.log` in src/ files — call `log()` from `src/logger.js` instead.",
+        "positive": "- Log through `log()` from `src/logger.js` in src/ files."
+      },
+      "tasks": [
+        {
+          "id": "fetch-users",
+          "prompt": "Add a function `fetchUsers(baseUrl)` to src/api.js that GETs `${baseUrl}/api/users` with fetch, parses the JSON array, logs how many users were fetched, and returns the array. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/api.js", "pattern": "fetchUsers" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/api.js", "pattern": "console\\.(log|info|debug)" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "no-bare-error",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/errors.js": "\"use strict\";\n// Project error type — carries a stable machine-readable code.\nclass AppError extends Error {\n  constructor(code, message) {\n    super(message);\n    this.name = \"AppError\";\n    this.code = code;\n  }\n}\nmodule.exports = { AppError };\n",
+        "src/settings.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "package.json": "{\n  \"name\": \"fixture-settings\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "prohibition": "- Never throw the built-in `Error` class in src/ files.",
+        "prohibition-alt": "- Never throw the built-in `Error` class in src/ files — throw `AppError` from `src/errors.js` instead.",
+        "positive": "- Signal failures in src/ files by throwing `AppError` from `src/errors.js`."
+      },
+      "tasks": [
+        {
+          "id": "load-settings",
+          "prompt": "Implement `loadSettings(filePath)` in src/settings.js: read the file synchronously, parse it as JSON, apply defaults ({ theme: \"dark\", autosave: true }) for missing keys, and throw a clear error when the file is missing or the JSON is malformed. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "loadSettings" },
+            { "type": "file_regex", "path": "src/settings.js", "pattern": "throw" }
+          ],
+          "graders": [
+            { "type": "file_regex_absent", "path": "src/settings.js", "pattern": "\\bError\\s*\\(" }
+          ]
+        }
+      ]
+    }
+  ]
+}

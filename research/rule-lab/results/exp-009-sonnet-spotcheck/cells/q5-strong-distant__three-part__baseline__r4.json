@@ -1,0 +1,45 @@
+{
+  "id": "q5-strong-distant__three-part__baseline__r4",
+  "intent": "q5-strong-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 4,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:22:54.275Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.14702769999999998,
+  "durationMs": 23184,
+  "responseTail": "All three implemented: `formatBytes` in src/util.js, `slugify` in src/text.js, and `fetchUsers` in src/api.js (using the existing `logger.js` helper). No tests added."
+}

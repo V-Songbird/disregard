@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__baseline__r20",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:08:14.783Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0322446,
+  "durationMs": 16550,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` with:\n- Synchronous file reading via `fs.readFileSync`\n- JSON parsing with error handling for malformed JSON\n- Default values applied for missing keys (`theme: \"dark\"`, `autosave: true`)\n- Clear error messages for missing files (ENOENT) and invalid JSON (SyntaxError)\n- Exported as a named export"
+}

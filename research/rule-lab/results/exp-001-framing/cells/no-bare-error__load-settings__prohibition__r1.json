@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r1",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 1,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:16:23.627Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0344299,
+  "durationMs": 18933,
+  "responseTail": "ve implemented `loadSettings(filePath)` with:\n- Synchronous file reading via `fs.readFileSync`\n- JSON parsing with proper error handling\n- Default values (`{ theme: \"dark\", autosave: true }`) applied for missing keys via object spread\n- A custom `SettingsError` class for clear error messages on missing files or malformed JSON\n- Exported as a named export from the module\n\nThe function merges parsed settings over defaults, so file values override defaults while missing keys get the default values."
+}

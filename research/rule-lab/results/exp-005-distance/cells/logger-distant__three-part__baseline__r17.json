@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r17",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:10:10.696Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0331974,
+  "durationMs": 16163,
+  "responseTail": "Done. I've implemented all three functions:\n\n- **formatBytes(n)** in src/util.js: Divides by 1024 through units (B, KB, MB, GB) and formats with one decimal place.\n- **slugify(title)** in src/text.js: Lowercases, trims, replaces space runs with dashes, and strips non-alphanumeric characters except dashes.\n- **fetchUsers(baseUrl)** in src/api.js: Fetches from `${baseUrl}/api/users`, logs the count, and returns the parsed JSON array.\n\nAll three are exported from their modules."
+}

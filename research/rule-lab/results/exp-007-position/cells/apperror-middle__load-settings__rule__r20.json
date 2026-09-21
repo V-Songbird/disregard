@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r20",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 20,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:49:12.318Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.036849999999999994,
+  "durationMs": 18946,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` that:\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses it as JSON, catching parse errors\n- Merges the parsed config with defaults (`{ theme: \"dark\", autosave: true }`)\n- Throws clear `AppError` exceptions for missing files and malformed JSON\n- Exports the function from the module\n\nThe function handles all three error cases: file not found (ENOENT), other read errors, and invalid JSON."
+}

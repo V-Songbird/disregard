@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__baseline__r7",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:10:34.127Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0334131,
+  "durationMs": 15806,
+  "responseTail": "All three functions are implemented and exported:\n\n1. **clamp** (`src/num.js`) — constrains a number to the inclusive range [min, max]\n2. **formatBytes** (`src/util.js`) — formats byte counts using B, KB, MB, GB with one decimal place\n3. **loadSettings** (`src/settings.js`) — reads and parses a JSON settings file with defaults for `theme` and `autosave`, throwing clear errors for missing files or invalid JSON\n\nDone."
+}

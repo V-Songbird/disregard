@@ -1,0 +1,95 @@
+{
+  "exp": "exp-004-examples",
+  "generatedAt": "2026-07-19T02:05:02.550Z",
+  "cells": 180,
+  "usable": 180,
+  "intents": {
+    "error-code-format": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "no-example": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "example": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "docs-sync": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "no-example": {
+          "n": 20,
+          "mean": 0.6,
+          "lift": 0.6,
+          "ci95": [
+            0.4,
+            0.8
+          ],
+          "verdict": "CONFIRMED+"
+        },
+        "example": {
+          "n": 20,
+          "mean": 0.75,
+          "lift": 0.75,
+          "ci95": [
+            0.55,
+            0.9
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "changelog-duty": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "no-example": {
+          "n": 20,
+          "mean": 0.15,
+          "lift": 0.15,
+          "ci95": [
+            0,
+            0.3
+          ],
+          "verdict": "INCONCLUSIVE"
+        },
+        "example": {
+          "n": 20,
+          "mean": 0.1,
+          "lift": 0.1,
+          "ci95": [
+            0,
+            0.25
+          ],
+          "verdict": "INCONCLUSIVE"
+        }
+      }
+    }
+  }
+}

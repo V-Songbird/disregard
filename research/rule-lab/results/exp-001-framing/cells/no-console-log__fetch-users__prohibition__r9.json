@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r9",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 9,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:18:31.603Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 1,
+  "costUsd": 0.0198225,
+  "durationMs": 7887,
+  "responseTail": "I notice a contradiction: you've asked me to log how many users were fetched, but the project CLAUDE.md says \"Never use `console.log` in src/ files.\" \n\nShould I:\n1. Skip the logging part entirely\n2. Use a different approach (like returning metadata with the result)\n3. Set up a proper logger instead of console.log\n\nWhich would you prefer?"
+}

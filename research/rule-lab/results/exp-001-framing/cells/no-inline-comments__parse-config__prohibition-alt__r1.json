@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__prohibition-alt__r1",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "prohibition-alt",
+  "rep": 1,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:09:26.921Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.04903950000000001,
+  "durationMs": 32840,
+  "responseTail": "Done. The function:\n- Reads files synchronously with `fs.readFileSync`\n- Parses JSON and throws a clear error if malformed\n- Distinguishes between missing files and read errors\n- Applies defaults (`retries: 3`, `timeoutMs: 5000`) by spreading defaults first, then config values (so file values override defaults)\n- Exports `parseConfig` from the module"
+}

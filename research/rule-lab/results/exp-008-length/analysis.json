@@ -1,0 +1,46 @@
+{
+  "exp": "exp-008-length",
+  "generatedAt": "2026-07-19T03:09:19.891Z",
+  "cells": 80,
+  "usable": 80,
+  "intents": {
+    "docs-short": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.55,
+          "lift": 0.55,
+          "ci95": [
+            0.35,
+            0.8
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "apperror-short": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.2
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.4,
+          "lift": 0.2,
+          "ci95": [
+            -0.09999999999999998,
+            0.45000000000000007
+          ],
+          "verdict": "INCONCLUSIVE"
+        }
+      }
+    }
+  }
+}

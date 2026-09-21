@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r11",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 11,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:41:45.105Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0415059,
+  "durationMs": 22965,
+  "responseTail": "h code `SETTINGS_PARSE_ERROR` if malformed\n- **Applies defaults** ({ theme: \"dark\", autosave: true }) for missing keys using object spread\n- **Throws clear errors** when:\n  - File is missing → `AppError(\"SETTINGS_FILE_NOT_FOUND\", ...)`\n  - JSON is invalid → `AppError(\"SETTINGS_PARSE_ERROR\", ...)`\n  - Other read errors → `AppError(\"SETTINGS_READ_ERROR\", ...)`\n- **Exported** as the module export\n\nThe function follows the project's convention of using `AppError` instead of the built-in Error class."
+}

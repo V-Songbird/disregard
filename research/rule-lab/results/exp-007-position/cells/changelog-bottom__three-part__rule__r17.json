@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__rule__r17",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 17,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:12:20.663Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.06902130000000001,
+  "durationMs": 38320,
+  "responseTail": "* in `src/num.js` — returns n bounded to [min, max] with early returns for clarity.\n2. **`formatBytes(n)`** in `src/util.js` — formats byte counts by dividing by 1024 until reaching B/KB/MB/GB, then formats with one decimal place.\n3. **`slugify(title)`** in `src/text.js` — processes the title through lowercase, trim, space→dash replacement, then strips non-alphanumeric-dash characters.\n\nAll are exported and follow the project's code style. I've also updated CHANGELOG.md with the three additions."
+}

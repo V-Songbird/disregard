@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__rule__r9",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:08:52.712Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.041293300000000005,
+  "durationMs": 22863,
+  "responseTail": "Done. I've implemented all three functions:\n\n- **`clamp(n, min, max)`** in src/num.js returns n clamped to [min, max]\n- **`formatBytes(n)`** in src/util.js formats byte counts with one decimal place (e.g., \"1.5MB\")\n- **`loadSettings(filePath)`** in src/settings.js reads JSON, applies defaults for `theme` and `autosave`, and throws errors with uppercase snake_case codes (FILE_NOT_FOUND, INVALID_JSON, FILE_READ_ERROR) when the file is missing or malformed\n\nAll exports are ready to use."
+}

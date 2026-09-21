@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync-duty__clamp__baseline__r2",
+  "intent": "docs-sync-duty",
+  "task": "clamp",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:39:13.046Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.026774100000000002,
+  "durationMs": 10315,
+  "responseTail": "Done. The `clamp` function limits n to the inclusive range [min, max] and is now exported from the module."
+}

@@ -213,11 +213,11 @@ make; nothing here does it. Two things to settle first:
    0.5 — which `README.md:33` already states as the house rules for authoring an
    experiment. That section is the contribution guide, nearly as written.
 
-**The harness was located and audited on 2026-09-20.** It lives outside this
-repo at `D:/Projects/Personal/SoftwareDevelopment/slag/docs/research/rule-lab`,
-gitignored by `slag/.gitignore:15` through a blanket `/docs/*`. The corpus is
-exactly **2,020 cells** across 12 experiment specs, and `node --test
-harness.test.js` passes 10 of 10 with no API calls.
+**The harness was audited on 2026-09-20,** while it still sat in `slag` under a
+blanket-ignored `/docs/*`. It is now [research/rule-lab/](../../research/rule-lab).
+The corpus is exactly **2,020 cells** across 12 experiment specs, and
+`harness.test.js` passes 10 of 10 with no API calls, as part of this
+repository's own check.
 
 Point 1 above came back **clean**. Every cell is a flat JSON record of 17 fields
 whose only free text is `responseTail`, and a scan of all 2,020 found no
@@ -226,25 +226,18 @@ absolute filesystem path, no username, no email address and no home-directory or
 cells ship. The scan looked for those patterns only; it is not a review of what
 the response text says.
 
-**It does not belong in this repository.** Checked 2026-09-20. Three reasons,
-in order of weight:
+**It lives here now.** Reversed by the owner on 2026-09-20, the same day the
+earlier recommendation was written. That recommendation rested on this
+repository having no remote and on assay's model profiles being the
+contribution target. The first is temporary — this repo is to be published. The
+second is the coupling being removed, not a reason to keep it.
 
-1. **This repository has no remote.** Moving `rule-lab` here publishes nothing,
-   because Disregard itself is not published. `slag` is public at
-   <https://github.com/V-Songbird/slag> and answers 200 unauthenticated.
-2. **The contribution target is already in `slag`.** A contributor submits one
-   `scripts/models/<id>.js` plus a line in `index.js`, and
-   `assay/scripts/models/` holds exactly that, tracked, with `fable5`,
-   `haiku45`, `opus5` and `sonnet5` beside `index.js`. The harness and the
-   files its output feeds would sit in one repository.
-3. **This app consumes nothing from it.** `lib/analyze.js` emits findings and
-   deliberately no grade, and its thresholds are its own, each measured in a
-   document under `docs/knowledge/`. The note elsewhere in `docs/tasks/` calling
-   the composition "inherited from assay beyond the rule-lab weights" describes
-   assay's weighted mean, which this app does not use.
-
-So the move is inside `slag`: out of the blanket-ignored `/docs/*` tree, or an
-un-ignore for that one path. Nothing here does it, and nothing here should.
+So `rule-lab` sits at [research/rule-lab/](../../research/rule-lab), with the
+rubric it shares beside it. `harness.test.js` runs as part of this
+repository's check, which is how the harness stops being a thing nobody runs.
+The trap worth naming: `.gitignore` already excludes `docs/research/`, so the
+harness is at top level instead, or this repo would have reproduced the exact
+accident that kept it out of `slag`.
 
 ---
 
@@ -510,24 +503,25 @@ argument for the findings-first UI rather than against shipping.
 
 ## Where the supporting research lives
 
-The rubric and the Jev probe behind the figures above were written into the other
-`slag` working copy (`D:\Projects\Personal\SoftwareDevelopment\slag`), as
-`docs/writing-rules-for-ai.md` and `docs/jev-rule-scoring-feasibility.md`.
+**In this repository, since 2026-09-20.** All four pieces were copied out of the
+`slag` working copy, where they sat under a blanket-ignored `/docs/*` tree in
+one copy each, in no version control at all:
 
-**That repository gitignores its whole `docs/` tree** (`.gitignore:15`,
-`/docs/*`), deliberately — all of its research lives there local-only. So those
-two files are not in version control and cannot be linked from here: any relative
-path out of this repository breaks on clone, and no absolute path is portable.
+| What | Here | Was |
+| --- | --- | --- |
+| The harness and its 2,020 cells | [research/rule-lab/](../../research/rule-lab) | `slag/docs/research/rule-lab` |
+| The F3 and F8 rubric | [research/rubrics.md](../../research/rubrics.md) | `slag/assay/references/rubrics.md` |
+| The extracted field guide | [writing-rules-for-ai.md](../knowledge/writing-rules-for-ai.md) | `slag/docs/writing-rules-for-ai.md` |
+| The first Jev probe | [jev-rule-scoring-feasibility.md](../knowledge/jev-rule-scoring-feasibility.md) | `slag/docs/jev-rule-scoring-feasibility.md` |
 
-Two consequences, both accepted rather than worked around:
+The figures this document depends on — per-rule token cost, the F3 calibration
+defect, the F8 agreement rate — are still restated here in full rather than
+cited. That was load-bearing when the sources were unlinkable and it is merely
+redundant now, but restating a measured number costs nothing and a reader who
+opens only this page still gets the whole argument.
 
-- The measured figures this document depends on — per-rule token cost, the F3
-  calibration defect, the F8 agreement rate — are **restated here in full**
-  rather than cited. This document is the only copy of them that git will ever
-  hold, so the repetition is load-bearing, not duplication.
-- If that research is ever needed outside this machine, it must be copied into a
-  tracked location. Not done here: moving files out of another repository's
-  deliberately-ignored folder is the owner's call, not this task's.
+`slag` keeps its own copies. Deleting them there is a separate decision and not
+this repository's to make.
 
 ## Rejected Alternatives
 

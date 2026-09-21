@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__example__r15",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "example",
+  "rep": 15,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:56:24.806Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0306019,
+  "durationMs": 14489,
+  "responseTail": "Done. The `slugify` function converts a title to a URL-friendly slug by lowercasing, trimming, replacing space runs with dashes, and removing non-alphanumeric characters (except dashes)."
+}

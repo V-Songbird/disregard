@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__example__r18",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "example",
+  "rep": 18,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:27.959Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0338827,
+  "durationMs": 15780,
+  "responseTail": ".js:\n\n- Reads the file synchronously with `fs.readFileSync`\n- Parses JSON with error handling for malformed content\n- Throws `E_NOT_FOUND: settings file missing` when the file doesn't exist\n- Throws `E_INVALID_JSON: malformed JSON in settings file` when JSON is invalid\n- Merges parsed settings with defaults `{ theme: \"dark\", autosave: true }`\n- Exported as a named export from the module\n\nThe function follows the project's error convention of uppercase snake-case error codes prefixed to messages."
+}

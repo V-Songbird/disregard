@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__baseline__r2",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:33.859Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0310529,
+  "durationMs": 15774,
+  "responseTail": "`fs.readFileSync`\n- **JSON parsing** with error handling\n- **Default values** applied via spread operator: `{ theme: \"dark\", autosave: true }` override missing keys\n- **Clear error messages**:\n  - File missing: `\"Settings file not found: {path}\"`\n  - Invalid JSON: `\"Invalid JSON in settings file: {path}\"`\n- **Exported** as `{ loadSettings }` from the module\n\nThe implementation merges parsed settings with defaults, so settings file values override the defaults while missing keys use the defaults."
+}

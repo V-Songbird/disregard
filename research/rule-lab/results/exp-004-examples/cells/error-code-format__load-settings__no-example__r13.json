@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r13",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 13,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:01:49.638Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032741599999999996,
+  "durationMs": 17058,
+  "responseTail": " (ENOENT) and read errors\n- **JSON parsing** with error handling for malformed JSON\n- **Default application** using spread operators: `{ theme: \"dark\", autosave: true }` merged with the loaded settings (settings override defaults)\n- **Clear error messages** following the project requirement (uppercase snake-case error codes followed by a colon)\n- **Module export** of the function\n\nThe function will merge any loaded settings with the defaults, so missing keys automatically get the default values."
+}

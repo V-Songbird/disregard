@@ -1,0 +1,51 @@
+{
+  "id": "errcode-distant__three-part__baseline__r18",
+  "intent": "errcode-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:13:34.782Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.037526300000000005,
+  "durationMs": 19436,
+  "responseTail": "Done! All three functions are now implemented and exported:\n\n1. **`clamp(n, min, max)`** in src/num.js — returns n constrained to the range [min, max]\n2. **`formatBytes(n)`** in src/util.js — formats byte counts as human-readable strings (B, KB, MB, GB with one decimal place)\n3. **`loadSettings(filePath)`** in src/settings.js — reads and parses a JSON settings file, applies defaults for missing `theme` and `autosave` keys, and throws clear errors for missing files or malformed JSON"
+}

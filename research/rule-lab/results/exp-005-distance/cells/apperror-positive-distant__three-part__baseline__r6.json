@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r6",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:24:05.306Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.0343939,
+  "durationMs": 18902,
+  "responseTail": "Done. I've implemented all three functions:\n\n- **clamp(n, min, max)** in src/num.js: Constrains n to the range [min, max]\n- **formatBytes(n)** in src/util.js: Formats byte counts with one decimal place, choosing B/KB/MB/GB based on size\n- **loadSettings(filePath)** in src/settings.js: Reads and parses JSON synchronously, applies defaults for theme and autosave, and throws descriptive errors for missing files or malformed JSON\n\nAll are exported and ready to use."
+}

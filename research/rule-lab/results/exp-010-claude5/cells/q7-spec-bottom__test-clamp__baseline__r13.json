@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__baseline__r13",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:28:19.729Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.1242892,
+  "durationMs": 27194,
+  "responseTail": "All 3 tests pass. Added `tests/num.test.js` with happy-path (in-range), and edge-case tests for below-range and above-range clamping, without touching `src/num.js`. (The directory-glob form `node --test tests/` doesn't resolve on this environment/Node build, but the direct file invocation confirms the suite is green.)"
+}

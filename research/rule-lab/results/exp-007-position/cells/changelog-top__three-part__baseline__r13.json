@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__baseline__r13",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 13,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:18:54.383Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0354598,
+  "durationMs": 16398,
+  "responseTail": "Done. All three functions are implemented and exported:\n\n1. **`clamp(n, min, max)`** in src/num.js — constrains n to the range [min, max]\n2. **`formatBytes(n)`** in src/util.js — formats byte counts with B, KB, MB, GB units and one decimal place\n3. **`slugify(title)`** in src/text.js — converts titles to URL-safe slugs (lowercase, trimmed, spaces→dashes, only alphanumeric+dashes)"
+}

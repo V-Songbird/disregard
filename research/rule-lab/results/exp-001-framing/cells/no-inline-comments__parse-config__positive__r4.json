@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__positive__r4",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "positive",
+  "rep": 4,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:09:50.915Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0315452,
+  "durationMs": 15209,
+  "responseTail": "Done. The `parseConfig` function now:\n- Reads the file synchronously using `fs.readFileSync`\n- Throws a clear error if the file is missing (`Config file not found: ...`)\n- Throws a clear error if JSON is malformed (`Invalid JSON in config file: ...`)\n- Applies defaults for `retries: 3` and `timeoutMs: 5000` when keys are missing\n- Is exported as a named export from the module"
+}

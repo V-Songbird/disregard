@@ -1,0 +1,39 @@
+{
+  "id": "docs-sync-trigger-distant__three-part__rule__r17",
+  "intent": "docs-sync-trigger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 17,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:27:19.646Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.050925000000000005,
+  "durationMs": 26081,
+  "responseTail": "Done. All three tasks are complete:\n\n1. **formatBytes** now throws a TypeError if n is negative or not a number.\n2. **slugify** now collapses consecutive dashes into one dash (added `.replace(/-+/g, \"-\")` to the chain).\n3. **clamp** is implemented in src/num.js and exported. Also added to docs/api.md per your project guidelines."
+}

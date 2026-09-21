@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r20",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:27:21.116Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029961,
+  "durationMs": 13807,
+  "responseTail": "settings.js with:\n\n- **Synchronous file reading** using `fs.readFileSync()`\n- **JSON parsing** with error handling for malformed JSON\n- **Default merging** for `theme: \"dark\"` and `autosave: true` (user settings override defaults)\n- **Clear error messages**:\n  - \"Settings file not found: {path}\" when file is missing\n  - \"Failed to read settings file: {error}\" for other read failures\n  - \"Invalid JSON in settings file: {error}\" for malformed JSON\n- **Export** as a named export: `{ loadSettings }`"
+}

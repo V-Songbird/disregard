@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r7",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 7,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:23:58.004Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 9,
+  "costUsd": 0.047621500000000004,
+  "durationMs": 23430,
+  "responseTail": "Done! All three functions are implemented and exported:\n\n1. **clamp** — Returns n limited to [min, max] using Math.max/min\n2. **formatBytes** — Formats bytes as human-readable (B, KB, MB, GB) with one decimal place, dividing by 1024 for each unit\n3. **loadSettings** — Reads and parses JSON synchronously, applies defaults ({ theme: \"dark\", autosave: true }), throws descriptive errors for missing files or malformed JSON"
+}

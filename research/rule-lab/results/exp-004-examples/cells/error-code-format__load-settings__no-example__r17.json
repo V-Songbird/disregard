@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r17",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 17,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:00:54.731Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031626299999999996,
+  "durationMs": 15506,
+  "responseTail": ":\n\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses it as JSON with error handling\n- Applies defaults for `theme` and `autosave` when missing (spread defaults first, then overlay file contents)\n- Throws clear errors with uppercase snake-case error codes per project conventions:\n  - `SETTINGS_FILE_NOT_FOUND` when the file doesn't exist\n  - `SETTINGS_FILE_READ_ERROR` for other read issues\n  - `SETTINGS_JSON_MALFORMED` for invalid JSON\n- Exports from the module as `{ loadSettings }`"
+}

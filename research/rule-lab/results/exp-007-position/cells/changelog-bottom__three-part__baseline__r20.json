@@ -1,0 +1,39 @@
+{
+  "id": "changelog-bottom__three-part__baseline__r20",
+  "intent": "changelog-bottom",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 20,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:18:33.375Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.0430795,
+  "durationMs": 21004,
+  "responseTail": ", max)`** in src/num.js — Returns n limited to the inclusive range [min, max] using nested Math operations.\n\n2. **`formatBytes(n)`** in src/util.js — Formats byte counts as human-readable strings with one decimal place, using B/KB/MB/GB units. Whole bytes stay undecorated (B), larger units get one decimal.\n\n3. **`slugify(title)`** in src/text.js — Trims, lowercases, replaces space runs with dashes, then strips any character that isn't a letter, digit, or dash.\n\nAll are exported and ready to use."
+}

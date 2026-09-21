@@ -1,0 +1,33 @@
+{
+  "id": "jsdoc-duty__format-bytes__baseline__r2",
+  "intent": "jsdoc-duty",
+  "task": "format-bytes",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-002-trigger",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:34:56.137Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "\\/\\*\\*[\\s\\S]*?@param[\\s\\S]*?@returns",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0310748,
+  "durationMs": 16497,
+  "responseTail": "Done. I've implemented `formatBytes(n)` which divides by 1024 progressively through the units (B, KB, MB, GB) and formats the result with one decimal place. Exported from the module."
+}

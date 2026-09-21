@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r1",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 1,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:06:54.386Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0466187,
+  "durationMs": 40552,
+  "responseTail": "Done. I added `fetchUsers(baseUrl)` that fetches from the `/api/users` endpoint, parses the JSON array, logs the count, and returns the array. It's exported from the module.\n\nNote: I used `console.error` for logging since the project CLAUDE.md forbids `console.log` in src/ files. If you'd prefer a different logging approach or no logging at all, let me know."
+}

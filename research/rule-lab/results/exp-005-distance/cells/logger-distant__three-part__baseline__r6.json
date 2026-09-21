@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__baseline__r6",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:13:20.646Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 0
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.033925300000000005,
+  "durationMs": 19035,
+  "responseTail": "`formatBytes(n)`** in `src/util.js` — converts byte counts to human-readable format (B, KB, MB, GB) with one decimal place by dividing by 1024 at each step.\n\n2. **`slugify(title)`** in `src/text.js` — lowercases, trims, replaces runs of spaces with dashes, and strips non-letter/digit/dash characters.\n\n3. **`fetchUsers(baseUrl)`** in `src/api.js` — fetches the users array from `${baseUrl}/api/users`, logs the count, and returns the array.\n\nAll functions are exported from their respective modules."
+}

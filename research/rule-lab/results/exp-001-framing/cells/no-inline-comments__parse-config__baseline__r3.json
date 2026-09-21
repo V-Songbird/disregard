@@ -1,0 +1,33 @@
+{
+  "id": "no-inline-comments__parse-config__baseline__r3",
+  "intent": "no-inline-comments",
+  "task": "parse-config",
+  "variant": "baseline",
+  "rep": 3,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:05:25.016Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/config.js",
+      "pattern": "parseConfig",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/config.js",
+      "pattern": "(^|[^:\"'])//(?!/)",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030977599999999994,
+  "durationMs": 14777,
+  "responseTail": "Done. I've implemented `parseConfig(filePath)` to read and parse the config file synchronously, applying defaults for `retries` and `timeoutMs` when those keys are missing. It throws descriptive errors for missing files and malformed JSON."
+}

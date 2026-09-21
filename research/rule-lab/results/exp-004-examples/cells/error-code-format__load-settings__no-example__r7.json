@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r7",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 7,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:26.194Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.038193500000000005,
+  "durationMs": 19514,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in src/settings.js with:\n\n- Synchronous file reading via `fs.readFileSync`\n- JSON parsing with proper error handling\n- Defaults applied via spread operator (`{ theme: \"dark\", autosave: true }`)\n- Two error codes following your project convention:\n  - `FILE_NOT_FOUND` when the file doesn't exist\n  - `INVALID_JSON` when the JSON is malformed\n- Exported as `{ loadSettings }` from the module"
+}

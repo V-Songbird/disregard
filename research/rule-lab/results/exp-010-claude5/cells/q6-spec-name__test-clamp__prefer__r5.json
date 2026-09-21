@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__prefer__r5",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "prefer",
+  "rep": 5,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:34:41.966Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.1628202,
+  "durationMs": 52353,
+  "responseTail": "Added `src/num.spec.js` with three `node:test` cases for `clamp`: below range, inside range, and above range. Verified with `node --test src/num.spec.js` — all 3 pass. Note: bare `node --test` (no path) doesn't auto-discover `*.spec.js` files in this Node version (v22) since its default glob only matches `*.test.js`/`*-test.js`/etc.; running it against the file or directory explicitly works fine. Didn't touch `src/num.js` or `package.json`."
+}

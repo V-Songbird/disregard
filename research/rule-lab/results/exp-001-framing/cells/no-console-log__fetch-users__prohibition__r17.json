@@ -1,0 +1,33 @@
+{
+  "id": "no-console-log__fetch-users__prohibition__r17",
+  "intent": "no-console-log",
+  "task": "fetch-users",
+  "variant": "prohibition",
+  "rep": 17,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:24:50.364Z",
+  "ok": true,
+  "valid": false,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 0
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 2,
+  "costUsd": 0.025304200000000002,
+  "durationMs": 14416,
+  "responseTail": "The project instructions say \"Never use `console.log` in src/ files,\" but you're asking me to log how many users were fetched. Should I use a different logging approach (like a logger object/function), or would you like me to omit the logging?"
+}

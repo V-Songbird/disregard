@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r6",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 6,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:38:40.678Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.030423000000000002,
+  "durationMs": 15052,
+  "responseTail": "Done. The `loadSettings()` function reads the file synchronously, parses JSON with clear error messages for missing files or malformed JSON, applies the defaults for `theme` and `autosave`, and is exported from the module."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-bottom__test-clamp__rule__r3",
+  "intent": "q7-spec-bottom",
+  "task": "test-clamp",
+  "variant": "rule",
+  "rep": 3,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:30:33.315Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.10905139999999999,
+  "durationMs": 20194,
+  "responseTail": "All three tests pass. (The `node --test tests/` directory-form invocation errored on this Node/Windows setup with a module-resolution issue unrelated to the new test — running the file directly works fine.)\n\nAdded `tests/num.spec.js` with three cases for `clamp`: below range, inside range, and above range, using `node:test` and `assert.deepStrictEqual`. `src/num.js` was not modified."
+}

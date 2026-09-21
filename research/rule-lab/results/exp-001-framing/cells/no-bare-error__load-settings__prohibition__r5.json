@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r5",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 5,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:14:32.131Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0420088,
+  "durationMs": 23220,
+  "responseTail": "ON parsing** with error handling for malformed JSON\n- **Default values** applied for missing keys ({ theme: \"dark\", autosave: true })\n- **Clear error handling** using AppError with specific error codes:\n  - `SETTINGS_FILE_NOT_FOUND` when the file is missing\n  - `SETTINGS_JSON_INVALID` when JSON is malformed\n  - `SETTINGS_READ_ERROR` for other file read issues\n- **Exported** as a named export\n\nThe function merges defaults with parsed settings, so any values in the JSON file override the defaults."
+}

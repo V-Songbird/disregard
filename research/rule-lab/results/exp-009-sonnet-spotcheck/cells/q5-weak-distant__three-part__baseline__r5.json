@@ -1,0 +1,39 @@
+{
+  "id": "q5-weak-distant__three-part__baseline__r5",
+  "intent": "q5-weak-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:29:55.678Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "TypeError",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.1246889,
+  "durationMs": 12719,
+  "responseTail": "All three tasks done: `formatBytes` now throws `TypeError` for negative/non-number input, `slugify` collapses consecutive dashes, and `clamp(n, min, max)` is implemented and exported in `src/num.js`."
+}

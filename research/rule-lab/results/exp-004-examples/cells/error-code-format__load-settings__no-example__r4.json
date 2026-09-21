@@ -1,0 +1,39 @@
+{
+  "id": "error-code-format__load-settings__no-example__r4",
+  "intent": "error-code-format",
+  "task": "load-settings",
+  "variant": "no-example",
+  "rep": 4,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:03:45.714Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "[`'\\\"][A-Z][A-Z0-9_]{2,}:",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.0372562,
+  "durationMs": 22643,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in src/settings.js that:\n\n- Reads the file synchronously with `fs.readFileSync()`\n- Parses it as JSON with error handling\n- Applies defaults (`{ theme: \"dark\", autosave: true }`) for missing keys using object spread\n- Throws clear errors with uppercase snake-case codes for missing files (`SETTINGS_FILE_NOT_FOUND`), parse errors (`SETTINGS_INVALID_JSON`), and other read errors (`SETTINGS_READ_ERROR`)\n- Exports the function as a named export"
+}

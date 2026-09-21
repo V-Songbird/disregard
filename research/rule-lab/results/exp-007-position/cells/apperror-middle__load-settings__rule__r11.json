@@ -1,0 +1,39 @@
+{
+  "id": "apperror-middle__load-settings__rule__r11",
+  "intent": "apperror-middle",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 11,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:58:46.404Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0405712,
+  "durationMs": 24783,
+  "responseTail": "Done. I've implemented `loadSettings(filePath)` in `src/settings.js` with:\n\n- **Synchronous file reading** via `fs.readFileSync`\n- **JSON parsing** with separate error handling for file-not-found vs. malformed JSON\n- **Default merging** so `{ theme: \"dark\", autosave: true }` is applied, then overridden by any keys from the file\n- **Clear AppError throws** with stable error codes (`SETTINGS_NOT_FOUND`, `SETTINGS_PARSE_ERROR`, `SETTINGS_READ_ERROR`)\n- **Module export** of `loadSettings`"
+}

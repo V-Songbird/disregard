@@ -1,0 +1,30 @@
+{
+  "id": "q7-spec-top__test-clamp__baseline__r8",
+  "intent": "q7-spec-top",
+  "task": "test-clamp",
+  "variant": "baseline",
+  "rep": 8,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:37:22.615Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 0
+    }
+  ],
+  "turns": 8,
+  "costUsd": 0.13145,
+  "durationMs": 29690,
+  "responseTail": "All three tests pass. The earlier `node --test tests/` directory-glob invocation is a pre-existing quirk of this environment (likely path handling in Git Bash), unrelated to the new test file — running the file directly works fine.\n\nCreated `tests/num.test.js` with three cases for `clamp`: below range, inside range, and above range, using `node:test` and `assert.deepStrictEqual` per the project conventions. `src/num.js` was not touched."
+}

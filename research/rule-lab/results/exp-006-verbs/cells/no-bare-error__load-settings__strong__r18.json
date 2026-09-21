@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r18",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 18,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:42:46.471Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0316156,
+  "durationMs": 16301,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n\n- **Reads synchronously** with `fs.readFileSync()`\n- **Parses JSON** and throws `AppError` with code `SETTINGS_PARSE_ERROR` if malformed\n- **Handles missing files** with code `SETTINGS_FILE_NOT_FOUND`\n- **Applies defaults** (`{ theme: \"dark\", autosave: true }`) for any missing keys by merging with the parsed settings\n- **Uses `AppError`** (not built-in `Error`) per project instructions\n- **Exports** the function from the module"
+}

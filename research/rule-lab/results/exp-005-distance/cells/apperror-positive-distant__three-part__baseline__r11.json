@@ -1,0 +1,45 @@
+{
+  "id": "apperror-positive-distant__three-part__baseline__r11",
+  "intent": "apperror-positive-distant",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 11,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:23:50.052Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.0508221,
+  "durationMs": 32449,
+  "responseTail": "Perfect! All three functions are implemented and working correctly:\n\n✅ **clamp(n, min, max)** — Returns n limited to [min, max]  \n✅ **formatBytes(n)** — Formats bytes as B/KB/MB/GB with one decimal place  \n✅ **loadSettings(filePath)** — Reads JSON synchronously, applies defaults, throws clear errors for missing/malformed files"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r11",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 11,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:08:21.324Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.032093,
+  "durationMs": 15726,
+  "responseTail": "e implemented `loadSettings(filePath)` with:\n\n- **Synchronous read** via `fs.readFileSync`\n- **JSON parsing** with try/catch for malformed JSON\n- **Defaults** merged via spread operator (defaults applied first, then overridden by loaded settings)\n- **Clear error messages** for missing files (`ENOENT` code detected specifically) and JSON parse errors\n- **Module export** as a named export\n\nMissing keys in the JSON automatically get the default values; explicit values in the file override defaults."
+}

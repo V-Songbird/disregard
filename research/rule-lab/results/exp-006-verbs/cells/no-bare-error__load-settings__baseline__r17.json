@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r17",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 17,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:37:33.344Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.03208420000000001,
+  "durationMs": 16449,
+  "responseTail": "Done. The `loadSettings` function now:\n- Reads the file synchronously using `fs.readFileSync`\n- Parses the JSON with error handling\n- Applies defaults for `theme` and `autosave` (only missing keys get the default value)\n- Throws clear errors for missing files (\"Settings file not found: ...\") and malformed JSON (\"Failed to parse settings JSON: ...\")\n- Is exported as a named export"
+}

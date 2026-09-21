@@ -1,0 +1,39 @@
+{
+  "id": "changelog-top__three-part__baseline__r2",
+  "intent": "changelog-top",
+  "task": "three-part",
+  "variant": "baseline",
+  "rep": 2,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:14:37.612Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.0452494,
+  "durationMs": 21456,
+  "responseTail": ")`** in `src/util.js` — Formats byte counts as human-readable strings (B, KB, MB, GB) with one decimal place for units larger than bytes.\n\n3. **`slugify(title)`** in `src/text.js` — Converts a title to a slug by lowercasing, trimming, replacing spaces with dashes, and removing non-alphanumeric characters (except dashes), then collapsing consecutive dashes.\n\nAll three functions follow the project's code style: two-space indentation, double quotes, early returns, and are exported as named exports."
+}

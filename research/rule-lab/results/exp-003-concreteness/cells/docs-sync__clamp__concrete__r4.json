@@ -1,0 +1,33 @@
+{
+  "id": "docs-sync__clamp__concrete__r4",
+  "intent": "docs-sync",
+  "task": "clamp",
+  "variant": "concrete",
+  "rep": 4,
+  "exp": "exp-003-concreteness",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:45:53.789Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0270518,
+  "durationMs": 10040,
+  "responseTail": "Done. The `clamp` function returns `n` limited to the range [min, max] by using `Math.max(min, Math.min(n, max))`, and it's now exported from the module."
+}

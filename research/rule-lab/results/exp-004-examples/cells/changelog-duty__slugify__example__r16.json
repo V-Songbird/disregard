@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__example__r16",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "example",
+  "rep": 16,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:55:26.486Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.028021899999999995,
+  "durationMs": 11274,
+  "responseTail": "Done. I've implemented `slugify(title)` in src/text.js with the transformation steps in order: lowercase, trim, replace space runs with dashes, and strip non-alphanumeric characters except dashes. It's exported as a named export."
+}

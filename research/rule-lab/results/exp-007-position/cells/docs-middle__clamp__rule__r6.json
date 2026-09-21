@@ -1,0 +1,33 @@
+{
+  "id": "docs-middle__clamp__rule__r6",
+  "intent": "docs-middle",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 6,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:54:29.088Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.029870300000000002,
+  "durationMs": 11240,
+  "responseTail": "Done. Added `clamp(n, min, max)` to src/num.js with the standard implementation: it returns `min` if `n < min`, `max` if `n > max`, otherwise `n`. Exported from the module."
+}

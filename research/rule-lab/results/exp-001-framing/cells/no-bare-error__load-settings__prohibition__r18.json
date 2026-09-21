@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition__r18",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 18,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:26:09.012Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0342447,
+  "durationMs": 19342,
+  "responseTail": "Done. The `loadSettings(filePath)` function now:\n- Reads the file synchronously using `fs.readFileSync`\n- Parses the JSON and throws `SettingsError` if malformed\n- Throws `SettingsError` if the file is missing or unreadable\n- Applies defaults for `theme` and `autosave` to any missing keys\n- Is exported as a named export\n\nThe implementation uses a custom `SettingsError` class to comply with the project's constraint against throwing the built-in `Error` class directly."
+}

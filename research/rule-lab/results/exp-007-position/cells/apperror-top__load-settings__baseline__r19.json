@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r19",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 19,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:55:09.496Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0426032,
+  "durationMs": 28292,
+  "responseTail": "ding** using `fs.readFileSync()`\n- **JSON parsing** with validation that the result is a plain object\n- **Default values** applied for missing keys: `{ theme: \"dark\", autosave: true }`\n- **Clear error messages** for missing files (\"Settings file not found\") and malformed JSON (\"Invalid JSON in settings file\")\n- **Proper export** from the module\n\nThe function merges the loaded settings with defaults, so any keys present in the file override the defaults, while missing keys get the default values."
+}

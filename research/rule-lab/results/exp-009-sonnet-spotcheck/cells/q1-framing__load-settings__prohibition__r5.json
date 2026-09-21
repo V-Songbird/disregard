@@ -1,0 +1,39 @@
+{
+  "id": "q1-framing__load-settings__prohibition__r5",
+  "intent": "q1-framing",
+  "task": "load-settings",
+  "variant": "prohibition",
+  "rep": 5,
+  "exp": "exp-009-sonnet-spotcheck",
+  "model": "sonnet",
+  "startedAt": "2026-07-19T03:27:35.766Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.12053459999999999,
+  "durationMs": 12749,
+  "responseTail": "Implemented `loadSettings` in `src/settings.js`, throwing `AppError` (not the built-in `Error`) for missing files or malformed JSON, and merging parsed values over the `{ theme: \"dark\", autosave: true }` defaults. No tests added."
+}

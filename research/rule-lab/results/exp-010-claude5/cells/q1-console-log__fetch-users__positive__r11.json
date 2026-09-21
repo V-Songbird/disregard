@@ -1,0 +1,33 @@
+{
+  "id": "q1-console-log__fetch-users__positive__r11",
+  "intent": "q1-console-log",
+  "task": "fetch-users",
+  "variant": "positive",
+  "rep": 11,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:28:58.787Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 4,
+  "costUsd": 0.0685074,
+  "durationMs": 9048,
+  "responseTail": "Done — `fetchUsers(baseUrl)` is added to src/api.js and exported, using `log()` from `src/logger.js` as required by the project conventions. No tests added."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "apperror-short__load-settings__rule__r9",
+  "intent": "apperror-short",
+  "task": "load-settings",
+  "variant": "rule",
+  "rep": 9,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:04:59.838Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0422414,
+  "durationMs": 23108,
+  "responseTail": "eading** using `fs.readFileSync`\n- **Default values** ({ theme: \"dark\", autosave: true }) merged with parsed settings, with file keys taking precedence\n- **Clear error handling** using `AppError`:\n  - Missing file: `SETTINGS_NOT_FOUND`\n  - Read errors: `SETTINGS_READ_ERROR`\n  - Malformed JSON: `SETTINGS_PARSE_ERROR`\n- **Exported** from the module\n\nThe function applies defaults by spreading them first, then spreading the parsed object on top, so any keys present in the file override the defaults."
+}

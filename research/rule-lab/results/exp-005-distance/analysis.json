@@ -1,0 +1,122 @@
+{
+  "exp": "exp-005-distance",
+  "generatedAt": "2026-07-19T02:34:26.649Z",
+  "cells": 240,
+  "usable": 240,
+  "intents": {
+    "logger-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "docs-sync-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0,
+          "lift": 0,
+          "ci95": [
+            0,
+            0
+          ],
+          "verdict": "NULL"
+        }
+      }
+    },
+    "apperror-positive-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0.2
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 0.8,
+          "ci95": [
+            0.6,
+            0.95
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "docs-sync-trigger-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.7,
+          "lift": 0.7,
+          "ci95": [
+            0.5,
+            0.9
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "changelog-trigger-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 0.95,
+          "lift": 0.95,
+          "ci95": [
+            0.85,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    },
+    "errcode-distant": {
+      "baseline": {
+        "n": 20,
+        "mean": 0
+      },
+      "antiDefault": true,
+      "variants": {
+        "rule": {
+          "n": 20,
+          "mean": 1,
+          "lift": 1,
+          "ci95": [
+            1,
+            1
+          ],
+          "verdict": "CONFIRMED+"
+        }
+      }
+    }
+  }
+}

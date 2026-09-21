@@ -1,0 +1,39 @@
+{
+  "id": "changelog-trigger-distant__three-part__rule__r20",
+  "intent": "changelog-trigger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 20,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:27:38.212Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 1
+    }
+  ],
+  "turns": 11,
+  "costUsd": 0.049461899999999996,
+  "durationMs": 28599,
+  "responseTail": "Done. I've implemented all three functions and updated CHANGELOG.md:\n\n1. **clamp(n, min, max)** — uses Math.min/Math.max to constrain n within [min, max]\n2. **formatBytes(n)** — divides by 1024 repeatedly, selecting B/KB/MB/GB, formatted to one decimal place\n3. **slugify(title)** — lowercases, trims, replaces space runs with dashes, removes non-alphanumeric characters except dashes\n\nEach is exported from its module."
+}

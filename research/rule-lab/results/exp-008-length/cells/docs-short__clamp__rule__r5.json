@@ -1,0 +1,33 @@
+{
+  "id": "docs-short__clamp__rule__r5",
+  "intent": "docs-short",
+  "task": "clamp",
+  "variant": "rule",
+  "rep": 5,
+  "exp": "exp-008-length",
+  "model": "haiku",
+  "startedAt": "2026-07-19T03:07:01.321Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/num.js",
+      "pattern": "clamp",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "docs/api.md",
+      "pattern": "clamp",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0286735,
+  "durationMs": 12273,
+  "responseTail": "Done. Added `clamp(n, min, max)` to src/num.js — it returns n constrained to the inclusive range [min, max], using the idiomatic Math.max/Math.min pattern."
+}

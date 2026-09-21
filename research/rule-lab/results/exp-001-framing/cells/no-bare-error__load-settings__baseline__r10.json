@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__baseline__r10",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:18:39.493Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.031578800000000004,
+  "durationMs": 15040,
+  "responseTail": "Done. The `loadSettings(filePath)` function is now implemented and exported. It:\n\n- Reads the file synchronously with `fs.readFileSync()`\n- Throws a clear error if the file is missing (catches ENOENT)\n- Throws a clear error if JSON parsing fails\n- Merges the parsed settings with defaults (`{ theme: \"dark\", autosave: true }`), with file values taking precedence\n- Is exported as a named export from the module"
+}

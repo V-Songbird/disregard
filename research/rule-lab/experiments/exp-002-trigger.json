@@ -1,0 +1,63 @@
+{
+  "id": "exp-002-trigger",
+  "question": "Q2",
+  "hypothesis": "A duty rule with an explicit 'when X' trigger clause produces more compliance than the same duty stated as a standing obligation, because the trigger tells the model at which moment the rule applies.",
+  "model": "haiku",
+  "reps": 20,
+  "maxTurns": 12,
+  "timeoutMs": 300000,
+  "intents": [
+    {
+      "id": "docs-sync-duty",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/num.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "docs/api.md": "# API reference\n\nExported functions:\n\n(none yet)\n",
+        "package.json": "{\n  \"name\": \"fixture-num\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-trigger": "- List every exported src/ function in docs/api.md.",
+        "trigger": "- When you export a new function from src/, list it in docs/api.md."
+      },
+      "tasks": [
+        {
+          "id": "clamp",
+          "prompt": "Implement `clamp(n, min, max)` in src/num.js: return n limited to the inclusive range [min, max]. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/num.js", "pattern": "clamp" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "docs/api.md", "pattern": "clamp" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "changelog-duty",
+      "claudeMd": "# Project notes\n\nSmall Node utility library. Tests run with `node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/text.js": "\"use strict\";\n\nmodule.exports = {};\n",
+        "CHANGELOG.md": "# Changelog\n\n## [Unreleased]\n\n## [1.0.0] - 2026-01-01\n- Initial release.\n",
+        "package.json": "{\n  \"name\": \"fixture-text\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null,
+        "no-trigger": "- Note every src/ change as a bullet under `## [Unreleased]` in CHANGELOG.md.",
+        "trigger": "- When you change a file in src/, note the change as a bullet under `## [Unreleased]` in CHANGELOG.md."
+      },
+      "tasks": [
+        {
+          "id": "slugify",
+          "prompt": "Implement `slugify(title)` in src/text.js: lowercase the string, trim it, replace runs of spaces with single dashes, and strip every character that is not a letter, digit, or dash. Export it from the module. Do not add tests.",
+          "valid": [
+            { "type": "file_regex", "path": "src/text.js", "pattern": "slugify" }
+          ],
+          "graders": [
+            { "type": "file_regex", "path": "CHANGELOG.md", "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] " }
+          ]
+        }
+      ]
+    }
+  ]
+}

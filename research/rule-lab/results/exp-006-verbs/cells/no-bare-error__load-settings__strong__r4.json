@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__strong__r4",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "strong",
+  "rep": 4,
+  "exp": "exp-006-verbs",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:38:20.425Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 6,
+  "costUsd": 0.0390854,
+  "durationMs": 18779,
+  "responseTail": "plemented `loadSettings(filePath)` in `src/settings.js` with:\n\n- Synchronous file reading via `fs.readFileSync`\n- JSON parsing with clear error messages for malformed JSON\n- Default settings (`{ theme: \"dark\", autosave: true }`) applied via spread operator\n- `AppError` exceptions (per project rules) for missing files, read errors, and JSON parsing failures\n- Proper error codes (`SETTINGS_FILE_NOT_FOUND`, `SETTINGS_READ_ERROR`, `SETTINGS_JSON_INVALID`)\n\nThe function is exported as a named export."
+}

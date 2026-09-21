@@ -1,0 +1,33 @@
+{
+  "id": "changelog-duty__slugify__baseline__r1",
+  "intent": "changelog-duty",
+  "task": "slugify",
+  "variant": "baseline",
+  "rep": 1,
+  "exp": "exp-004-examples",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:53:35.902Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex",
+      "path": "CHANGELOG.md",
+      "pattern": "\\[Unreleased\\](?:(?!## \\[)[\\s\\S])*?^\\s*[-*] ",
+      "score": 0
+    }
+  ],
+  "turns": 3,
+  "costUsd": 0.0302595,
+  "durationMs": 14168,
+  "responseTail": "Done. I've implemented `slugify(title)` in `src/text.js` that:\n- Converts to lowercase\n- Trims whitespace\n- Replaces runs of spaces with single dashes\n- Removes all characters except letters, digits, and dashes\n\nThe function is exported from the module."
+}

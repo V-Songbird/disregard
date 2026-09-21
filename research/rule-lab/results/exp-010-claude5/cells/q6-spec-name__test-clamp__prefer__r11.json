@@ -1,0 +1,30 @@
+{
+  "id": "q6-spec-name__test-clamp__prefer__r11",
+  "intent": "q6-spec-name",
+  "task": "test-clamp",
+  "variant": "prefer",
+  "rep": 11,
+  "exp": "exp-010-claude5",
+  "model": "sonnet",
+  "startedAt": "2026-08-26T05:25:26.323Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "path_regex",
+      "pattern": "\\.(test|spec)\\.[cm]?js$",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "composite",
+      "score": 1
+    }
+  ],
+  "turns": 7,
+  "costUsd": 0.10052679999999999,
+  "durationMs": 21340,
+  "responseTail": "All 3 tests pass when run directly (`node --test`'s default glob doesn't pick up `src/*.spec.js` without an explicit path, but that's a pre-existing project/runner config matter, not something to fix unrequested).\n\nAdded `src/num.spec.js` with three `node:test` cases for `clamp`: below range, inside range, and above range — verified passing via `node --test src/num.spec.js`."
+}

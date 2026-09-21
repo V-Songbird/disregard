@@ -1,0 +1,45 @@
+{
+  "id": "logger-distant__three-part__rule__r18",
+  "intent": "logger-distant",
+  "task": "three-part",
+  "variant": "rule",
+  "rep": 18,
+  "exp": "exp-005-distance",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:07:44.340Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/util.js",
+      "pattern": "formatBytes",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/text.js",
+      "pattern": "slugify",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/api.js",
+      "pattern": "fetchUsers",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/api.js",
+      "pattern": "console\\.(log|info|debug)",
+      "score": 1
+    }
+  ],
+  "turns": 10,
+  "costUsd": 0.04964590000000001,
+  "durationMs": 28516,
+  "responseTail": "Done. All three functions are implemented:\n\n1. **formatBytes(n)** — converts bytes to human-readable format (B, KB, MB, GB) with one decimal place\n2. **slugify(title)** — lowercases, trims, replaces space runs with dashes, strips non-alphanumeric characters except dashes\n3. **fetchUsers(baseUrl)** — fetches users from the API endpoint, logs the count using the logger, and returns the array"
+}

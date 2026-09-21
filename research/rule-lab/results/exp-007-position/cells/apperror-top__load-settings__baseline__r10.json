@@ -1,0 +1,39 @@
+{
+  "id": "apperror-top__load-settings__baseline__r10",
+  "intent": "apperror-top",
+  "task": "load-settings",
+  "variant": "baseline",
+  "rep": 10,
+  "exp": "exp-007-position",
+  "model": "haiku",
+  "startedAt": "2026-07-19T02:57:44.565Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 0,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 0
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.042139800000000005,
+  "durationMs": 23029,
+  "responseTail": "nously using Node's `fs.readFileSync`\n- Throws a clear error if the file is missing (`\"Settings file not found: {path}\"`)\n- Throws a clear error if JSON is malformed (`\"Invalid JSON in settings file: {error}\"`)\n- Applies defaults for `theme: \"dark\"` and `autosave: true` for any missing keys\n- Exports the function as the module's public API\n\nThe function follows your project's code style: under 40 lines, early returns for error cases, and uses object spread to merge defaults with loaded settings."
+}

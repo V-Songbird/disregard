@@ -1,0 +1,39 @@
+{
+  "id": "no-bare-error__load-settings__prohibition-alt__r7",
+  "intent": "no-bare-error",
+  "task": "load-settings",
+  "variant": "prohibition-alt",
+  "rep": 7,
+  "exp": "exp-001-framing",
+  "model": "haiku",
+  "startedAt": "2026-07-19T01:21:22.762Z",
+  "ok": true,
+  "valid": true,
+  "compliance": 1,
+  "validityDetail": [
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "loadSettings",
+      "score": 1
+    },
+    {
+      "type": "file_regex",
+      "path": "src/settings.js",
+      "pattern": "throw",
+      "score": 1
+    }
+  ],
+  "complianceDetail": [
+    {
+      "type": "file_regex_absent",
+      "path": "src/settings.js",
+      "pattern": "\\bError\\s*\\(",
+      "score": 1
+    }
+  ],
+  "turns": 5,
+  "costUsd": 0.03773699999999999,
+  "durationMs": 20838,
+  "responseTail": "ous file reading** using `fs.readFileSync()`\n- **JSON parsing** with automatic default merging (`{ theme: \"dark\", autosave: true }`)\n- **Clear error handling** via `AppError`:\n  - `SETTINGS_NOT_FOUND` when the file is missing\n  - `SETTINGS_INVALID_JSON` for malformed JSON\n  - `SETTINGS_READ_ERROR` for other file issues\n- **Module export** as `{ loadSettings }`\n\nThe function merges user settings with defaults, so any provided keys override the defaults while missing keys get their default values."
+}
