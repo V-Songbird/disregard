@@ -1,8 +1,9 @@
 ---
 type: knowledge
-summary: "Which files Codex, Antigravity and Claude Code each read from this repository, why AGENTS.md is the only instruction file, where a project skill would have to live for each host, and how each host is kept away from .dev.vars; read before adding an instruction file, a rules folder, a skill or an agent setting."
+summary: "Which files Codex, Antigravity and Claude Code each read from this repository, why AGENTS.md is the only file that holds instructions and CLAUDE.md is a one-line import of it, where a project skill would have to live for each host, and how each host is kept away from .dev.vars; read before adding an instruction file, a rules folder, a skill or an agent setting."
 related_files:
   - "AGENTS.md"
+  - "CLAUDE.md"
   - ".claude/settings.json"
   - ".gitignore"
   - ".dev.vars.example"
@@ -18,22 +19,25 @@ copy that can drift.
 
 ## Conclusion
 
-**`AGENTS.md` at the root is the only instruction file, and it stays plain
-Markdown.** Checked on 2026-09-20 against each host's documentation.
+**`AGENTS.md` at the root is the only file that holds instructions, and it stays
+plain Markdown.** `CLAUDE.md` is one line, `@AGENTS.md`, so Claude Code loads the
+same text and nothing else. Checked on 2026-09-20 against each host's
+documentation.
 
 | Host | Reads root `AGENTS.md` | Condition |
 | --- | --- | --- |
 | Codex | Yes | Always. It stops adding instruction files once they total 32 KiB. |
 | Antigravity | Yes | Since 1.20.3. It reads `GEMINI.md` as well when one exists. |
-| Claude Code | Yes | Since 2.1.277, and only while no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists here or above. |
+| Claude Code | Yes | Through `CLAUDE.md`, whose whole body is `@AGENTS.md`. Direct reading exists since 2.1.277, only while no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists here or above, and not in every session. |
 
 `AGENTS.md` is about 3.5 KB, under Codex's 32 KiB cut and under the 12,000
 characters Antigravity documents for a rules file.
 
 ## What not to add
 
-- **`CLAUDE.md` or `CLAUDE.local.md`.** Either one stops Claude Code from reading
-  `AGENTS.md` at all. The owner removed the old pointer file on purpose.
+- **A second line in `CLAUDE.md`, or a `CLAUDE.local.md`.** Claude Code would
+  then read something Codex and Antigravity do not. The import is the whole
+  file.
 - **`GEMINI.md`, `.agents/rules/` or `.claude/rules/` copies.** Antigravity and
   Claude Code would load them beside `AGENTS.md`, and Codex would not, so the
   hosts would stop agreeing.
@@ -44,15 +48,18 @@ characters Antigravity documents for a rules file.
 - **`.agents/` in `.gitignore`.** A third-party report says Antigravity then
   skips the folder.
 
-## The one known gap
+## Why `CLAUDE.md` is here
 
 Claude Code cannot read `AGENTS.md` directly in some sessions: with telemetry
 disabled, with `disableAllHooks` set, on Amazon Bedrock, or in the first session
 after an upgrade. An interactive session that did load it prints
 `no CLAUDE.md found; AGENTS.md loaded`. The documented fallback is a `CLAUDE.md`
-whose whole body is `@AGENTS.md`, which never loads the file twice. It is not
-here, because the owner chose a single file. Revisit that if sessions keep
-starting without the project instructions.
+whose whole body is `@AGENTS.md`, which never loads the file twice.
+
+The owner first chose a single file and removed an older pointer. Two sessions
+on 2026-09-20 then started with the global instructions and the memory index in
+context and without this repository's `AGENTS.md`, so the owner added the
+fallback the same day.
 
 ## Skills
 

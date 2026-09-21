@@ -218,7 +218,7 @@ no rate limit of its own. Only the upstream 429 is surfaced, as `rate_limited`.
 
 ---
 
-## Open item: the Acceptable Use Policy is unreachable
+## Closed unread: the Acceptable Use Policy is unreachable
 
 §2.3(l) binds us to *"TypeSafe's Acceptable Use Policy (located at
 typesafe.ai/legal/aup)"*. **That URL returns HTTP 404, and the document is not
@@ -239,11 +239,21 @@ withdrawn.
 
 We are therefore contractually bound to a policy we cannot read, which is exactly
 the kind of term a public app accepting anonymous free-text input needs to see.
-**Status: the app launched on 2026-09-20 with the AUP still unread, and no reply
-from TypeSafe is recorded here.** The only input moderation is the injection
-screen and the 2000-character cap. **Action: email TypeSafe for the current AUP
-text and record the reply here.** Until then, assume the usual prohibitions
-(illegal content, abuse, harassment, automated decisions about people) apply.
+**Status: the app launched on 2026-09-20 with the AUP unread, and the owner
+closed the item the same day without asking for it.** The app is free and open
+source and sells nothing, so the request to TypeSafe was judged not worth
+making. No email was sent. The only input moderation is the injection screen and
+the 2000-character cap.
+
+What that decision does not change: §2.3(l) binds every use of the service, paid
+or not, so the policy still applies to this app and is still unread. Assume the
+usual prohibitions (illegal content, abuse, harassment, automated decisions
+about people) apply. If the item is ever reopened, the MCA page names
+`support@typesafe.ai`.
+
+Rechecked later on 2026-09-20, after the second deploy: `typesafe.ai/legal/aup`
+still answers the site's 404 page, and the sitemap still lists the same four
+`/legal` documents.
 
 ---
 

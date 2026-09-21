@@ -83,7 +83,7 @@ that measured it, and each of those carries a section naming what a change
 costs. Change the number and the document in the same commit, re-run the set,
 and report the held-out result rather than the tuned one.
 
-**Four held-out halves are already spent.** They were used to diagnose fixes, so
+**Five held-out halves are already spent.** They were used to diagnose fixes, so
 they are regression guards now, not measurements. Build a fresh set rather than
 promoting a guard back into evidence.
 
