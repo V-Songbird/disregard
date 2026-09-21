@@ -112,4 +112,23 @@ const HELDOUT = [
    text: "Never run unconstrained recursive searches from home or filesystem roots." },
 ];
 
-module.exports = { LABELLED, HELDOUT, V1, V2, INSTRUCTIONS_V1, INSTRUCTIONS_V2 };
+// Held out, and live. Ten lines taken verbatim from working instruction files,
+// picked and labelled from research/rubrics.md alone by a labeller that never
+// saw V2 or any result. A second blind labeller agreed on eight of ten, and
+// `alt` is its level on the two where it differed. Labels were frozen before
+// the first run. Diagnose a fix from a case in here and this set is spent too:
+// build HELDOUT3 rather than reporting it as a measurement.
+const HELDOUT2 = [
+  { id: "propose-instruction-changes",    level: 4, text: "Propose changes to standing instructions instead of applying them unasked." },
+  { id: "no-repeat-global-content",       level: 4, alt: 3, text: "Never repeat the content of the global CLAUDE.md on the project documentation, AGENTS.md, CLAUDE.md or README.md, if it is really needed think about using CONTRIBUTING.md." },
+  { id: "criteria-change-rerun-set",      level: 3, text: "Change a criteria string, re-run its set, and report the held-out number, not the tuned one." },
+  { id: "dry-run-before-launch",          level: 3, alt: 2, text: "Check the cell count with `--dry-run` and smoke one cell with `--limit 1` before launching a run." },
+  { id: "persist-findings-before-report", level: 2, text: "Persist every non-trivial finding, investigation result, decision or research outcome to a Markdown file before the final report." },
+  { id: "persist-checklist-multistep",    level: 2, text: "For multi-step tasks (>3 distinct operations), persist the minimal plan or checklist to a tracking artifact before mutating code, and mark off items as completed so progress survives context compaction." },
+  { id: "respect-time-token-limits",      level: 1, text: "Respect explicit time and token limits." },
+  { id: "playable-worker-unreachable",    level: 1, text: "The game must stay fully playable with the Worker unreachable." },
+  { id: "personal-defaults-description",  level: 0, text: "Personal defaults for every project on this workstation, for any coding agent." },
+  { id: "scores-one-rule-description",    level: 0, text: "Scores one rule from an agent instruction file and reports how that line reads to the agent that has to follow it." },
+];
+
+module.exports = { LABELLED, HELDOUT, HELDOUT2, V1, V2, INSTRUCTIONS_V1, INSTRUCTIONS_V2 };

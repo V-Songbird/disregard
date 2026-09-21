@@ -191,12 +191,14 @@ changing this" section, and those with a spent set name it there.
 | Is it English? | Held out: 1 leak in 10 foreign, **0 refusals** in 10 English | [the language screen](docs/knowledge/language-screen-criteria.md) |
 | Is it a rule? | Held out: 7/8, margin +0.06. The margin matters more than the count | [is_rule and best_primitive](docs/knowledge/is-rule-and-primitive-criteria.md) |
 | Rule, hook, skill or subagent? | Held out: 6/8, and **10/10 on confident picks** across all 16 | same document |
-| When does it come due? | Held out: 6/10 exact, mean error 0.39 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
+| When does it come due? | Held out: 4/10 exact, mean error 0.90 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
 | Is the verb soft? Is anything checkable? | Held out: 20/20 and 20/20 | [the deterministic factors](docs/knowledge/f1-f7-deterministic-criteria.md) |
 
-Five of those held-out halves are **spent**, trigger distance among them. A fix was diagnosed from a case
-inside them, so they are regression guards now, not measurements. Build a fresh
-set rather than promoting a guard back.
+Five held-out halves are **spent**. A fix was diagnosed from a case inside
+them, so they are regression guards now, not measurements. Trigger distance and
+the deterministic factors have a fresh set since, and their rows above are the
+fresh number. The language, `is_rule` and primitive rows are guards. Build a
+fresh set rather than promoting a guard back.
 
 ## Where things live
 

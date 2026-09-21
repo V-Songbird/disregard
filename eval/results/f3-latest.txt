@@ -1,41 +1,54 @@
 
-### v1  flat comparative strings   exact 4/10   MAE 0.68 levels   14217 tok
+### v1  flat comparative strings   exact 4/10   MAE 0.69 levels   14217 tok
 id                  want  got   lvl  err   spread
-getProjectCommands  4     3.07  3    0.93  0.12
-barrel-imports      4     3.34  3    0.66  0.12
-grammar-psi         3     3.6   4    0.60  0.04
-functional-new      3     3.79  4    0.79  0.01
-state-synced        2     3.71  4    1.71  0.05
-prettier-commit     2     3     3    1.00  0.03
-aquatic             1     0.97  1    0.03  0.01
-try-prefer          1     1.36  1    0.36  0.08
-changelog           1     1.19  1    0.19  0.02
-optimized-files     0     0.48  0    0.48  0.02
+getProjectCommands  4     3.02  3    0.98  0.12
+barrel-imports      4     3.3   3    0.70  0.08
+grammar-psi         3     3.58  4    0.58  0.04
+functional-new      3     3.79  4    0.79  0.07
+state-synced        2     3.72  4    1.72  0.04
+prettier-commit     2     3.01  3    1.01  0.06
+aquatic             1     0.96  1    0.04  0.01
+try-prefer          1     1.42  1    0.42  0.09
+changelog           1     1.19  1    0.19  0.06
+optimized-files     0     0.47  0    0.47  0.05
 
-### v2  standalone situations + signals   exact 9/10   MAE 0.14 levels   34947 tok
+### v2  standalone situations + signals   exact 9/10   MAE 0.13 levels   34947 tok
 id                  want  got   lvl  err   spread
 getProjectCommands  4     4     4    0.00  0
-barrel-imports      4     3.98  4    0.02  0.01
+barrel-imports      4     3.98  4    0.02  0
 grammar-psi         3     3     3    0.00  0
-functional-new      3     3.06  3    0.06  0
-state-synced        2     2.25  2    0.25  0.05
+functional-new      3     3.06  3    0.06  0.01
+state-synced        2     2.22  2    0.22  0.01
 prettier-commit     2     2     2    0.00  0
-aquatic             1     1.02  1    0.02  0.01
-try-prefer          1     1.85  2    0.85  0.09
-changelog           1     1.01  1    0.01  0.01
-optimized-files     0     0.16  0    0.16  0.04
+aquatic             1     1.02  1    0.02  0
+try-prefer          1     1.82  2    0.82  0.08
+changelog           1     1.02  1    0.02  0.01
+optimized-files     0     0.17  0    0.17  0.04
 
-### v2 on HELD-OUT cases   exact 6/10   MAE 0.39 levels   35142 tok
+### v2 on first HELD-OUT cases (spent, a guard)   exact 6/10   MAE 0.40 levels   35142 tok
 id                  want  got   lvl  err   spread
-temp-files-report   2     2     2    0.00  0
-english-docs        1     2.53  3    1.53  0.12
-lastexitcode        4     3.87  4    0.13  0.04
-run-checks          2     2.52  3    0.52  0.06
+temp-files-report   2     2.01  2    0.01  0.01
+english-docs        1     2.52  3    1.52  0.13
+lastexitcode        4     3.87  4    0.13  0.05
+run-checks          2     2.54  3    0.54  0.02
 select-object       4     3.93  4    0.07  0.02
-read-before-edit    3     3.01  3    0.01  0.04
-exclude-deps        1     1.81  2    0.81  0.08
-not-predictor       0     0.69  1    0.69  0.07
-rename-refs         3     2.96  3    0.04  0
-no-recursive        3     3.1   3    0.10  0.05
+read-before-edit    3     3.06  3    0.06  0.05
+exclude-deps        1     1.86  2    0.86  0.14
+not-predictor       0     0.71  1    0.71  0.11
+rename-refs         3     2.96  3    0.04  0.01
+no-recursive        3     3.08  3    0.08  0.1
 
-SUMMARY  tuned 4/10 -> 9/10 (MAE 0.68 -> 0.14)   HELD-OUT 6/10 MAE 0.39
+### v2 on HELD-OUT 2 (live)   exact 4/10   MAE 0.90 levels   35283 tok
+id                              want  got   lvl  err   spread
+propose-instruction-changes     4     2.38  2    1.62  0.05
+no-repeat-global-content        4     2.65  3    1.35  0.08
+criteria-change-rerun-set       3     2.99  3    0.01  0.03
+dry-run-before-launch           3     3.05  3    0.05  0.02
+persist-findings-before-report  2     2.3   2    0.30  0.03
+persist-checklist-multistep     2     2.74  3    0.74  0.03
+respect-time-token-limits       1     2.07  2    1.07  0.17
+playable-worker-unreachable     1     1.19  1    0.19  0.02
+personal-defaults-description   0     1.34  1    1.34  0.04
+scores-one-rule-description     0     2.3   2    2.30  0.13
+
+SUMMARY  tuned 4/10 -> 9/10 (MAE 0.69 -> 0.13)   HELD-OUT 2 4/10 MAE 0.90   first held-out 6/10 MAE 0.40

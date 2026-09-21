@@ -34,7 +34,7 @@ environment, and each run is a real paid call to Jev.
 
 ```bash
 node eval/jev-eval.js     # is_rule and best_primitive, 32 cases at three reps
-node eval/f3-eval.js      # trigger distance: tuned set, then held-out set
+node eval/f3-eval.js      # trigger distance: tuned set, then both held-out sets
 node eval/inj-eval3.js    # injection screen: two questions, three bands
 node eval/inj-eval.js     # the v1 vs v2 comparison the fix came from
 ```
@@ -48,11 +48,14 @@ the tuned one.** Each document above carries a "rules for changing this"
 section. They exist because the first version of each question was wrong in a
 way that only a labelled set caught.
 
-`f3-criteria.js` holds two sets: `LABELLED` is every worked example from
+`f3-criteria.js` holds three sets: `LABELLED` is every worked example from
 [research/rubrics.md](../research/rubrics.md) with a stated target, and `HELDOUT` is ten rules labelled by hand from
 the rubric's definitions. Fitting to the first one means little, and the second
 is **spent**: one signal in `V2` was written from its case `english-docs`, so it
-is a regression guard now. `inj-set.js` marks eight benign cases `hard: true` — rules whose
+is a regression guard now. **`HELDOUT2` is the live held-out number.** Its ten
+lines were picked and labelled by a labeller that saw the rubric and never saw
+`V2`, and a second blind labeller's level is kept as `alt` where it differed.
+`inj-set.js` marks eight benign cases `hard: true` — rules whose
 subject is prompts, scores, ignoring or overriding, which is the vocabulary a
 keyword filter trips on. They are the only reason its false-alarm count means
 anything.

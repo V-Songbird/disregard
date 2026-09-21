@@ -65,10 +65,11 @@ was never consulted while writing the criteria:
 | Tuned (rubric examples) | 9 / 10 | 0.14 |
 | **Held out** | **6 / 10** | **0.39 levels** |
 
-**So: the reported defect is fixed, and F3 is not "solved".** On rules it has not
-seen, the level is right about six times in ten and off by roughly four tenths of
-a level on average. That is good enough to **order** rules by trigger weakness
-and to drive a finding. It is not good enough to headline as a precise score, which
+**So: the reported defect is fixed, and F3 is not "solved".** On this first set
+of rules it had not seen, the level is right about six times in ten and off by
+roughly four tenths of a level on average. That read as good enough to **order**
+rules by trigger weakness and to drive a finding, and the second set below says
+less. It is not good enough to headline as a precise score, which
 is the same limit this project has accepted everywhere else. The page shows the
 value only inside its "what was measured" disclosure.
 
@@ -97,8 +98,64 @@ would have turned the held-out set into a second training set.
 an artifact such as a commit message is not this"*, was written from the
 held-out case `english-docs`. A fix diagnosed from a case inside a held-out half
 is the standard every other set in this project was retired by, and F3 gets no
-exemption. The 6/10 is a regression guard now, not an accuracy, and a fresh
-held-out set is owed.
+exemption. The 6/10 is a regression guard now, not an accuracy. Its successor is
+the next section.
+
+### Second held-out set — the live number, and it is worse
+
+`HELDOUT2` in [eval/f3-criteria.js](../../eval/f3-criteria.js) is ten lines
+taken verbatim from working instruction files: three from the owner's global
+instructions, three from this repository's `AGENTS.md`, three from the
+`- core -` project's `AGENTS.md` and one from Melodome's. It was built on
+2026-09-20 so that nobody who had read `V2` touched a label:
+
+- **A labeller shown only the F3 section of the rubric picked the lines.** It
+  took the first honest candidates in reading order, two per level, at most
+  three per file, none from `LABELLED` or `HELDOUT`. It never saw `V2`, the
+  harness or a result.
+- **A second labeller, shown only the rubric section and the ten texts
+  shuffled, agreed on 8 of 10.** Both disagreements are one level apart and are
+  kept as `alt`: `no-repeat-global-content`, 4 against 3, and
+  `dry-run-before-launch`, 3 against 2.
+- **Labels were frozen in the file before the first paid call.** None changed
+  after.
+
+| Set | Exact level | MAE | Rank correlation |
+| --- | --- | --- | --- |
+| Tuned (rubric examples) | 9 / 10 | 0.13 | |
+| First held out, spent | 6 / 10 | 0.40 | 0.93 |
+| **`HELDOUT2`, live** | **4 / 10** | **0.90 levels** | **0.69** |
+
+The harness ran twice, because ids longer than its 20-character column
+misaligned the first table. Both runs gave 4/10, at MAE 0.91 and 0.90. The
+recorded output is the second, and its first two rows sit a hundredth off the
+tables above, which is run-to-run noise. Rank correlation is Spearman's, worked
+out from the recorded rows rather than printed by the harness.
+
+**So the claim shrinks.** The first held-out set said F3 was good enough to
+order rules. On rules picked by someone who never saw the criteria, the level is
+right four times in ten and the ordering is loose. What the rows show:
+
+- **The ends of the scale are not reached.** All ten scores fall between 1.19
+  and 3.05. Both Level 4 rules score 2.38 and 2.65, and both Level 0 lines score
+  1.34 and 2.30. The tuned set reaches 4.00 and 0.16, so the ends work on the
+  examples `V2` embeds and not on rules with other vocabulary.
+- **Level 0 has never been hit on held-out text.** Three descriptions across the
+  two sets score 0.71, 1.34 and 2.30.
+- **Eight of ten are within one level.** The two that are not are
+  `propose-instruction-changes`, 2.38 against 4, and
+  `scores-one-rule-description`, 2.30 against 0.
+- **Scored against the second labeller, it is 5/10.** `no-repeat-global-content`
+  rounds to that labeller's 3.
+
+What the app uses is one cut, `NO_TRIGGER = 1.5`. Counted by hand from the
+recorded rows of both held-out sets: seven lines are labelled 0 or 1 and should
+raise `no_trigger`, and **three do**. Thirteen are labelled 2 or higher, and
+**none** falls under the cut. The finding misses more than half of what it is
+for, and has not yet been seen to fire wrongly.
+
+These rows describe; they are not a worklist. A signal written from any case
+above spends `HELDOUT2` the way `english-docs` spent the first set.
 
 ## The validated question
 
@@ -124,12 +181,13 @@ not applied.
 2. **Never name an artifact as a signal when the occasion is what matters.**
    "a commit" matched "commit messages"; the residual keyword leak above is what
    that costs.
-3. **Re-run both sets after any edit**, and report the held-out number, not the
-   tuned one. `HELDOUT` is spent, so until a fresh set exists its number guards
-   against regression and proves nothing more. The harness is
-   `eval/f3-eval.js` and `eval/f3-criteria.js`;
-   ~35k input tokens per set of ten at three reps, about $0.0015 a run. Latest
-   recorded output: `eval/results/f3-latest.txt`.
+3. **Re-run every set after any edit**, and report the `HELDOUT2` number, not
+   the tuned one. `HELDOUT` is spent, so its number guards against regression
+   and proves nothing more. When `HELDOUT2` is spent in its turn, build
+   `HELDOUT3`. The harness is `eval/f3-eval.js` and `eval/f3-criteria.js`;
+   ~35k input tokens per set of ten at three reps. A full run is four passes
+   and 119,589 input tokens, about $0.002 at the rate the earlier three-pass
+   run was priced at. Latest recorded output: `eval/results/f3-latest.txt`.
 4. **Add held-out cases rather than tuning against the existing ones.** Ten is
    too few to conclude much; the honest way to raise confidence is more labelled
    rules, not more wording passes.

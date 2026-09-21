@@ -510,6 +510,10 @@ rules by trigger weakness and raise a finding; not enough to print as a precise
 score. That is the same limit already accepted everywhere else here, and it is an
 argument for the findings-first UI rather than against shipping.
 
+**Later, 2026-09-20.** That set was spent, and a fresh one labelled without
+sight of the criteria scored **4/10 exact, MAE 0.90 levels**. The ordering claim
+above is weaker than it reads; the criteria document has the rows.
+
 ---
 
 ## What to do instead

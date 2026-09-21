@@ -60,7 +60,8 @@ improved, with what is left named and left alone on purpose.
 2. **F3 compressed the top of its scale.** Cause: the Score levels were written
    comparatively, and the model evaluates each level without seeing its
    neighbours. Fix: standalone situations with signals. **4/10 → 9/10 exact** on
-   the rubric's examples, **6/10 on held out**.
+   the rubric's examples, **6/10 on the first held-out set, 4/10 on the fresh
+   one**.
    [f3-trigger-distance-criteria.md](../knowledge/f3-trigger-distance-criteria.md)
 3. **The injection screen was noise.** ~0.38 on everything, 0.77 on a plain
    Spanish rule. Cause: one Noul, no criteria, asking whether an instruction is
@@ -155,6 +156,11 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
   held-out case `english-docs`, so the 6/10 is a regression guard. The owner
   left the call to the project's own standard on 2026-09-20, and that standard
   retired the other four.
+- **F3's fresh set scored lower: 4/10 exact, MAE 0.90 levels.** `HELDOUT2` was
+  picked and labelled without sight of `V2`. All ten scores fall between 1.19
+  and 3.05, so neither end of the scale is reached on unfamiliar rules, and
+  across both held-out sets `no_trigger` fires on three of the seven lines it
+  should. Nothing was tuned from it.
 - **`is_rule`'s margin is +0.06.** Positive, so the ordering is right, but thin.
   Fourteen of sixteen cases separate 0.85-to-0.94 against 0.09-to-0.20; the two
   that do not are the two built to be hard.
@@ -226,11 +232,14 @@ nothing.
 
 ## Open decisions
 
-1. **Fresh held-out sets** for the four that are spent with no successor:
-   `is_rule`, `best_primitive`, the language screen and F3. `eval/det-set.js`
-   already has `HELDOUT2` as its live set.
+1. **Fresh held-out sets** for the three that are spent with no successor:
+   `is_rule`, `best_primitive` and the language screen. `eval/det-set.js` and
+   `eval/f3-criteria.js` already have `HELDOUT2` as their live set.
+2. **What to do about F3's 4/10.** The fresh set says `V2` compresses unfamiliar
+   rules toward the middle of the scale. A fix has to come from new cases, not
+   from the ten in `HELDOUT2`, or that set is spent as well.
 
-The Acceptable Use Policy was the second open decision. The owner closed it on
+The Acceptable Use Policy was an open decision too. The owner closed it on
 2026-09-20 without requesting the text, because the app is free and open source
 and sells nothing. The policy stays unread and still binds the app; see
 [jev-commercial-licensing.md](../knowledge/jev-commercial-licensing.md).
