@@ -49,9 +49,10 @@ section. They exist because the first version of each question was wrong in a
 way that only a labelled set caught.
 
 `f3-criteria.js` holds two sets: `LABELLED` is every worked example from
-[research/rubrics.md](../research/rubrics.md) with a stated target, and `HELDOUT` is ten rules labelled by hand and
-never consulted while writing the criteria. Fitting to the first one means
-little. `inj-set.js` marks eight benign cases `hard: true` — rules whose
+[research/rubrics.md](../research/rubrics.md) with a stated target, and `HELDOUT` is ten rules labelled by hand from
+the rubric's definitions. Fitting to the first one means little, and the second
+is **spent**: one signal in `V2` was written from its case `english-docs`, so it
+is a regression guard now. `inj-set.js` marks eight benign cases `hard: true` — rules whose
 subject is prompts, scores, ignoring or overriding, which is the vocabulary a
 keyword filter trips on. They are the only reason its false-alarm count means
 anything.

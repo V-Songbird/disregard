@@ -93,6 +93,13 @@ later pass argues with the reasoning rather than inheriting a silent fix. Only
 one criteria revision was made after seeing held-out results; tuning past that
 would have turned the held-out set into a second training set.
 
+**That one revision spends the set.** The signal it added, *"merely mentioning
+an artifact such as a commit message is not this"*, was written from the
+held-out case `english-docs`. A fix diagnosed from a case inside a held-out half
+is the standard every other set in this project was retired by, and F3 gets no
+exemption. The 6/10 is a regression guard now, not an accuracy, and a fresh
+held-out set is owed.
+
 ## The validated question
 
 One Score question. State goes in a named field so the rule text is data, not
@@ -118,7 +125,9 @@ not applied.
    "a commit" matched "commit messages"; the residual keyword leak above is what
    that costs.
 3. **Re-run both sets after any edit**, and report the held-out number, not the
-   tuned one. The harness is `eval/f3-eval.js` and `eval/f3-criteria.js`;
+   tuned one. `HELDOUT` is spent, so until a fresh set exists its number guards
+   against regression and proves nothing more. The harness is
+   `eval/f3-eval.js` and `eval/f3-criteria.js`;
    ~35k input tokens per set of ten at three reps, about $0.0015 a run. Latest
    recorded output: `eval/results/f3-latest.txt`.
 4. **Add held-out cases rather than tuning against the existing ones.** Ten is

@@ -35,9 +35,10 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
 
 ## Pitfalls
 
-- **`AGENTS.md` is the only instruction file, for every host.** A `CLAUDE.md`, a
-  `GEMINI.md` or a rules folder makes Codex, Antigravity and Claude Code read
-  different things. The reasons are in
+- **`AGENTS.md` is the only file that holds instructions, for every host.**
+  [CLAUDE.md](CLAUDE.md) is one line, `@AGENTS.md`, and stays that way. A second
+  line there, a `GEMINI.md` or a rules folder makes Codex, Antigravity and
+  Claude Code read different things. The reasons are in
   [docs/knowledge/agent-host-compatibility.md](docs/knowledge/agent-host-compatibility.md).
 - **Everything is CommonJS except [worker.js](worker.js).** A new file under
   `lib/` or `api/` writes `module.exports`, not `export`. No `package.json`
@@ -54,7 +55,7 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
   not the tuned one.** Each criteria document under
   [docs/knowledge/](docs/knowledge/) carries a "rules for changing this"
   section, and those with a spent set name it there.
-- **Four held-out halves are already spent.** A fix was diagnosed from a case
+- **Five held-out halves are already spent.** A fix was diagnosed from a case
   inside them, so they are regression guards now. Build a fresh set rather than
   promoting a guard back to a measurement.
 - **Four of the six eval harnesses spend real money per run.** Only

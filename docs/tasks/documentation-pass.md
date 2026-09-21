@@ -1,9 +1,10 @@
 ---
 type: task_summary
-status: active
+status: completed
 summary: "Full pass over every non-code file in the repository: stale paths and references, AGENTS.md, the READMEs, docs/ frontmatter and truthfulness, the anneal audit, agent-host parity for Codex, Antigravity and Claude Code, .gitignore leaks, and author identity; read to see what was checked, what changed, what was left alone on purpose, and the decisions that are the owner's."
 related_files:
   - "AGENTS.md"
+  - "CLAUDE.md"
   - "README.md"
   - "CONTRIBUTING.md"
   - "SECURITY.md"
@@ -35,14 +36,15 @@ Codex, Antigravity and Claude Code must all work from the same instructions.
 - [x] `.gitignore` reviewed, tracked files scanned for private data.
 - [x] Author identity is `Victor Villegas <victor.villegas@tuta.com>` in the repository-local Git config, LICENSE and SECURITY.md.
 - [x] `node --test` passes: 57 of 57.
-- [ ] The owner's two decisions below.
+- [x] The owner's two decisions below, both made on 2026-09-20.
 - [x] Skill frontmatter review: the repository holds no skill to review.
 
 ## Conclusion
 
-The pass landed on `main` through pull request #3. Nothing was deployed.
-`public/research.html` changed, so the live page keeps the old cost sentence
-until the next deploy.
+The pass landed on `main` through pull request #3, and the owner deployed it on
+2026-09-20 as version `715b3a43`. `public/research.html` was the one asset that
+changed, and the live copy now matches the repository byte for byte once line
+endings are normalized.
 
 ### What was false, and is fixed
 
@@ -81,8 +83,9 @@ were already in place.
 
 ### Agent hosts
 
-All three hosts read the root `AGENTS.md`, and nothing else should be added. The
-facts and their sources are in
+All three hosts read the root `AGENTS.md`. Claude Code reaches it through a
+one-line `CLAUDE.md`, and nothing else should be added. The facts and their
+sources are in
 [agent-host-compatibility.md](../knowledge/agent-host-compatibility.md).
 `.claude/settings.json` now denies `Read(./.dev.vars)` and `Read(.wrangler/**)`,
 and the pattern `Read(**/*.idea)`, which matched nothing, became
@@ -108,22 +111,25 @@ Commits on `main` carry the author name `Songbird` with the same address. A
 squash merge takes the name from the GitHub profile, not from the local Git
 config.
 
-## Decisions that are the owner's
+## Decisions that were the owner's
 
-1. **Is the F3 held-out set spent?** One criteria revision was diagnosed on the
+1. **The F3 held-out set is spent.** One criteria revision was diagnosed on the
    held-out case `english-docs`, which is the standard the other four sets were
-   retired by. The F3 document discloses the revision. "Four held-out halves are
-   spent" was left as written.
-2. **A `CLAUDE.md` holding only `@AGENTS.md`.** This session's startup context
-   listed the global instructions and the memory index, and not this
-   repository's `AGENTS.md`. The documented fallback is that one-line file. It
-   reverses the owner's earlier removal, so it was not added.
+   retired by. The owner left the call to what serves the project, and the
+   project's claim is its measurements, so F3 gets no exemption. Every "four
+   held-out halves" became five, and F3 joined the sets that need a fresh one.
+2. **`CLAUDE.md` holds only `@AGENTS.md`.** A second session started without this
+   repository's `AGENTS.md` in context, so the owner added the documented
+   fallback. AGENTS.md and
+   [agent-host-compatibility.md](../knowledge/agent-host-compatibility.md) now
+   describe it.
 
 ## Not verified
 
 - The quick-start `curl` in README.md. It spends a paid Jev request. The F1, F2
   and F7 values in its sample output do match `lib/scorer.js` run locally.
-- `npx wrangler dev` and `npx wrangler deploy`, which need a key and an account.
+- `npx wrangler dev`, which needs a key. `npx wrangler deploy` was run by the
+  owner and is covered under Evidence.
 - Figures that come from the `slag` repository, from TypeSafe's contract pages
   or from competitors' sites.
 
@@ -144,7 +150,8 @@ config.
 | `node eval/det-eval.js`, free | passed, matches `eval/results/det-latest.txt` |
 | Cell count and cost summed from `results/*/cells/` | 2,020 cells, $111.61 |
 | `harness.js run --exp exp-007-position --model sonnet --resume --dry-run` | `"cellsToRun": 0` |
-| Paid eval harnesses, `harness.js run` without `--dry-run`, deploy | not run |
+| Deployed Worker, version `715b3a43` | passed: `/`, `/privacy`, `/terms` 200, `/api/score` 405 on GET and 400 on an empty rule, unknown path 404, a Spanish rule `not_english`, the prettier rule `hook` at 0.99 with 2,572 tokens |
+| Paid eval harnesses, `harness.js run` without `--dry-run` | not run |
 
 ## Rejected Alternatives
 

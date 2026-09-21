@@ -93,9 +93,10 @@ const INSTRUCTIONS_V2 = {
   note: "Judge only the gap, not whether the instruction is good, specific, or worth following. An instruction with no occasion at all is not a small gap; it is a missing one.",
 };
 
-// Held out: never used while writing the criteria. Levels assigned by hand from
-// the rubric's definitions, not by the rubric's own worked examples, so these
-// test whether the wording generalises rather than whether it memorised.
+// Held out, and spent: V2's "merely mentioning an artifact" signal was written
+// from `english-docs` below, so this set is a regression guard now. Levels were
+// assigned by hand from the rubric's definitions, not by the rubric's own worked
+// examples. Build a fresh set rather than reporting this one as a measurement.
 const HELDOUT = [
   { id: "temp-files-report", level: 2, text: "Before the final report of a task, list temporary files you created outside the session scratchpad." },
   { id: "english-docs",      level: 1, text: "Keep code comments, identifiers, commit messages, and documentation in English." },

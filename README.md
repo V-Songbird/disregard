@@ -194,7 +194,7 @@ changing this" section, and those with a spent set name it there.
 | When does it come due? | Held out: 6/10 exact, mean error 0.39 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
 | Is the verb soft? Is anything checkable? | Held out: 20/20 and 20/20 | [the deterministic factors](docs/knowledge/f1-f7-deterministic-criteria.md) |
 
-Four of those held-out halves are **spent**. A fix was diagnosed from a case
+Five of those held-out halves are **spent**, trigger distance among them. A fix was diagnosed from a case
 inside them, so they are regression guards now, not measurements. Build a fresh
 set rather than promoting a guard back.
 
