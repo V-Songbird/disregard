@@ -1,16 +1,22 @@
 ---
 type: knowledge
-summary: "The validated Jev Score criteria for judging a rule's trigger-action distance (F3), with the measured accuracy on the rubric's own examples and on held-out rules; read before wiring F3 into the rule-scoring app or changing its wording."
+summary: "The validated Jev Score criteria for judging a rule's trigger-action distance (F3), with the measured accuracy on the rubric's own examples and on held-out rules; read before changing the F3 wording in eval/f3-criteria.js or the NO_TRIGGER cut in lib/analyze.js."
 related_files:
+  - "eval/f3-criteria.js"
+  - "eval/f3-eval.js"
+  - "eval/results/f3-latest.txt"
+  - "lib/questions.js"
+  - "lib/analyze.js"
+  - "research/rubrics.md"
   - "docs/decisions/rule-scoring-product-viability.md"
-  - "eval/"
 ---
 
 # F3 — trigger distance, as a validated Jev question
 
 ## The defect
 
-The first probe sent assay's F3 level descriptions to Jev almost verbatim. It
+The first probe sent the F3 level descriptions from
+[research/rubrics.md](../../research/rubrics.md) to Jev almost verbatim. It
 compressed the top of the scale: *"Run prettier on modified files before
 committing"* came back at Level **3.00** where the rubric says Level **2**
 (0.50), and *"Every commit modifying src/ MUST end with [State: SYNCED]"* at
@@ -33,7 +39,7 @@ situations that resemble the real inputs.
 ## Result
 
 Ten cases with an explicit F3 target exist — every worked example in
-`assay/references/rubrics.md`. Three repetitions each, `jev-1.13.0`, scores
+[research/rubrics.md](../../research/rubrics.md). Three repetitions each, `jev-1.13.0`, scores
 averaged.
 
 | Variant | Exact level | Mean absolute error |
@@ -62,8 +68,9 @@ was never consulted while writing the criteria:
 **So: the reported defect is fixed, and F3 is not "solved".** On rules it has not
 seen, the level is right about six times in ten and off by roughly four tenths of
 a level on average. That is good enough to **order** rules by trigger weakness
-and to drive a finding. It is not good enough to print as a precise score, which
-is the same limit this project has accepted everywhere else.
+and to drive a finding. It is not good enough to headline as a precise score, which
+is the same limit this project has accepted everywhere else. The page shows the
+value only inside its "what was measured" disclosure.
 
 Known residuals, all confirmed by hand:
 
@@ -88,76 +95,19 @@ would have turned the held-out set into a second training set.
 
 ## The validated question
 
-Send one Score question with these criteria. State goes in a named field so the
-rule text is data, not instruction.
+One Score question. State goes in a named field so the rule text is data, not
+instruction.
 
-```js
-const F3_INSTRUCTIONS = {
-  question: "The text in `rule` is a standing instruction someone will read once, at the start of a piece of work, and is then expected to obey later. How much of a gap is there between reading it and the occasion on which it comes due?",
-  note: "Judge only the gap, not whether the instruction is good, specific, or worth following. An instruction with no occasion at all is not a small gap; it is a missing one.",
-};
+The wording is not copied here, because a copy would drift. The source of truth
+is [eval/f3-criteria.js](../../eval/f3-criteria.js): `INSTRUCTIONS_V2` is the
+question and `V2` holds the five level descriptions with their signals.
+[lib/questions.js](../../lib/questions.js) imports both, so the app sends exactly
+what the harness measured.
 
-const F3_CRITERIA = [
-  {
-    summary: "The line reports how the project already is. It asks nobody to do anything.",
-    signals: [
-      "It states a fact about the files, the code, or the team",
-      "Nothing at all would be done differently by someone who read it",
-      "It reads like a sentence from a status report",
-      'Example: "All files are optimized for agent consumption."',
-    ],
-  },
-  {
-    summary: "It asks for a standing quality that is supposed to hold at all times, so there is no particular occasion on which it comes due.",
-    signals: [
-      "It asks for a feeling, a style, or a condition to be maintained",
-      "No action, file, command or project phase is named as the occasion",
-      "Someone could read it, work all day, and never hit a point where it obviously applied",
-      'Any occasion it does give is a condition rather than an event: "when possible", "where practical", "as needed" name nothing that happens',
-      'Example: "The site must feel alive, playful, and aquatic."',
-      'Example: "Keep CHANGELOG.md updated."',
-    ],
-  },
-  {
-    summary: "It comes due at a checkpoint in the session — committing, pushing, releasing, opening a pull request, handing work back — which the worker has to notice arriving while busy with something else.",
-    signals: [
-      "The occasion is the work being wrapped up, submitted, released or handed over",
-      "Merely mentioning an artifact such as a commit message is not this: the occasion has to be the moment of wrapping up, not a thing that gets named",
-      "The instruction is read at the start of the work and comes due at the end of it",
-      "Whatever the worker is editing right now gives no hint that this applies",
-      "Obeying it means interrupting one activity to go and do another",
-      'Example: "Run prettier on modified files before committing."',
-      'Example: "Every commit modifying src/ MUST end with [State: SYNCED]"',
-    ],
-  },
-  {
-    summary: "It comes due inside the piece of work already under way: the worker is handling the exact kind of thing the instruction is about, and what it asks for is the next part of that same job.",
-    signals: [
-      "The named occasion is creating or changing a particular kind of file",
-      "The worker is already looking at the thing the instruction names",
-      "What it asks for follows on from an edit that is already in progress",
-      "No separate activity has to be remembered later",
-      'Example: "When adding new grammar rules, add corresponding PSI visitor methods and test coverage."',
-      'Example: "Use functional components for all new React files."',
-    ],
-  },
-  {
-    summary: "Noticing that it applies and obeying it are the same act: at the moment of writing the line, it says which form to write.",
-    signals: [
-      "It names which call, symbol, import or spelling to use as the line is typed",
-      "There is nothing to remember, because the choice it governs is the one being made",
-      "It governs the very characters being written",
-      "A standing rule about how to perform an operation belongs here too: it comes due at the moment that operation is performed, with nothing to remember beforehand",
-      'Example: "Use `getProjectCommands(project)` not `.database.commands`"',
-      'Example: "Each test file must import from the module it tests, not from barrel exports"',
-    ],
-  },
-];
-```
-
-Map the returned 0–4 float onto the rubric's bands by linear interpolation
-within the level it lands in: 4 → 0.90–1.00, 3 → 0.65–0.85, 2 → 0.40–0.60,
-1 → 0.15–0.35, 0 → 0.00–0.10.
+The app uses the raw 0–4 value. `no_trigger` fires below `NO_TRIGGER = 1.5` in
+[lib/analyze.js](../../lib/analyze.js), the midpoint between level 1 and level 2.
+The rubric's 0–1 bands in [research/rubrics.md](../../research/rubrics.md) are
+not applied.
 
 ## Rules for changing this wording
 
@@ -177,7 +127,7 @@ within the level it lands in: 4 → 0.90–1.00, 3 → 0.65–0.85, 2 → 0.40�
 
 ## Rejected Alternatives
 
-- **Keeping assay's rubric text as the Score criteria.** Rejected: the rubric is
+- **Keeping the rubric's text as the Score criteria.** Rejected: the rubric is
   written for a reader who sees all five levels at once, which is exactly what
   Jev does not.
 - **Tuning until the held-out set passed.** Rejected: that converts the only

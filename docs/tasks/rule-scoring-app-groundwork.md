@@ -1,7 +1,7 @@
 ---
 type: task_summary
 status: active
-summary: "State of the Jev rule-scoring app now that it is built and live on Cloudflare: what was researched, the three scorer defects that were found and fixed, what is validated and what is not, and the decisions still open."
+summary: "State of the Jev rule-scoring app now that it is built and live on Cloudflare: what was researched, the nine defects that were found and fixed, what is validated and what is not, and the decisions still open."
 related_files:
   - "docs/decisions/rule-scoring-product-viability.md"
   - "docs/knowledge/jev-commercial-licensing.md"
@@ -16,11 +16,11 @@ related_files:
   - "public/"
 ---
 
-# Rule-scoring app — groundwork, before any code
+# Rule-scoring app — state and open work
 
-Handoff note. Everything below is already written down somewhere durable; this
-exists so a session starting fresh knows which document to open and what is
-still undecided.
+Handoff note. It exists so a session starting fresh knows which document to open
+and what is still undecided. The naming rationale, the deploy checks and the
+page-design notes below are recorded only here.
 
 ## What the thing is
 
@@ -42,7 +42,7 @@ same web report. Reasoning and the rest of the competitive picture:
 | May we resell Jev access itself? | No — MCA §2.3(a) | same |
 | May we train our own scorer on the verdicts? | **No** — §2.3(b) | same |
 | Do we need a privacy notice? | Yes; the DPA names us controller. Draft text is in the doc | same |
-| Cost per rule | **~2,380 tokens ≈ $0.0001** for the shipped five-question set; the $0.000037 in the docs was one question, not five | measured 2026-09-20 against `lib/questions.js` |
+| Cost per rule | **~2,570 tokens ≈ $0.0001** for the shipped six-question set, 2,380 before the `is_rule` and `best_primitive` repair; the $0.000037 in the feasibility probe was a shorter five-question request | measured 2026-09-20 against `lib/questions.js` |
 | What differentiates it | The measured corpus, not a feature | the ADR, item 5 |
 
 ## Nine defects, found by measuring
@@ -104,7 +104,7 @@ improved, with what is left named and left alone on purpose.
    **2,573 tokens spent** on a rule the design promises never to charge for.
    Fix: the thresholds moved into the gap the corpus showed, the English veto
    became a tie-break, and the closed-class lists got the words the port was
-   missing. **Leaks 12/20 → 1/20, refusals 0 throughout.**
+   missing. **Leaks 12/20 → 1/22, held out 7/10 → 1/10, refusals 0 throughout.**
    [language-screen-criteria.md](../knowledge/language-screen-criteria.md)
 
 Both repairs are live as of version `7caeec0c` and were checked on the deployed
@@ -116,7 +116,7 @@ used to say `hook`; the release review comes back **`subagent` at 0.64**; and
 
 ## What is validated, and what is not
 
-**Validated and ready to wire:** the injection screen (two Nouls), the F3 Score
+**Validated:** the injection screen (two Nouls), the F3 Score
 question, the F8 question and the primitive-routing Choice from the first probe
 (F8 hit 4/4 on labelled cases; hook routing hit confidence 1.00).
 
@@ -137,12 +137,11 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
 
 **Not validated:**
 
-- **F4 and F5 are not in this app and cannot be.** Both take a whole file —
-  `scoreF4(rule, file)` reads the file's globs, `scoreF5(lineStart, file)` reads
-  a line offset — and this app scores one pasted rule. The earlier draft of this
-  note listed them as unmeasured risks here, which was wrong: they are not risks,
-  they are absent. Measuring them means measuring assay against a corpus of whole
-  files, which is a different project.
+- **F4 and F5 are not in this app and cannot be.** Both take a whole file, its
+  globs for F4 and a line offset for F5, and this app scores one pasted rule. The
+  earlier draft of this note listed them as unmeasured risks here, which was
+  wrong: they are not risks, they are absent. Measuring them needs a corpus of
+  whole files, which is a different project.
 - **The corpus behind F1 and F7 is 56 rules across three sets.** Enough to catch
   a structural defect, nowhere near enough to certify an accuracy. One residual
   is still open and named in the test: *"Consider logging disabled in
@@ -155,12 +154,12 @@ is still 0.20 hedged, and *"Move it to the next step"* still has no anchor.
 - **`is_rule`'s margin is +0.06.** Positive, so the ordering is right, but thin.
   Fourteen of sixteen cases separate 0.85-to-0.94 against 0.09-to-0.20; the two
   that do not are the two built to be hard.
-- **The composition** — weighted mean, soft floor, grade letters — is inherited
-  from assay and has no evidence of its own beyond the rule-lab weights.
+- **Enforceability, F8, has no labelled set of its own.** Four probed rules, and
+  it gates one finding, `could_be_a_hook`.
 - **The language screen's held-out half is spent**, and one case still leaks:
   *"No uses `any` en TypeScript."* has three prose words and one of them on any
   list, so there is nothing there to read. Pinned by name in the test.
-- **The six interface translations.** Written here, not reviewed by a native
+- **The five interface translations.** Written here, not reviewed by a native
   speaker of any of them.
 
 ## Settled since
@@ -194,8 +193,8 @@ wrangler secret put TYPESAFE_API_KEY
 
 **Live since 2026-09-20** at
 [disregard-score.victor-villegas.workers.dev](https://disregard-score.victor-villegas.workers.dev/),
-56.03 KiB across five assets, 16.95 KiB gzipped, with the key set as a Worker
-secret. It was verified on workerd first, and the deployed Worker answers the
+56.03 KiB across five assets and 16.95 KiB gzipped at that first deploy, with the
+key set as a Worker secret. It was verified on workerd first, and the deployed Worker answers the
 same 405, 400 and 404 paths. Nothing in the handler touches a Node built-in, so
 `nodejs_compat` is off.
 
@@ -208,30 +207,32 @@ page serves 200 and `/api/score` still answers 405 to a GET.
 copy is running and the old link is gone for good. Every reference inside this
 repo was moved with the rename; anything outside it was not checked.
 
+**`rule-lab` is published.** The harness and its 2,020 cells, $111.61, are in
+this repository at `research/rule-lab/`, and the repository is public at
+[github.com/V-Songbird/disregard](https://github.com/V-Songbird/disregard). The
+research page links the harness and CONTRIBUTING.md. The audit of the cells found
+no username, email or `localhost` reference. Two exp-001 cells carry a
+`fixtureDir` temp path, `X:Tempule-lab-…`, left by a `--keep` run.
+
+**The translations are disclosed, not measured.** The five translated locales
+need a native speaker rather than a harness, and the owner has no way to reach
+one. Each carries an `aiTranslated` line under the title declaring the
+translation machine-made and possibly wrong. English is the source and shows
+nothing.
+
 ## Open decisions
 
-1. **Publish `rule-lab`?** It is the moat — 2,020 measured cells, $111.61, and a
-   harness that lets strangers add model columns for ~$41 each. **The audit is
-   done and the harness is in this repository**, at `research/rule-lab/`: its
-   2,020 cells carry no path, username, email or `localhost` reference, so
-   nothing needs redacting. What is left is not a decision about the harness but
-   about this repository, which is to be published and has no remote yet. See
-   [the decoupling note](decouple-from-slag.md).
-2. **What to measure next.** Everything the app decides now has a labelled set
-   behind it. What is left with none is the **six interface translations**, which
-   need a native speaker rather than a harness. **Settled on 2026-09-20:** the
-   owner has no way to reach one, so the page now says so instead. Each of the
-   five translated locales carries an `aiTranslated` line under the title
-   declaring the translation machine-made and possibly wrong; English is the
-   source and shows nothing. Measuring them stays undone, and is now disclosed
-   rather than pending.
-3. **Fresh held-out sets** for the four that are spent.
+1. **Fresh held-out sets** for the three that are spent with no successor:
+   `is_rule`, `best_primitive` and the language screen. `eval/det-set.js`
+   already has `HELDOUT2` as its live set.
+2. **The Acceptable Use Policy.** The app launched with it unread; see
+   [jev-commercial-licensing.md](../knowledge/jev-commercial-licensing.md).
 
 ## Where things live
 
-This project moved out of `Slag` on 2026-09-20 and is now **Disregard**, its own
-repository. Only `docs/` and `eval/` came across; `Slag/docs/collet-plugin.md`
-stayed behind because it belongs to that repo.
+This project moved out of the `Slag` repository on 2026-09-20 and is now
+**Disregard**, its own repository. `docs/` and `eval/` came across first, and
+the harness, the rubric and two research documents followed the same day.
 
 **Disregard is a git repository as of 2026-09-20**, on `main`, first commit
 `db63860`. Identity is set per-repository, not globally.
@@ -245,10 +246,8 @@ come across: both need a whole file and a corpus, which this app does not have.
 The upstream copies stay uncommitted in `slag`, and assay is still being
 retired; nothing here depends on them any more.
 
-**Nothing this app needs lives outside this folder any more.** On 2026-09-20 the
-harness, the rubric and the two research documents were all copied in — see
-[the decoupling note](decouple-from-slag.md) for what
-moved and what was deliberately left behind.
+**Nothing this app needs lives outside this folder any more.** The ADR's *Where
+the supporting research lives* section maps each piece to its path here.
 
 ## Naming
 
@@ -275,10 +274,10 @@ already owns it) and *Ruleproof* (accurate, flat).
 ## Next step
 
 The function is built and deployed. `api/score.js` takes `{ rule }`, `lib/analyze.js` sends
-one Jev request carrying all five questions and composes findings — **no grade**,
+one Jev request carrying all six questions and composes findings — **no grade**,
 by the ADR's honesty argument, so the inherited weighted mean was never wired and
-nothing here depends on it. `node --test` covers the bands and the composition
-with stubbed answers, 24/24.
+nothing here depends on it. `lib/analyze.test.js` covers the bands and the
+composition with stubbed answers, 20 tests of the 57 in the whole check.
 
 **It is live, and it was checked there.** Against the deployed Worker on
 2026-09-20: every static path plus `/privacy` and `/terms` returned 200,
@@ -295,7 +294,7 @@ What is left is no longer shipping. It is measuring — see the open decisions.
 
 ## The page
 
-`public/` — four static files and a stylesheet, no framework and no build step.
+`public/` — five static files and a stylesheet, no framework and no build step.
 It leads with the findings and never shows a grade, which is the ADR's honesty
 argument carried into the markup: `not_a_rule` and the hook findings get the
 accent border, the numbers sit behind a *"What was measured"* disclosure, and

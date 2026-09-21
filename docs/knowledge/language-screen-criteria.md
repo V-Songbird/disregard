@@ -12,9 +12,9 @@ related_files:
 
 ## Why it mattered most
 
-It is the **first gate every request passes**, and it was the last thing here
-with no measurement behind it. It is assay's, ported, and it was never measured
-there either.
+It is the **first gate every request passes**, and it was the last screen here
+with no labelled set behind it. It was ported from an earlier tool, and it was
+never measured there either.
 
 What it decides: English is scored, anything else is handed back unscored before
 a request is spent. So it makes two mistakes, and they are not equal.
@@ -86,7 +86,7 @@ additions were made together and measured together.
 1. **`MIN_TOKENS` 6 → 3.** Below three prose words there really is nothing to
    read; above it there is.
 2. **`MIN_HITS` 3 → 2.** Two sits inside the gap above.
-3. **The English veto became a tie-break.** `english >= hits` still returns
+3. **The English veto became a tie-break.** `english >= bestHits` still returns
    English, so mixed text stays English and equal evidence goes to English —
    but one borrowed word no longer outvotes three.
 4. **Missing closed-class words added**, per language. *"Niemals direkt auf main
@@ -111,7 +111,7 @@ HELD OUT      1 leak  / 10 foreign     0 refusals / 10 English
 
 **Refusals stayed at zero**, which is the condition the repair had to meet. Every
 caught rule is also named correctly — no rule is refused as French when it is
-Spanish. The suite went 41 to 47 tests.
+Spanish. The pins are in [lib/language.test.js](../../lib/language.test.js).
 
 ### The one that still leaks
 
@@ -149,7 +149,7 @@ that were already caught by other means. Checked before writing any code.
 once the distribution above came out: with English never exceeding one hit, a
 flat two is simpler and sits in the same gap.
 
-**Adding imperative verbs — `usa`, `utiliser`, `verwende`.** It would catch
+**Adding imperative verbs — `usa`, `uses`, `utiliser`, `verwende`.** It would catch
 `es-typescript` and it is the open-class word-list expansion that put F7 wrong
 in the first place. The closed class is small, stable and finite; the open class
 is neither.

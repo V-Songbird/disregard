@@ -9,6 +9,7 @@ characters max. The full picture is in [README.md](README.md).
 | What | Command |
 | --- | --- |
 | Check | `node --test --test-reporter=dot` |
+| Check one file | `node --test --test-reporter=dot lib/analyze.test.js` |
 | Local server | `npx --yes wrangler dev` |
 | Deploy | `npx --yes wrangler deploy` |
 
@@ -34,6 +35,10 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
 
 ## Pitfalls
 
+- **`AGENTS.md` is the only instruction file, for every host.** A `CLAUDE.md`, a
+  `GEMINI.md` or a rules folder makes Codex, Antigravity and Claude Code read
+  different things. The reasons are in
+  [docs/knowledge/agent-host-compatibility.md](docs/knowledge/agent-host-compatibility.md).
 - **Everything is CommonJS except [worker.js](worker.js).** A new file under
   `lib/` or `api/` writes `module.exports`, not `export`. No `package.json`
   declares a `"type"`, so nothing else will tell you. Wrangler's bundler joins
@@ -46,16 +51,20 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
   is committed. A local run reads `.dev.vars`, production reads a Workers
   secret. Start from [.dev.vars.example](.dev.vars.example).
 - **Change a criteria string, re-run its set, and report the held-out number,
-  not the tuned one.** Each document under [docs/knowledge/](docs/knowledge/)
-  carries a "rules for changing this" section naming what is spent.
+  not the tuned one.** Each criteria document under
+  [docs/knowledge/](docs/knowledge/) carries a "rules for changing this"
+  section, and those with a spent set name it there.
 - **Four held-out halves are already spent.** A fix was diagnosed from a case
   inside them, so they are regression guards now. Build a fresh set rather than
   promoting a guard back to a measurement.
-- **Every eval harness except `det-eval.js` spends real money per run.** Read
+- **Four of the six eval harnesses spend real money per run.** Only
+  `det-eval.js` and `lang-eval.js` are free. Read
   [eval/README.md](eval/README.md) before running one.
 - **`research/rule-lab` spends real money too, and more of it.** Each cell is a
   live `claude -p` session on the contributor's own login. The whole existing
   corpus cost $111.61. Check the cell count with `--dry-run` and smoke one cell
   with `--limit 1` before launching a run.
 - **Thresholds live in [lib/analyze.js](lib/analyze.js)** beside the document
-  that measured them, named in the comment above each measured one.
+  that measured them, named in the comment above each measured one. The language
+  screen's `MIN_TOKENS` and `MIN_HITS` are the exception, in
+  [lib/language.js](lib/language.js).

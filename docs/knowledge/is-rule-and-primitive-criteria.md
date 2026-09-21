@@ -12,7 +12,8 @@ related_files:
 
 ## Why they were unmeasured
 
-Every other question the app asks was validated before it was written down. These
+Every other question the app asks was validated before it was written down,
+except `enforceability`, which has four probed rules and no labelled set. These
 two were not, and `lib/questions.js` said so at the top: the original probe ran
 an `is_rule` Noul and got 0.88–0.97 on six rules **that were all rules**, so the
 question had never been shown a negative. `best_primitive` had two hook cases at
@@ -37,8 +38,10 @@ The `is_rule` label follows one stated test, so a reader can check each case
 rather than trust it: **can a reader change what they do because of this
 sentence?** Yes is a rule. A sentence that only informs is not, however useful.
 
-Three repetitions each. Three runs cost about **151,000 input tokens, roughly
-$0.006** at the rate measured for this app.
+Three repetitions each. The three runs of this measurement cost about **151,000
+input tokens, roughly $0.006** at the rate measured for this app. One run at the
+repaired wording is 56,481 input tokens, recorded in
+[eval/results/jev-latest.txt](../../eval/results/jev-latest.txt).
 
 ```bash
 node eval/jev-eval.js
@@ -65,7 +68,9 @@ two cases cross: a rule at **0.56** and a non-rule at **0.79**. The margin is
 that the scale works.
 
 The non-rule at 0.79 was *"Readback scores one rule at a time and never returns
-a grade."* — a product description wearing the word "never". The page would show
+a grade."* — a product description wearing the word "never". Readback was this
+project's earlier name, and the case text is kept as written because it is
+measured data. The page would show
 no `not_a_rule` finding on it at all, which is the one finding the whole product
 exists to make.
 
@@ -117,8 +122,9 @@ primitive  working 7/8   HELD OUT 6/8    13/16 overall, nothing unstable
 **Every primitive pick at confidence 0.80 or better was right — 10 for 10 — and
 every error sat below that line.** The app only asserts *"a command could settle
 this, so a hook would do it better"* above 0.80; below it, the card softens to
-*"a tool could check this for you"* and names no primitive at all. So the four
-remaining errors never reach a reader as a claim. The confident band also
+*"a tool could check this for you"* when F8 is at or under 1.25, and says nothing
+otherwise. Either way it names no primitive. So the three remaining primitive
+errors never reach a reader as a claim. The confident band also
 doubled, from five picks to ten.
 
 That is what the confidence-routing pattern is for, and this is the first

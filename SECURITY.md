@@ -1,7 +1,7 @@
 # Security policy
 
-Report anything security related to **songbird@tuta.com**. Do not open it in a
-public channel.
+Report anything security related to **victor.villegas@tuta.com**. Do not open it
+in a public channel.
 
 ## In scope
 

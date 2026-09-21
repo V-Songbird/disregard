@@ -1,6 +1,6 @@
 ---
 type: knowledge
-summary: "The first Jev probe: which factors a model can judge, which the code must compute, what the app structurally cannot do, and the measured cost per rule; read before adding a question or promising an output."
+summary: "Historical record of the first Jev probe, 2026-09-19, five questions: which factors a model can judge, which the code must compute, and what the app structurally cannot do. Superseded on F3, injection, language and cost by the criteria documents; read for why the split exists, not for current numbers."
 related_files:
   - "lib/questions.js"
   - "lib/analyze.js"
@@ -9,6 +9,20 @@ related_files:
 ---
 
 # Feasibility: a public rule-scoring web app powered by Jev
+
+**Status: historical.** This is the probe that justified building the app, kept
+as written in its sections 1 to 6. The app is built and live, and what happened
+to each of its recommendations is in section 7. Current numbers live in
+[f3-trigger-distance-criteria.md](./f3-trigger-distance-criteria.md),
+[injection-screen-criteria.md](./injection-screen-criteria.md),
+[is-rule-and-primitive-criteria.md](./is-rule-and-primitive-criteria.md) and
+[language-screen-criteria.md](./language-screen-criteria.md).
+
+Paths that start with `assay/`, and bare `assay.js`, `rubrics.md` or
+`SCOPE.md` citations, point into the retired assay plugin, which is not part of
+this repository. What came across is [lib/scorer.js](../../lib/scorer.js) for
+F1, F2 and F7, and [research/rubrics.md](../../research/rubrics.md) for the F3
+and F8 rubric. Composition, grades and the `PLAIN_FIXES` tips were not ported.
 
 **What was investigated.** Whether the research captured in
 [writing-rules-for-ai.md](./writing-rules-for-ai.md) and in the `assay/` plugin
@@ -72,9 +86,9 @@ Four of the six rules carry a **labelled target value** from
 
 `is_rule` returned 0.88–0.97 on all six — correct, all six are rules.
 
-Reproduce with `probe.js` in the session scratchpad; the key lives in the
-**user-scope** `TYPESAFE_API_KEY` (not machine scope — Git Bash does not see it,
-PowerShell must hydrate it explicitly).
+The probe script was not kept. The shipped questions are re-measured with
+`node eval/jev-eval.js` and `node eval/f3-eval.js`; see
+[eval/README.md](../../eval/README.md).
 
 ### What the probe establishes
 
@@ -179,8 +193,9 @@ path stays one Jev call.
 | Auth | `Authorization: Bearer $TYPESAFE_API_KEY` | quickstart |
 | Model | `jev-1.13.0` (`jev-latest`) | `/models` |
 | Price | $42 per billion **input** tokens; output free | `/models` |
-| **Measured cost per rule** | ~880 input tokens ≈ **$0.000037** | probe |
-| 1,000 evaluations | ≈ **4 cents** | derived from the two rows above |
+| **Measured cost per rule, in the probe** | ~880 input tokens ≈ **$0.000037** | probe |
+| **Measured cost per rule, as shipped** | ~2,380 input tokens ≈ **$0.0001** | `lib/analyze.js`, `wrangler.jsonc` |
+| 1,000 evaluations, as shipped | ≈ **10 cents** | derived from the row above |
 | Rate limit | 1,200 req/min, 250k tok/s | `/models` |
 | Context | 64k per request; 32k for state + longest question | `/models` |
 | Batching | Every question over the same state in one call; parallel, barely changes latency | `/primitives` |
@@ -202,20 +217,22 @@ is worth more or less depending on who reads it.*
 
 ---
 
-## 7. Before shipping
+## 7. What happened to each recommendation
 
-1. Rewrite the F3 level descriptions; re-run against the labelled set until the
-   two top levels separate. **Blocking.**
-2. Replace the injection question; treat rule text as hostile input. **Blocking.**
-3. Decide the language policy. Jev judges Spanish acceptably; the deterministic
-   half does not. Either run English-only and say so, or ship Spanish with F1/F2/F7
-   withheld and the verdict marked partial. assay's standing rule is that a
-   wording score for a new language needs a **validated** language-specific
-   analyzer (`assay/SCOPE.md:1224`).
-4. Add the two placement dropdowns so F4 and F5 are approximated rather than
-   silently missing.
-5. Label every number with what it is not: a wording check, not a compliance
-   prediction, on a rubric measured on Haiku 4.5 and partially on Sonnet 5.
+| Recommended before shipping | Outcome |
+| --- | --- |
+| Rewrite the F3 level descriptions | Done. Measured in [f3-trigger-distance-criteria.md](./f3-trigger-distance-criteria.md). |
+| Replace the injection question | Done. Two questions, `control` and `premise`, in [injection-screen-criteria.md](./injection-screen-criteria.md). |
+| Decide the language policy | Decided: English only. Another language gets `status: not_english` before any call is spent. |
+| Two placement dropdowns for F4 and F5 | Rejected. Both need the whole file, and the app does not approximate them. |
+| A model selector that re-weights one call | Not built. The app returns findings with no grade, so there is nothing to re-weight. |
+| Canned tips from `PLAIN_FIXES`, and a rewrite button | Not built. Findings cross the wire as ids, and the page supplies the text per locale. |
+| Label every number with what it is not | Done on the page, in the terms and in the README's Limits section. |
+
+The shipped request carries six questions, not the probe's five: `control`,
+`premise`, `is_rule`, `trigger_distance`, `enforceability` and
+`best_primitive`. The shipped flow is language screen, one Jev call, injection
+bands, then F1, F2 and F7, then finding ids.
 
 ---
 

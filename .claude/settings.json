@@ -15,12 +15,14 @@
   "permissions": {
     "deny": [
       "Read(./.env*)",
+      "Read(./.dev.vars)",
       "Read(./dist/**)",
       "Read(./build/**)",
       "Read(./node_modules/**)",
+      "Read(.wrangler/**)",
+      "Read(.idea/**)",
       "Read(**/*.map)",
-      "Read(**/*.log)",
-      "Read(**/*.idea)"
+      "Read(**/*.log)"
     ]
   }
 }

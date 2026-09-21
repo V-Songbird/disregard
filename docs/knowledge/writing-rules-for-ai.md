@@ -1,6 +1,6 @@
 ---
 type: knowledge
-summary: "The field guide behind every factor this app scores: what makes a rule fire, the seven checks, per-model calibration and the evidence tag on each claim; read before changing any factor or threshold."
+summary: "Field guide to writing agent rules, extracted from the retired assay plugin: rule anatomy, assay's seven checks of which Disregard ships F1, F2, F3, F7 and F8, per-model weights and the evidence tag on each claim; read for the reasoning behind a factor, and read the criteria documents for what lib/ does today."
 related_files:
   - "lib/scorer.js"
   - "lib/questions.js"
@@ -21,6 +21,30 @@ theory of how an instruction for an AI should be written.
 guide. This file is that extraction: every rule below is traced to the file and
 line in `assay/` that encodes or measures it. Nothing here is invented, and
 where assay marks a lever unmeasured, this guide marks it unmeasured too.
+
+**Where Disregard differs.** This guide describes assay as it was when the text
+was extracted, on 2026-09-20. Every `assay/…` citation points into the `slag`
+repository, which is not part of Disregard, so the line numbers cannot be
+resolved from here. Disregard took five of the seven checks and changed four
+things since:
+
+- **No grade.** The score formula, the A to F grades, the category floors and
+  `STALL_RISK_CAP` are assay's. Disregard composes nothing: a bare ban raises the
+  `stall_risk` finding.
+- **F2.** An unrelated directive beside a ban is no longer scored as bare. It
+  lands at 0.60, `prohibition_alternative_unproven`, with no stall flag. A ban
+  that carries its own exception, such as *"without explicit authorization"*,
+  counts as having an alternative.
+- **F1.** A hedge after the first prohibition marker no longer governs the
+  sentence, and `consider` reads as a suggestion only before `whether`, `if` or
+  a known gerund. See
+  [f1-f7-deterministic-criteria.md](./f1-f7-deterministic-criteria.md).
+- **Language.** The screen fires at 3 prose tokens and 2 hits, with English as a
+  tie-break, and a rule in another language is not scored at all. See
+  [language-screen-criteria.md](./language-screen-criteria.md).
+
+F4 and F5, sections 6, 7, 9 and 10, and the weight table describe assay only.
+Nothing in this repository measures or ships them.
 
 **Who this is for.** Anyone writing `CLAUDE.md`, `AGENTS.md`, `.claude/rules/`,
 skill descriptions, subagent prompts, or system prompts — i.e. durable
@@ -157,7 +181,7 @@ Four load-bearing parts (`assay/skills/craft-rules/references/recipe.md:37`):
 
 ## 4. The seven checks
 
-assay grades six factors mechanically plus two by model judgment. Their plain
+assay grades five factors mechanically plus two by model judgment. Their plain
 names are the ones the report prints (`assay/scripts/assay.js:5437`):
 
 | Factor | Plain problem | Plain fix |
@@ -339,7 +363,7 @@ Scoring (`assay/scripts/assay.js:2344`), with `c` = concrete count, `a` = abstra
 | mixed, ratio ≥ 0.25 | 0.25 + 0.15·ratio |
 | mixed, ratio < 0.25 | 0.10 + 0.1·ratio |
 
-> ✗ `Write clean, maintainable code.` → F7 = 0.05
+> ✗ `Write clean, maintainable code.` → F7 = 0.10
 > ✓ `Keep functions under 40 lines; extract a helper rather than nesting a third `if`.`
 
 ### F8 — enforceability ceiling (model-judged)
@@ -722,7 +746,7 @@ Any "no" on 4–12 is a rewrite, not a nuance.
 
 | Anti-pattern | Example | Why it fails | Fix |
 | --- | --- | --- | --- |
-| The wish | `Write clean, maintainable code.` | F7 = 0.05; nothing checkable | Name the threshold and the escape |
+| The wish | `Write clean, maintainable code.` | F7 = 0.10; nothing checkable | Name the threshold and the escape |
 | The description | `All files are optimized for agent consumption.` | Reads as a statement; F3 = 0.00 | Rewrite as an instruction |
 | The standing duty | `Keep CHANGELOG.md updated.` | Distant file, no moment; ignored outright | `Before opening a pull request, add a line to CHANGELOG.md for every user-visible change.` |
 | The bare ban | `Never edit the generated files.` | Stalls the task; caps grade at 0.30 | Name the replacement or the escape hatch |
@@ -768,7 +792,17 @@ guide:
 
 ## Sources
 
-All paths relative to the `slag` repository root.
+All paths are relative to the `slag` repository root. That repository is not
+part of Disregard, and its `assay/` tree is being retired. What came across:
+
+| Source | Here |
+| --- | --- |
+| F1, F2 and F7 in `assay/scripts/assay.js` | [lib/scorer.js](../../lib/scorer.js) |
+| The language screen in `assay/scripts/assay.js` | [lib/language.js](../../lib/language.js) |
+| `assay/references/rubrics.md` | [research/rubrics.md](../../research/rubrics.md) |
+| The measurements behind `assay/scripts/models/*.js` | [research/rule-lab/FINDINGS.md](../../research/rule-lab/FINDINGS.md) |
+
+Everything else in the table below has no counterpart here.
 
 | Topic | File |
 | --- | --- |

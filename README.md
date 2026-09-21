@@ -126,9 +126,6 @@ downloads wrangler on first use.
    npx --yes wrangler dev
    ```
 
-The page in `public/` is served as a static asset and is matched before any code
-of ours runs. Only `/api/score` and mistyped paths reach the Worker.
-
 ## Configuration
 
 One setting, and it is a secret.
@@ -139,8 +136,8 @@ One setting, and it is a secret.
 
 Where the value goes: `.dev.vars` on a developer machine, a Cloudflare Workers
 secret in production. **Never `wrangler.jsonc`**, which is committed. Everything
-else the service uses is a constant in [lib/analyze.js](lib/analyze.js), next to
-the document that measured it.
+else the service uses is a constant in [lib/analyze.js](lib/analyze.js) or
+[lib/language.js](lib/language.js), next to the document that measured it.
 
 ## Deploy
 
@@ -161,8 +158,7 @@ order, from the repository root.
 
 ## Development and tests
 
-The suite is local, needs no key, and costs nothing. Tests sit beside the code
-they cover, in `lib/`.
+The suite is local, needs no key, and costs nothing.
 
 ```bash
 node --test --test-reporter=dot
@@ -177,10 +173,8 @@ assertion instead.
 .................
 ```
 
-Drop `--test-reporter=dot` to see every test name and the `# pass 57` summary.
-
-The labelled sets and their harnesses live in `eval/`. One of them is free and
-the rest spend real money per run. Read
+The labelled sets and their harnesses live in `eval/`. Two of them are free and
+four spend real money per run. Read
 [the eval guide](eval/README.md) before running any of them, because it says
 which number a given set is still allowed to report.
 
@@ -189,16 +183,16 @@ which number a given set is still allowed to report.
 **Change a criteria string, re-run its set, and report the held-out number, not
 the tuned one.** Every question here was wrong in its first version, and a
 labelled set caught it each time. Each document below carries a "rules for
-changing this" section naming what is spent and what is still safe to quote.
+changing this" section, and those with a spent set name it there.
 
-| What it decides | Held out | Read first |
+| What it decides | Measured | Read first |
 | --- | --- | --- |
-| Is this text steering the evaluator? | 9/9 attacks caught, 14/15 benign clean, margin 0.74 | [the injection screen](docs/knowledge/injection-screen-criteria.md) |
-| Is it English? | 1 leak / 20, **0 refusals** | [the language screen](docs/knowledge/language-screen-criteria.md) |
-| Is it a rule? | 7/8, and the ordering matters more than the count | [is_rule and best_primitive](docs/knowledge/is-rule-and-primitive-criteria.md) |
-| Rule, hook, skill or subagent? | 6/8 overall, **10/10 on confident picks** | same document |
-| When does it come due? | 6/10 exact, mean error 0.39 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
-| Is the verb soft? Is anything checkable? | 20/20 and 20/20 | [the deterministic factors](docs/knowledge/f1-f7-deterministic-criteria.md) |
+| Is this text steering the evaluator? | 9/9 attacks caught, 14/15 benign clean, margin 0.74. One set of 24, no held-out split | [the injection screen](docs/knowledge/injection-screen-criteria.md) |
+| Is it English? | Held out: 1 leak in 10 foreign, **0 refusals** in 10 English | [the language screen](docs/knowledge/language-screen-criteria.md) |
+| Is it a rule? | Held out: 7/8, margin +0.06. The margin matters more than the count | [is_rule and best_primitive](docs/knowledge/is-rule-and-primitive-criteria.md) |
+| Rule, hook, skill or subagent? | Held out: 6/8, and **10/10 on confident picks** across all 16 | same document |
+| When does it come due? | Held out: 6/10 exact, mean error 0.39 levels | [trigger distance](docs/knowledge/f3-trigger-distance-criteria.md) |
+| Is the verb soft? Is anything checkable? | Held out: 20/20 and 20/20 | [the deterministic factors](docs/knowledge/f1-f7-deterministic-criteria.md) |
 
 Four of those held-out halves are **spent**. A fix was diagnosed from a case
 inside them, so they are regression guards now, not measurements. Build a fresh
@@ -227,7 +221,7 @@ touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
 
 - **Enforceability has no labelled set of its own.** It gates one finding,
   `could_be_a_hook`.
-- **The six interface translations are unmeasured.** They need a native reader,
+- **The five interface translations are unmeasured.** They need a native reader,
   not a harness, and the page says so in each of them.
 - **Scope and position are not scored and cannot be.** Both need the whole file,
   and this scores one pasted line.
@@ -236,15 +230,14 @@ touches no Node built-in. It runs unchanged on Netlify v2, Vercel, Deno or Node
 
 ## Support and license
 
-[CONTRIBUTING.md](CONTRIBUTING.md) says what is worth contributing and the
-floor a measurement has to clear. The short version: the gap worth closing is
-model coverage in [research/rule-lab](research/rule-lab), and a full column
-costs about $41 on your own login.
+[CONTRIBUTING.md](CONTRIBUTING.md) says what is worth contributing, what it
+costs, and the floor a measurement has to clear.
 
-The documents under `docs/` are the route for questions about why a criteria
-string says what it says; each threshold has the document that measured it.
-Report anything security related to the address in [SECURITY.md](SECURITY.md),
-never in a public channel.
+Report a wrong verdict or a bug in the
+[issue tracker](https://github.com/V-Songbird/disregard/issues), with the exact
+rule text you pasted. The documents under `docs/` answer why a criteria string
+says what it says. Report anything security related to the address in
+[SECURITY.md](SECURITY.md), never in a public channel.
 
 **MIT**, in [LICENSE](LICENSE). The service's own terms and privacy notice are
 shipped with the page, at [terms](public/terms.html) and

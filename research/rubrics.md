@@ -1,10 +1,13 @@
 Rubric version: 3
 
 > Brought into Disregard on 2026-09-20 from `assay/references/rubrics.md`, which
-> was the only copy. The F8 levels in `lib/questions.js` are verbatim from the F8
-> section below, and the `LABELLED` set in `eval/f3-criteria.js` is every worked
-> example below that carries an explicit F3 target. Change a level here and both
-> of those are wrong; change them together or not at all.
+> was the only copy. The F8 levels in `lib/questions.js` are taken from the F8
+> section below with three small wording edits, and the `LABELLED` set in
+> `eval/f3-criteria.js` is every worked example below that carries an explicit
+> F3 target. Change a level here and both of those are wrong; change them
+> together or not at all. The last two sections, the F1 patch and the payload
+> notes, describe assay's judge payload. Nothing in Disregard has those fields,
+> and they are kept for fidelity to the source.
 
 # Judgment rubrics — F3 and F8
 
