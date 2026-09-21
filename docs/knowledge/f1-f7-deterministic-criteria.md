@@ -14,7 +14,7 @@ related_files:
 
 F2 was the only deterministic factor anyone had checked against labelled cases,
 and it was wrong nine times in ten — see
-[the groundwork note](../tasks/20260920_TASK_rule-scoring-app-groundwork_ffdda76c.md).
+[the groundwork note](../tasks/rule-scoring-app-groundwork.md).
 F1 and F7 shipped on the same assumption that produced that defect: a word list,
 read once, never counted. F7 was already visibly suspect. It scored *"Run
 prettier on modified files before committing."* at **0.05** and raised *"nothing

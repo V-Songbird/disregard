@@ -58,4 +58,4 @@ carry the labelled corpora for [lib/scorer.js](lib/scorer.js).
   corpus cost $111.61. Check the cell count with `--dry-run` and smoke one cell
   with `--limit 1` before launching a run.
 - **Thresholds live in [lib/analyze.js](lib/analyze.js)** beside the document
-  that measured them. Change the document in the same commit.
+  that measured them, named in the comment above each measured one.

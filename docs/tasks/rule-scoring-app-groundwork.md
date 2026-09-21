@@ -216,7 +216,7 @@ repo was moved with the rename; anything outside it was not checked.
    2,020 cells carry no path, username, email or `localhost` reference, so
    nothing needs redacting. What is left is not a decision about the harness but
    about this repository, which is to be published and has no remote yet. See
-   [the decoupling note](20260920_TASK_decouple-from-slag_a71c3e04.md).
+   [the decoupling note](decouple-from-slag.md).
 2. **What to measure next.** Everything the app decides now has a labelled set
    behind it. What is left with none is the **six interface translations**, which
    need a native speaker rather than a harness. **Settled on 2026-09-20:** the
@@ -247,7 +247,7 @@ retired; nothing here depends on them any more.
 
 **Nothing this app needs lives outside this folder any more.** On 2026-09-20 the
 harness, the rubric and the two research documents were all copied in — see
-[the decoupling note](20260920_TASK_decouple-from-slag_a71c3e04.md) for what
+[the decoupling note](decouple-from-slag.md) for what
 moved and what was deliberately left behind.
 
 ## Naming
