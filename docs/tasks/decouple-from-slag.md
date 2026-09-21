@@ -60,11 +60,9 @@ labelled case.
 
 ## Left open by this task
 
-**The research page cannot link to the source yet.** [public/research.html](../../public/research.html)
-explains the method, the findings and what a contribution costs, and then has to
-say the harness "ships with the source" rather than naming a URL, because this
-repository still has no remote. When it gets one, that page and this note both
-want one line each. Nothing else on it goes stale.
+**Closed 2026-09-20.** The repository is public at <https://github.com/V-Songbird/disregard>, so
+[public/research.html](../../public/research.html) links the harness and the
+contribution guide directly instead of saying the source ships somewhere.
 
 ## Not to be touched
 
