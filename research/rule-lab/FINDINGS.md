@@ -19,6 +19,7 @@
 | Q7 | Position: rule at top vs middle vs bottom of CLAUDE.md | RESOLVED, spot-checked | Top beats bottom ×2: 1.00→0.65 and 1.00→0.15. Sonnet probe uninformative (baseline flipped); no burial seen on q8-long |
 | Q8 | File length: same rule in a ~20-line vs ~80-line CLAUDE.md | RESOLVED, spot-checked | No uniform effect: duty collapsed (burial), code-site rule improved. Sonnet: 1.00 both lengths |
 | Q9 | Do the three decisive contrasts (Q7 position, Q1 stall, Q6 verbs) still hold on a current 5-generation small tier? | RESOLVED for position and verbs; the stall leg stays OPEN | Measured on sonnet 5, 2026-08-25. **Position NULL ×2 intents** (top 1.00, bottom 1.00). **Verb strength NULL ×2** ("prefer" 1.00 = "always" 1.00). **Bare-prohibition penalty replicated only ×1** (0.60 vs 1.00 on console-log; 1.00 either way on spec-name). All three against a ceiling: once any rule was present this tier followed it |
+| Q10 | Does concreteness (F7) lift compliance on a Claude-5 tier, on intents that tier fails without a rule? | DESIGN — pilot owed | exp-010 answered nothing about big tiers because its intents were not anti-default there. exp-011 inverts the axis: restraint and non-idiom instead of good practice. Runs only if the pilot puts baseline below 0.5 |
 
 ## Experiment log
 
@@ -147,6 +148,26 @@ Result per contrast (baseline 0.00 in every intent below):
 **Read every line above as a ceiling result.** Lift was 1.00 in 11 of 12 non-baseline arms. What this measures is that on this tier, once a rule is present at all, it is followed — not that a badly placed or softly worded rule became a good one. Nothing here says what happens to a rule competing with a second rule, a longer session, or a task the model would rather do another way.
 
 Decision: Q9 is RESOLVED for position and verb strength on this tier — NULL in two intents each — and stays OPEN on the stall leg, which replicated once. Engine change made, and only the one the data pays for: in `assay/scripts/models/sonnet5.js`, `weights.F1` 0.6 → 0.3 and `weights.F5` 1.5 → 0.5, both relabelled `experiment-supported` and citing this experiment; `weights.F2` relabelled too and left at 1.0. Every other constant in that column is still `profile-inferred`, and haiku45, opus5 and fable5 are untouched — they were not measured. `RUBRIC_VERSION` is 3.
+
+### exp-011-bigtier-concreteness — DESIGN, 2026-09-20 (pilot owed before it runs)
+Question: Q10. Model: sonnet. 3 intents × 1 task × 3 arms × n=20 = **180 cells, about $17** at the $0.0925/cell exp-010 measured. Pilot `exp-011-pilot` is the same three intents, baseline arm only, n=5: **15 cells, about $1.40**.
+
+**Why exp-010 could not answer this.** Its intents asked the tier to do what it already wanted — don't use `console.log`, throw `AppError`, name a spec file. On a capable model that is free, so baselines sat at or near ceiling and three of them flipped outright. Every contrast came back NULL against a ceiling, which is not the same as a null effect, and the limits section already says so: big-tier effects need harder anti-default intents than this lab has.
+
+**The inversion.** The mechanics account the higher profiles are extrapolated from says capability *lowers* format-constraint adherence, because a more capable model elaborates more. So the anti-default axis for a big tier is not *do the good thing* but **withhold what you would supply unprompted**, or **write against your own idiom**. Two levers put the baseline below 0.5:
+1. The rule forbids an elaboration the model adds without being asked.
+2. The fixture is seeded with the forbidden behaviour, so style-matching is itself the violation. Each concrete arm names the seeded file as predating the rule, so "match the neighbours" and "follow the rule" point in opposite directions.
+
+**The three intents**, one axis each, so a finding that shows up in all three is not one quirk repeated:
+- `q10-no-guards` — restraint. `src/stats.js` opens every function with a `TypeError` guard; the task adds `src/median.js`. Violation: any `throw new`, `typeof`, `Array.isArray` or `instanceof`.
+- `q10-promise-chains` — idiom. `src/legacy/` is declared ES5-only and its existing file uses `async`/`await` anyway; the task adds `src/legacy/fetchPair.js`. Violation: any `async` or `await`. Both the model's own idiom and the neighbouring file pull toward it.
+- `q10-options-object` — signature shape. `src/format.js` exports positional-parameter helpers; the task adds `src/row.js`. Compliance: `formatRow` destructures a single options object in its signature.
+
+**Arms** are the exp-003 contrast, one property apart: `baseline` (no rule), `abstract` (the demand with no names), `concrete` (the same demand naming the file, the constructs and the exemption). Predicted direction: concrete > abstract > baseline, and the abstract-to-concrete gap larger here than the 0.60 measured on haiku, because F7 is the one factor the mechanics account expects to *rise* with capability.
+
+**Precondition, and it is a real gate.** Run the pilot first. If baseline compliance is 0.5 or higher on an intent, that intent is uninformative on this tier and is retired rather than reported — the same rule that retired three exp-010 intents. Fewer than two surviving intents means the design does not run: a one-intent result is OPEN, not a finding.
+
+**What each outcome means.** Concrete beating abstract confirms F7 on a tier where every F7 cell in every profile is currently `profile-inferred`. A null with baselines genuinely below 0.5 is the first big-tier null this lab can actually stand behind, and it would say the F7 weights of 2.2 and 2.4 in the opus5 and fable5 profiles are guesses in the wrong direction. Either way the cell stops being a guess.
 
 ## Method notes
 

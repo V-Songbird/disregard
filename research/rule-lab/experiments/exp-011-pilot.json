@@ -1,0 +1,132 @@
+{
+  "id": "exp-011-pilot",
+  "question": "Q10",
+  "hypothesis": "The three exp-011 intents are anti-default on a Claude-5 tier: with no rule present, that tier supplies the guards, writes async/await and uses positional parameters, so baseline compliance sits below 0.5 on each.",
+  "model": "sonnet",
+  "reps": 5,
+  "maxTurns": 24,
+  "timeoutMs": 420000,
+  "maxBudgetUsd": 0.35,
+  "intents": [
+    {
+      "id": "q10-no-guards",
+      "claudeMd": "# Project notes\n\nSmall Node statistics library, CommonJS, no dependencies. Tests run with\n`node --test`.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/stats.js": "\"use strict\";\n\nfunction mean(values) {\n  if (!Array.isArray(values)) throw new TypeError(\"values must be an array\");\n  if (values.length === 0) throw new RangeError(\"values must not be empty\");\n  return values.reduce((a, b) => a + b, 0) / values.length;\n}\n\nfunction variance(values) {\n  if (!Array.isArray(values)) throw new TypeError(\"values must be an array\");\n  if (values.length < 2) throw new RangeError(\"variance needs at least two values\");\n  const m = mean(values);\n  return values.reduce((a, b) => a + (b - m) ** 2, 0) / (values.length - 1);\n}\n\nmodule.exports = { mean, variance };\n",
+        "package.json": "{\n  \"name\": \"fixture-stats\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null
+      },
+      "tasks": [
+        {
+          "id": "median",
+          "prompt": "Add a new file `src/median.js` that exports `median(values)`, returning the median of an array of numbers. An even-length array returns the mean of the two middle values. Use `module.exports = { median }`. Do not modify any existing file and do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/median.js",
+              "pattern": "median"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/median.js",
+              "pattern": "throw\\s+new"
+            },
+            {
+              "type": "file_regex_absent",
+              "path": "src/median.js",
+              "pattern": "typeof|Array\\.isArray|instanceof"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q10-promise-chains",
+      "claudeMd": "# Project notes\n\nNode service. Everything under `src/legacy/` is compiled by an older toolchain\nthat parses ES5 only; everything else is modern.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/legacy/loadConfig.js": "\"use strict\";\n\nasync function loadConfig(url) {\n  const res = await fetch(url);\n  return await res.json();\n}\n\nmodule.exports = { loadConfig };\n",
+        "src/modern/report.js": "\"use strict\";\n\nasync function report(url) {\n  const res = await fetch(url);\n  return res.text();\n}\n\nmodule.exports = { report };\n",
+        "package.json": "{\n  \"name\": \"fixture-service\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null
+      },
+      "tasks": [
+        {
+          "id": "fetch-pair",
+          "prompt": "Add a new file `src/legacy/fetchPair.js` that exports `fetchPair(urlA, urlB)`. It requests both URLs with fetch, parses both as JSON, and resolves to an array of the two parsed bodies in the order given. Use `module.exports = { fetchPair }`. Do not modify any existing file and do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/legacy/fetchPair.js",
+              "pattern": "fetchPair"
+            }
+          ],
+          "graders": [
+            {
+              "type": "file_regex_absent",
+              "path": "src/legacy/fetchPair.js",
+              "pattern": "\\basync\\b"
+            },
+            {
+              "type": "file_regex_absent",
+              "path": "src/legacy/fetchPair.js",
+              "pattern": "\\bawait\\b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "q10-options-object",
+      "claudeMd": "# Project notes\n\nNode reporting library, CommonJS, no dependencies.\n\n{{RULE}}\n",
+      "fixture": {
+        "src/format.js": "\"use strict\";\n\nfunction formatCell(value, width, pad) {\n  return String(value).padStart(width, pad);\n}\n\nfunction formatHeader(title, width) {\n  return title.toUpperCase().padEnd(width, \" \");\n}\n\nmodule.exports = { formatCell, formatHeader };\n",
+        "package.json": "{\n  \"name\": \"fixture-report\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}\n"
+      },
+      "variants": {
+        "baseline": null
+      },
+      "tasks": [
+        {
+          "id": "format-row",
+          "prompt": "Add a new file `src/row.js` that exports `formatRow`. It joins an array of cell values into one line, padding each cell to a given width and separating them with a given string. Use `module.exports = { formatRow }`. Do not modify any existing file and do not add tests.",
+          "valid": [
+            {
+              "type": "file_regex",
+              "path": "src/row.js",
+              "pattern": "formatRow"
+            }
+          ],
+          "graders": [
+            {
+              "type": "composite",
+              "op": "or",
+              "children": [
+                {
+                  "type": "file_regex",
+                  "path": "src/row.js",
+                  "pattern": "formatRow\\s*\\(\\s*\\{"
+                },
+                {
+                  "type": "file_regex",
+                  "path": "src/row.js",
+                  "pattern": "formatRow\\s*=\\s*(?:function\\s*)?\\(\\s*\\{"
+                },
+                {
+                  "type": "file_regex",
+                  "path": "src/row.js",
+                  "pattern": "formatRow\\s*=\\s*\\{?\\s*\\(?\\s*\\{"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
