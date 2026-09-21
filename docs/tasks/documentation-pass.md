@@ -40,8 +40,9 @@ Codex, Antigravity and Claude Code must all work from the same instructions.
 
 ## Conclusion
 
-Nothing was committed, pushed or deployed. `public/research.html` changed, so
-the live page keeps the old cost sentence until the next deploy.
+The pass landed on `main` through pull request #3. Nothing was deployed.
+`public/research.html` changed, so the live page keeps the old cost sentence
+until the next deploy.
 
 ### What was false, and is fixed
 
@@ -103,8 +104,9 @@ Template entries for folders this repository does not have were removed:
 one letter away from `eval/results/`, which is tracked on purpose. No key or
 token was found in tracked files. The owner's name and address are public on
 purpose: the commits, the service URL, LICENSE and SECURITY.md all carry them.
-Commits made before this pass carry the author name `Songbird` with the same
-address.
+Commits on `main` carry the author name `Songbird` with the same address. A
+squash merge takes the name from the GitHub profile, not from the local Git
+config.
 
 ## Decisions that are the owner's
 
