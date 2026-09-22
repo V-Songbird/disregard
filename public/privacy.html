@@ -13,17 +13,29 @@
 
   <p>When you paste or choose an instruction file, its preview is parsed in your
   browser. Previewing does not send the file for scoring. When you start analysis,
-  eligible excerpts are sent individually to TypeSafe AI, Inc. (United States)
-  to be scored. In the one-rule mode, the submitted rule is sent instead.
+  eligible excerpts are sent individually to our scoring endpoint hosted on
+  Cloudflare. Excerpts that pass the server's language screen are forwarded to
+  TypeSafe AI, Inc. (United States) to be scored. In the one-rule mode, the
+  submitted rule follows the same path.
   We are the data controller; TypeSafe is our processor.</p>
 
-  <p>TypeSafe will not use your text to train AI models. It may keep derived telemetry,
-  and may process the text to monitor abuse and to comply with the law, including after
-  our account ends.</p>
+  <p>TypeSafe's <a href="https://typesafe.ai/legal/mca">customer agreement</a>
+  excludes model training on submitted data without our prior consent. TypeSafe may
+  derive telemetry from the text and process it to monitor abuse and comply with the law, including after
+  our account ends. Its <a href="https://typesafe.ai/legal/data-processing">data processing addendum</a>
+  describes its role and obligations for personal data.</p>
+
+  <p>Cloudflare hosts the service and handles incoming requests. The scoring endpoint
+  uses the client IP address supplied by Cloudflare to limit requests. People sharing
+  an IP address share that allowance.</p>
 
   <p>The file, source ranges and completed results stay in the current page so
   you can review them. Referenced files and links are not fetched automatically.
   We do not use submitted rules to train anything.</p>
+
+  <p>Your selected interface language is saved in this browser's local storage when
+  available, so it can be restored on your next visit. Submitted rules, file contents,
+  and scoring results are not saved there by the application.</p>
 
   <p>The refactoring prompt is assembled in your browser from the scored excerpts,
   findings and coverage information. Generating or copying it makes no additional

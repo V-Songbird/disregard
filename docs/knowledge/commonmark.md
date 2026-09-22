@@ -17,7 +17,7 @@ AST source locations are used; the application never renders uploaded Markdown.
 - Upstream: <https://github.com/commonmark/commonmark.js>
 - Exact distribution: <https://unpkg.com/commonmark@0.31.2/dist/commonmark.min.js>
 - License: <https://unpkg.com/commonmark@0.31.2/LICENSE> (BSD-2-Clause), retained
-  in `commonmark-LICENSE.txt`.
+  in [commonmark-LICENSE.txt](../../public/vendor/commonmark-LICENSE.txt).
 - Distribution SHA-256: `2de0f8ecbca0a6470da57c8b2ad043777ae999c5132f9abf12e8c332d4e46164`.
 - License SHA-256: `6cc4b9b28cf68e5bd20f9e94859a85cde35095ef4f9d0f7385b0b6166642f50b`.
 
