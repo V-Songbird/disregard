@@ -3,10 +3,10 @@
 // The one server-side piece. It exists because the API key cannot go in a page:
 // everything else about this app is static.
 //
-// Written against the Web standard `Request -> Response`. Cloudflare Workers is
-// the host — see wrangler.jsonc and worker.js — and the same handler still runs
-// unchanged on Netlify v2, Vercel, Deno or Node 22, because nothing here
-// touches a Node built-in.
+// Written against the Web standard `Request -> Response`. The supplied
+// deployment uses Cloudflare Workers; see wrangler.jsonc and worker.js.
+// Other hosts must provide compatible module loading or bundling, routing,
+// secrets, and request controls. No deployment adapters for them are included.
 //
 // The key arrives as a Workers secret, which is the `env` argument, and falls
 // back to `process.env` for a local run:

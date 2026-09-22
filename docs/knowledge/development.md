@@ -8,6 +8,7 @@ related_files:
   - .github/workflows/check.yml
   - checks/request-ui.cjs
   - checks/file-review-ui.cjs
+  - checks/recommendation-ui.cjs
   - checks/theme-accessibility.cjs
 ---
 
@@ -87,6 +88,7 @@ directory and refuse to overwrite an existing report:
 ```shell
 node checks/request-ui.cjs .private/checks/request-ui.json
 node checks/file-review-ui.cjs .private/checks/file-review-ui.json
+node checks/recommendation-ui.cjs .private/checks/recommendation-ui.json
 node checks/theme-accessibility.cjs .private/checks/theme-accessibility.json
 ```
 
@@ -95,6 +97,7 @@ Choose another filename when repeating a check.
 
 - `request-ui.cjs` checks the single-rule request lifecycle and translated states.
 - `file-review-ui.cjs` checks parsing previews, coverage, cancellation, retries, and prompt export.
+- `recommendation-ui.cjs` checks synthetic findings across locales and layouts using the bundled public fixtures.
 - `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior.
 
 Browser checks use viewport emulation, not physical mobile devices. Prompt clipboard
@@ -108,7 +111,7 @@ The CommonJS modules in `lib/` implement scoring, screening, and request guards.
 default export; Wrangler bundles the CommonJS modules for that runtime.
 
 The interface is plain HTML, CSS, and JavaScript. The bundled CommonMark parser in
-`public/vendor/` supplies Markdown block structure. The local document reader owns
+`public/vendor/` supplies Markdown block structure; see its [provenance and integrity](commonmark.md). The local document reader owns
 source ranges and eligibility; `refactor-prompt.js` validates scored evidence before export.
 
 Keep source ranges and explicit unreviewed states intact when changing the file

@@ -1,140 +1,76 @@
 # Disregard
 
-Disregard reviews English agent instruction files and exports findings as a refactoring prompt for your agent.
-It scores eligible excerpts separately, preserves source locations, and identifies text that still needs contextual review.
+Disregard reviews English instructions for AI agents and builds a refactoring prompt from the findings.
+It highlights wording to inspect; it does not predict compliance or judge a whole file's consistency.
 
-Use it to review an `AGENTS.md`, `CLAUDE.md`, or a single instruction.
-Scores describe wording; they do not predict whether an agent will follow an instruction.
+## Try a file
 
-## Requirements
-
-- Node and npm, using the Node version in [.nvmrc](.nvmrc).
-- A [TypeSafe API key](https://typesafe.ai/) for scoring. Each scored excerpt can incur a provider charge.
-- Network access for Wrangler and scoring. Offline tests need neither a key nor package installation.
-- A Cloudflare account only if you deploy your own service.
-
-## Run it locally
-
-1. Clone this repository, or your fork, with Git:
-
-   ```shell
-   git clone https://github.com/V-Songbird/disregard.git
-   cd disregard
-   ```
-
-2. Copy [.dev.vars.example](.dev.vars.example) to `.dev.vars` and set `TYPESAFE_API_KEY` to your key.
-   The local secrets file is ignored by Git.
-
-3. Start the local server from the repository root:
-
-   ```shell
-   npx --yes wrangler dev
-   ```
-
-   Wrangler downloads when needed and prints the local address to open.
-   The page opens in **Instruction file** mode.
-
-4. Paste this example and select **Preview instructions**:
-
-   ```markdown
-   # Project instructions
-
-   - Always try to use functional components.
-   - Run `node --test` before submitting changes.
-   ```
-
-   The preview shows these ready excerpts, without sending a scoring request:
-
-   ```text
-   Lines 3–3  Ready  - Always try to use functional components.
-   Lines 4–4  Ready  - Run `node --test` before submitting changes.
-   ```
-
-   Select **Analyze** to see findings, then **Copy prompt** to hand the review to your agent.
-   If scoring is unavailable, the page shows an error beside the affected excerpt; check your key and connection.
-
-## Review a file
-
-Choose a `.md` file or paste its contents. The browser parses Markdown locally before you submit eligible excerpts.
-Analysis uses at most two concurrent requests. Completed results remain available if you select **Stop analysis**.
-
-Review findings and unreviewed ranges before copying the prompt.
-The English prompt includes scored evidence and asks your agent to inspect the real file, preserve intent, and make minimal changes.
-Copying sends no additional scoring request; manual copying is available if clipboard access fails.
-
-Select **One rule** to analyze one excerpt directly.
-The interface supports English, Spanish, Chinese, Hindi, Arabic, and French; scored input remains English-only.
-
-## Configuration and deployment
-
-| Name | Required | Default | What it does |
-| --- | --- | --- | --- |
-| `TYPESAFE_API_KEY` | For scoring | None | Authenticates server-side TypeSafe requests. |
-| `SCORE_CLIENT_LIMITER` | In the Worker | [wrangler.jsonc](wrangler.jsonc) | Limits requests sharing a client address. |
-| `SCORE_AGGREGATE_LIMITER` | In the Worker | [wrangler.jsonc](wrangler.jsonc) | Limits combined requests at a Cloudflare location. |
-
-Local Wrangler reads the key from `.dev.vars`; production uses a Workers secret.
-Keep the key out of committed files. Rate-limit bindings provide approximate request protection, not a global spending cap.
-
-To deploy a fork, sign in to Cloudflare and choose your Worker name in [wrangler.jsonc](wrangler.jsonc).
-Use distinct rate-limit namespace IDs unless you intend to share counters with another Worker.
+Use the Node version in [.nvmrc](.nvmrc), npm, and a browser.
+From the repository root, start the local server:
 
 ```shell
-npx --yes wrangler login
-npx --yes wrangler deploy
-npx --yes wrangler secret put TYPESAFE_API_KEY
+npx --yes wrangler dev
 ```
 
-The last command prompts for your secret. Scoring becomes available once the Worker has its key and rate-limit bindings.
+The first run downloads Wrangler and needs network access. No package installation or build step is required for the application itself.
+Open the local address printed by Wrangler and choose **English** in the interface language picker.
+Paste this into **Your instruction file**, then select **Preview instructions**:
 
-## API
+```markdown
+- Run node --test before submitting changes.
+```
 
-`POST /api/score` accepts a JSON object with one `rule` string.
-It returns structured findings and factor values, or an explicit screening status.
-See the [API reference](docs/apis/score.md) for fields, limits, errors, and factor meanings.
+The preview shows one excerpt with its source line. Expected labels:
 
-## Development and tests
+```text
+Ready
+Analyze 1 instructions
+```
 
-Run the offline suite from the repository root:
+Previewing runs locally and needs no API key. If the parser cannot load, the page reports that failure instead of showing excerpts.
+
+## Analyze and copy a prompt
+
+For scoring, copy [.dev.vars.example](.dev.vars.example) to `.dev.vars`, set `TYPESAFE_API_KEY`, and restart the server.
+You need a TypeSafe account and network access. Scoring calls can incur charges on that account.
+
+Select **Analyze**, inspect the findings and unreviewed ranges, then select **Copy prompt**.
+Paste the English prompt into an agent that can read the original file. Review its proposed edits against your intended requirements.
+The **One rule** mode also accepts a single instruction.
+
+The key stays on the server. Previewing and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
+Do not submit secrets or personal data. Read the application's [privacy notice](public/privacy.html) and [terms](public/terms.html).
+
+## Limits and configuration
+
+- Scoring supports English instructions; the interface supports six languages.
+- Files may contain up to 64 KiB, 256 structural blocks, and 40 eligible excerpts.
+- Each scored excerpt is limited to 2000 UTF-16 code units.
+- Context-dependent, refused, skipped, or failed excerpts remain explicitly unreviewed.
+- Findings are separate signals. There is no overall grade or guarantee of correctness.
+
+`TYPESAFE_API_KEY` has no default and is required only for scoring.
+Use `.dev.vars` locally and a Worker secret when hosting; never place a real key in shared configuration.
+The supplied [Worker configuration](wrangler.jsonc) includes required request-limit bindings. They are not a spending cap.
+See the [scoring API reference](docs/apis/score.md) for requests, results, and errors.
+
+## Development
+
+With the pinned Node version, run the offline checks from the repository root:
 
 ```shell
 node --test --test-reporter=dot
 ```
 
-Passing tests print dots; a failing test produces an assertion and a nonzero exit code.
-There is no `package.json` or separate build step.
-Optional browser checks use installed Edge and local mock responses; see [development setup](docs/knowledge/development.md).
+Passing tests print dots and exit successfully. No provider key, external packages, or network access is needed.
+See [development setup](docs/knowledge/development.md) for focused tests and optional browser checks.
 
-## Where things live
+## Help and contributions
 
-| Path | Purpose |
-| --- | --- |
-| [lib/analyze.js](lib/analyze.js) | Scoring, validation, thresholds, and findings. |
-| [lib/questions.js](lib/questions.js) | Current model questions and criteria. |
-| [lib/scorer.js](lib/scorer.js) | Deterministic wording checks. |
-| [lib/language.js](lib/language.js) | English input screening. |
-| [api/score.js](api/score.js) | Portable HTTP handler using `Request` and `Response`. |
-| [worker.js](worker.js) | Cloudflare entry point and request protection. |
-| [public/](public/) | Interface, Markdown reader, prompt exporter, and bundled parser. |
-| [checks/](checks/) | Product checks and optional browser checks. |
+Report reproducible bugs or ask usage questions in the [issue tracker](https://github.com/V-Songbird/disregard/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a change and [SECURITY.md](SECURITY.md) for private vulnerability reports.
+For the bundled parser's source, license, and hashes, see [CommonMark provenance](docs/knowledge/commonmark.md).
 
-The portable handler uses no Node built-ins. Another host must provide its own routing, secrets, static assets, and request protection.
+## License
 
-## Limits
-
-- File input accepts up to 64 KiB, 256 structural blocks, and 40 ready excerpts.
-- Each scored excerpt is limited to 2000 JavaScript string units. Oversized or context-dependent excerpts remain unscored.
-- Eligibility and language screening are heuristic. They can exclude valid instructions or accept unsuitable text.
-- Excerpts are scored separately. Contradictions, precedence, duplication, and completeness require your agent's contextual review.
-- Findings can be wrong. Preferences, prohibitions, and project requirements may be intentional; a higher factor value is not always better.
-- The exported prompt is a handoff. You must review the resulting edits before accepting them.
-
-Read [how scoring works](public/research.html) for the current factors and their interpretation.
-
-## Support and license
-
-For bugs and usage questions, use the [issue tracker](https://github.com/V-Songbird/disregard/issues).
-Include a minimal example you can share publicly. See [CONTRIBUTING.md](CONTRIBUTING.md) to make a change.
-Report vulnerabilities through [SECURITY.md](SECURITY.md).
-
-Disregard is licensed under [MIT](LICENSE). The service also provides [terms](public/terms.html) and a [privacy notice](public/privacy.html).
+[MIT](LICENSE). The bundled CommonMark parser retains its separate [BSD license](public/vendor/commonmark-LICENSE.txt).

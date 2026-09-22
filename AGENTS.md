@@ -1,50 +1,53 @@
 # Disregard
 
-Reviews English agent instruction files by scoring eligible excerpts separately
-and exporting a refactoring prompt. File input preserves source ranges and
-unreviewed context; it is not a contextual whole-file verdict.
-The one-rule API retains its 2000-character limit. See [README.md](README.md).
+Disregard reviews English agent instructions and exports findings with source locations.
+Use the Node version in `.nvmrc`. There is no package manifest or application build step.
+`lib/` and `api/` use CommonJS; `worker.js` uses the Cloudflare Workers module export.
+
+## Start here
+
+- For product behavior and first use, read [README.md](README.md).
+- Before changing requests, scoring, or thresholds, read [the API contract](docs/apis/score.md).
+- For setup and verification, read [development](docs/knowledge/development.md).
+- Before updating the bundled parser, read [its provenance](docs/knowledge/commonmark.md).
+- For code conventions and contributions, read [the contribution guide](docs/knowledge/contributing.md).
 
 ## Commands
 
-| What | Command |
+Run from the repository root with the pinned Node version.
+
+| Command | Purpose | External effects |
+| --- | --- | --- |
+| `node --test --test-reporter=dot` | All offline product tests | None; uses included fixtures and mocks. |
+| `node --test --test-reporter=dot lib/analyze.test.js` | Focused analyzer tests | None. |
+| `npx --yes wrangler dev` | Local application server | Downloads Wrangler if needed; analysis can call the paid provider. |
+
+Browser checks require Playwright and installed Microsoft Edge. Their setup, output arguments, and scope are in the development guide.
+
+## Where things live
+
+| Path | Purpose |
 | --- | --- |
-| Check | `node --test --test-reporter=dot` |
-| Check one file | `node --test --test-reporter=dot lib/analyze.test.js` |
-| Local server | `npx --yes wrangler dev` |
-| Deploy | `npx --yes wrangler deploy` |
+| `worker.js`, `wrangler.jsonc` | Routing, static assets, and rate-limit bindings. |
+| `api/score.js`, `api/score.test.js` | Portable HTTP handler and request-contract tests. |
+| `lib/analyze.js`, `lib/questions.js`, `lib/criteria.js` | Provider request, current criteria, screening, and findings. |
+| `lib/scorer.js`, `lib/language.js`, `lib/score-rate-limit.js` | Local scoring, language screening, and request guards. |
+| `lib/*.test.js`, `lib/fixtures/` | Offline logic tests and synthetic fixtures. |
+| `public/` | Served interface, product pages, document reader, and prompt generator. |
+| `public/vendor/` | Pinned browser parser and its license; required product assets. |
+| `checks/` | Document/prompt tests and optional browser harnesses. |
+| `docs/knowledge/`, `docs/apis/` | Maintained product documentation. |
+| `.github/workflows/check.yml` | Offline CI command using `.nvmrc`. |
 
-Use the Node version in [.nvmrc](.nvmrc). The offline suite needs no key,
-package installation, or network. There is no `package.json` or separate build step.
-Optional browser checks use installed Edge and local mock responses;
-see [development setup](docs/knowledge/development.md).
+## Conventions
 
-## Project map
+API findings use stable identifiers and numeric evidence. Display wording belongs in `public/i18n.js` and `public/file-i18n.js`.
+The file workflow preserves source ranges and explicit unreviewed states; it does not turn excerpt findings into a file-wide verdict.
+Provider criteria are runtime source in `lib/criteria.js` and `lib/questions.js`.
 
-- [lib/](lib/) holds scoring, current criteria, request guards, and adjacent tests.
-- [api/score.js](api/score.js) is the portable one-rule HTTP handler.
-- [worker.js](worker.js) is the Cloudflare entry point.
-- [public/](public/) holds the interface, local Markdown reader, prompt exporter,
-  and bundled CommonMark parser.
-- [checks/](checks/) holds file-workflow tests and optional browser checks.
-- [docs/apis/score.md](docs/apis/score.md) describes the request and response contract.
-- [docs/knowledge/development.md](docs/knowledge/development.md) describes local setup and verification.
+## Pitfalls
 
-## Implementation boundaries
-
-- **`AGENTS.md` is the instruction source for every host.** `CLAUDE.md` contains
-  only `@AGENTS.md`. Do not add divergent host-specific instruction copies.
-- **Files under `lib/` and `api/` use CommonJS.** Use `module.exports`.
-  `worker.js` uses `export default` for Cloudflare Workers; Wrangler bundles them together.
-- **The portable handler uses Web standard APIs and no Node built-ins.** Keep
-  Cloudflare-specific request protection in the Worker wrapper.
-- **`TYPESAFE_API_KEY` is a secret.** Local Wrangler reads `.dev.vars`;
-  production reads a Workers secret. Start from [.dev.vars.example](.dev.vars.example).
-  Never put the key in committed configuration.
-- **Criteria and thresholds are public product code.** Keep current definitions
-  in `lib/`; update focused tests and the API description when behavior changes.
-- **Input remains English-only.** Interface locales do not change scoring language.
-  Keep API findings structured and user-facing wording in the locale files.
-- **File excerpts are scored independently.** Preserve source ranges and explicit
-  unreviewed states; do not present them as a whole-file verdict.
-- **Live scoring can incur charges.** Routine tests use local fixtures or mocks.
+- **A missing rate-limit binding returns 503.** Use the supplied Worker configuration when exercising HTTP integration.
+- **Raw values control thresholds before display rounding.** Consume returned statuses and findings instead of reconstructing decisions from rounded factors.
+- **Browser selectors vary by locale and scenario.** The optional harnesses build some selectors dynamically; follow their fixture tables when tracing a case.
+- **Static HTML pages are served product assets.** `public/research.html`, `privacy.html`, and `terms.html` belong to the application routes.

@@ -5,6 +5,8 @@ related_files:
   - api/score.js
   - lib/analyze.js
   - lib/questions.js
+  - lib/criteria.js
+  - lib/scorer.js
   - lib/score-rate-limit.js
   - worker.js
 ---
@@ -57,9 +59,11 @@ HTTP 200 includes a `status` field. Only `ok` contains scored factors.
 | `review` | `risk`, `echo`, `findings: []`, `tokens` | The injection screen withheld scored advice for review. |
 | `refused` | `risk`, `echo`, `findings: []`, `tokens` | The injection screen refused the text. |
 
-`risk` is the maximum of the model's two injection-screen values, rounded to two
-decimal places. Values from 0.35 through less than 0.70 yield `review`; 0.70 or higher
-yields `refused`. This value is not an overall instruction score.
+The injection screen compares the maximum of the model's two risk values before
+rounding. Values from 0.35 through less than 0.70 yield `review`; 0.70 or higher
+yields `refused`. The returned `risk` is rounded to two decimal places and is not
+an overall instruction score. For example, an original risk of 0.349 returns
+`status: "ok"` with `risk: 0.35`; 0.699 returns `status: "review"` with `risk: 0.70`.
 
 `echo` is the trimmed input and must be treated as untrusted text. `language` is
 `{ code, name }`; `name` can be `null`. `tokens` is provider-reported input usage,
@@ -86,7 +90,8 @@ injection screening use one provider request. Fractional F3 and F8 values repres
 weighted model judgments, not integer categories.
 
 The current implementation and criteria are in [analyze.js](../../lib/analyze.js),
-[questions.js](../../lib/questions.js), and [scorer.js](../../lib/scorer.js).
+[questions.js](../../lib/questions.js), [criteria.js](../../lib/criteria.js), and
+[scorer.js](../../lib/scorer.js).
 
 ## Findings
 
@@ -110,6 +115,10 @@ Routing is named at confidence 0.8 or greater. Otherwise, F8 values at or below 
 can produce the generic `could_be_a_hook` finding. F3 below 1.5 produces `no_trigger`.
 An `is_rule` value below 0.5 produces `not_a_rule`, unless the supplemental classifier
 identifies an artifact requirement at confidence 0.8 or greater.
+
+These comparisons also use unrounded provider values. Returned model factors,
+confidence values, and finding values are rounded to two decimal places. Consume
+`status` and `findings` directly; do not reconstruct them from the rounded values.
 
 An empty findings array does not guarantee completeness, correctness, or compliance.
 Recommendations can be wrong and must be checked against the file's context.

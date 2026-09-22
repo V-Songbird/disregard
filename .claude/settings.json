@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "promptCacheTtl": "1h",
+  "subagentPromptCacheTtl": "1h",
+  "syncClaudeAiSkills": false,
+  "syncClaudeAiPlugins": false,
+  "includeGitInstructions": false,
+  "showClearContextOnPlanAccept": true,
+  "disableClaudeAiConnectors": true,
+  "bashOutputMaxChars": 8000,
+  "taskOutputMaxChars": 8000,
+  "skillListingBudgetFraction": 0.005,
+  "skillListingMaxDescChars": 800,
+  "autoMemoryEnabled": true,
+  "permissions": {
+    "deny": [
+      "Read(./.env*)",
+      "Read(./.dev.vars)",
+      "Read(./dist/**)",
+      "Read(./build/**)",
+      "Read(./node_modules/**)",
+      "Read(.wrangler/**)",
+      "Read(.idea/**)",
+      "Read(**/*.map)",
+      "Read(**/*.log)"
+    ]
+  }
+}
