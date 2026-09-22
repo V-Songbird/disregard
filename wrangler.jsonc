@@ -32,5 +32,13 @@
 
   // TYPESAFE_API_KEY is a secret, not a var: it must never be in this file.
   //   wrangler secret put TYPESAFE_API_KEY
-  "observability": { "enabled": true }
+
+  // Workers Logs keeps errors and console output (the code writes none), but
+  // no per-request invocation logs: those would store each caller's IP address
+  // and location, which the privacy page does not list. Traces stay off.
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": false },
+    "traces": { "enabled": false }
+  }
 }
