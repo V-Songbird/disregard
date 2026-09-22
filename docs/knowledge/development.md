@@ -6,6 +6,7 @@ related_files:
   - .dev.vars.example
   - wrangler.jsonc
   - .github/workflows/check.yml
+  - checks/wrangler-config.test.cjs
   - checks/request-ui.cjs
   - checks/file-review-ui.cjs
   - checks/recommendation-ui.cjs
@@ -41,6 +42,11 @@ node --test --test-reporter=dot lib/analyze.test.js
 [GitHub Actions](../../.github/workflows/check.yml) runs the same test runner using
 the version in `.nvmrc`. Tests establish the behavior they assert; they do not
 establish provider accuracy or the quality of an agent's resulting edits.
+
+`checks/wrangler-config.test.cjs` fails when [wrangler.jsonc](../../wrangler.jsonc)
+changes a release setting: preview URLs off, Workers Logs on with invocation logs and
+traces off, and both rate-limit bindings with their namespaces and limits. It checks the
+file, not the settings of a deployed Worker.
 
 ## Local server
 

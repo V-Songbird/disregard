@@ -28,14 +28,14 @@ Browser checks require Playwright and installed Microsoft Edge. Their setup, out
 
 | Path | Purpose |
 | --- | --- |
-| `worker.js`, `wrangler.jsonc` | Routing, static assets, and rate-limit bindings. |
+| `worker.js`, `wrangler.jsonc` | Routing, static assets, rate-limit bindings, and the preview URL and logging settings. |
 | `api/score.js`, `api/score.test.js` | Portable HTTP handler and request-contract tests. |
 | `lib/analyze.js`, `lib/questions.js`, `lib/criteria.js` | Provider request, current criteria, screening, and findings. |
 | `lib/scorer.js`, `lib/language.js`, `lib/score-rate-limit.js` | Local scoring, language screening, and request guards. |
 | `lib/*.test.js`, `lib/fixtures/` | Offline logic tests and synthetic fixtures. |
 | `public/` | Served interface, product pages, document reader, and prompt generator. |
 | `public/vendor/` | Pinned browser parser and its license; required product assets. |
-| `checks/` | Document, prompt and translation tests, and optional browser harnesses. |
+| `checks/` | Document, prompt, translation and configuration tests, and optional browser harnesses. |
 | `docs/knowledge/`, `docs/apis/` | Maintained product documentation. |
 | `.github/workflows/check.yml` | Offline CI command using `.nvmrc`. |
 
