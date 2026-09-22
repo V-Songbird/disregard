@@ -56,3 +56,7 @@ Desktop.ini
 
 # Workstation editor project and local Claude preferences
 .idea/
+
+# Foreman roadmap and settings: private planning records
+ROADMAP.jsonl
+.foreman/
