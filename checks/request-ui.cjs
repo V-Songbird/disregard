@@ -299,6 +299,30 @@ async function localized(page, locale, kind) {
       await detectContext.close();
     }
 
+    // Traditional Chinese tags, and a bare zh listed after one, skip the Simplified
+    // strings and detection moves down the list; a stored pick still wins.
+    for (const [languages, detected, saved = null] of [
+      [["zh-TW", "en", "en-GB", "en-US"], "en"], [["zh-HK"], "en"], [["zh-MO"], "en"], [["zh-Hant"], "en"],
+      [["zh-Hant-HK"], "en"], [["zh-Hant-TW"], "en"], [["zh-TW", "zh", "en"], "en"], [["zh-TW", "zh-CN"], "zh"],
+      [["zh-CN"], "zh"], [["zh-SG"], "zh"], [["zh-Hans"], "zh"], [["zh-Hans-HK"], "zh"], [["zh"], "zh"],
+      [["en-US", "zh-TW"], "en"], [["zh-TW", "fr-FR"], "fr"], [["zh-TW", "en"], "zh", "zh"],
+    ]) {
+      const chineseContext = await browser.newContext({ locale: "en-US" });
+      site.watch(chineseContext, url);
+      const chinese = await chineseContext.newPage();
+      chinese.on("pageerror", (e) => report.pageErrors.push(e.message));
+      await chinese.addInitScript(([list, value]) => {
+        Object.defineProperty(navigator, "languages", { get: () => list });
+        if (value) try { localStorage.setItem("disregard.lang", value); } catch { /* no storage before the page loads */ }
+      }, [languages, saved]);
+      await chinese.goto(url);
+      const shown = await chinese.evaluate(() => ({ locale: document.getElementById("ui-lang").value,
+        lang: document.documentElement.lang, stored: localStorage.getItem("disregard.lang") }));
+      check("browser languages " + languages.join(" ") + (saved ? " with stored " + saved : "") + " choose " + detected + " and store nothing new",
+        shown, { locale: detected, lang: langTags[detected], stored: saved });
+      await chineseContext.close();
+    }
+
     // Server keys naming inherited properties take the same fallbacks as unknown keys.
     const keyContext = await browser.newContext({ locale: "en-US" });
     site.watch(keyContext, url);

@@ -93,8 +93,14 @@
       const saved = localStorage.getItem("disregard.lang");
       if (saved && Object.hasOwn(window.STRINGS, saved)) return saved;
     } catch { /* private mode, or storage blocked */ }
+    // The Chinese strings are Simplified. A Traditional tag does not select
+    // them, and neither does a bare zh listed after one.
+    let traditional = false;
     for (const tag of navigator.languages || [navigator.language || "en"]) {
-      const code = String(tag).toLowerCase().split("-")[0];
+      const lower = String(tag).toLowerCase();
+      if (/^zh-(hant|tw|hk|mo)(-|$)/.test(lower)) { traditional = true; continue; }
+      if (traditional && lower === "zh") continue;
+      const code = lower.split("-")[0];
       if (Object.hasOwn(window.STRINGS, code)) return code;
     }
     return "en";
