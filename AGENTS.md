@@ -35,7 +35,7 @@ Browser checks require Playwright and installed Microsoft Edge. Their setup, out
 | `lib/*.test.js`, `lib/fixtures/` | Offline logic tests and synthetic fixtures. |
 | `public/` | Served interface, product pages, document reader, and prompt generator. |
 | `public/vendor/` | Pinned browser parser and its license; required product assets. |
-| `checks/` | Document/prompt tests and optional browser harnesses. |
+| `checks/` | Document, prompt and translation tests, and optional browser harnesses. |
 | `docs/knowledge/`, `docs/apis/` | Maintained product documentation. |
 | `.github/workflows/check.yml` | Offline CI command using `.nvmrc`. |
 

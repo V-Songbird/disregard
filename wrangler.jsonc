@@ -8,6 +8,11 @@
   // /api/score and typos.
   "assets": { "directory": "./public" },
 
+  // Serve only deployed versions: preview URLs would make every uploaded
+  // version public, including any without the rate limits below. Only
+  // `wrangler deploy` and `wrangler triggers deploy` apply this setting.
+  "preview_urls": false,
+
   // Approximate request protection within each Cloudflare location, not a
   // global budget. The anonymous client quota is shared by users on one IP.
   // Namespace IDs are non-secret account-wide identifiers; keep them unique
@@ -27,5 +32,13 @@
 
   // TYPESAFE_API_KEY is a secret, not a var: it must never be in this file.
   //   wrangler secret put TYPESAFE_API_KEY
-  "observability": { "enabled": true }
+
+  // Workers Logs keeps errors and console output (the code writes none), but
+  // no per-request invocation logs: those would store each caller's IP address
+  // and location, which the privacy page does not list. Traces stay off.
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "invocation_logs": false },
+    "traces": { "enabled": false }
+  }
 }

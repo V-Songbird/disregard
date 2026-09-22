@@ -7,7 +7,7 @@ const path = require("node:path");
 const http = require("node:http");
 const { createHash } = require("node:crypto");
 const { chromium } = require(process.env.DISREGARD_PLAYWRIGHT_MODULE || "playwright");
-const reviewAssets = require("./browser-assets.cjs");
+const { localSite, locales, langTags, loopbackOnlyArgs } = require("./browser-assets.cjs");
 const root = path.resolve(__dirname, "..");
 const output = process.argv[2] || ".private/checks/recommendation-ui.json";
 const option = process.argv[3];
@@ -21,20 +21,13 @@ fs.mkdirSync(path.dirname(target), { recursive: true });
 const packetPath = customPacket || "checks/fixtures/file-review-findings.json";
 const packet = JSON.parse(fs.readFileSync(path.join(root, packetPath)));
 const hash = (file) => createHash("sha256").update(fs.readFileSync(path.join(root, file))).digest("hex");
+const site = localSite();
 for (const [file, expected] of Object.entries(packet.sourceHashes)) {
-  if (hash(file) !== expected) throw new Error("Fixture source changed: " + file);
+  if ((site.hashes[file] || hash(file)) !== expected) throw new Error("Fixture source changed: " + file);
 }
-const translationPath = "public/i18n.js";
-const sourcePaths = ["public/index.html", "public/style.css", translationPath, packetPath, "checks/recommendation-ui.cjs"];
-sourcePaths.push(...reviewAssets.map(file => "public/" + file));
-const report = { mode: "synthetic", browser: "installed Edge", providerRequests: 0,
-  sourceHashes: Object.fromEntries(sourcePaths.map((p) => [p, hash(p)])), scenarios: [], rendered: [], errors: [], screenshots: [] };
-const assets = {
-  "/": ["text/html", fs.readFileSync(path.join(root, "public/index.html"))],
-  "/i18n.js": ["text/javascript", fs.readFileSync(path.join(root, translationPath))],
-  "/style.css": ["text/css", fs.readFileSync(path.join(root, "public/style.css"))],
-};
-for (const asset of reviewAssets) assets["/" + asset] = ["text/javascript", fs.readFileSync(path.join(root, "public", asset))];
+const report = { mode: "synthetic", browser: "installed Edge",
+  sourceHashes: { ...site.hashes, [packetPath]: hash(packetPath), "checks/recommendation-ui.cjs": hash("checks/recommendation-ui.cjs") },
+  scenarios: [], rendered: [], errors: [], screenshots: [] };
 let fixture, requests = 0;
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
@@ -44,23 +37,20 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(fixture.body));
     return;
   }
-  const asset = assets[req.url];
-  if (!asset) { res.writeHead(404); res.end(); return; }
-  res.writeHead(200, { "Content-Type": asset[0] });
-  res.end(asset[1]);
+  site.serve(req, res);
 });
 (async () => {
   let browser;
   try {
     await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
     const url = "http://127.0.0.1:" + server.address().port;
-    browser = await chromium.launch({ channel: "msedge", headless: true });
+    browser = await chromium.launch({ channel: "msedge", headless: true, args: loopbackOnlyArgs });
     report.version = browser.version();
     const layouts = ["desktop", "mobile", "scaled"];
-    const locales = ["en", "es", "zh", "hi", "ar", "fr"];
     for (const layout of layouts) {
       for (const locale of locales) {
         const context = await browser.newContext({ locale: "en-US", viewport: layout === "mobile" ? { width: 375, height: 812 } : { width: 1280, height: 900 } });
+        site.watch(context, url);
         const page = await context.newPage();
         page.on("pageerror", (error) => report.errors.push(error.message));
         await page.goto(url);
@@ -77,7 +67,7 @@ const server = http.createServer(async (req, res) => {
           await page.waitForFunction(() => document.getElementById("out").getAttribute("aria-busy") === "false");
           await page.selectOption("#ui-lang", locale);
           const observed = await page.evaluate((body) => {
-            const t = window.STRINGS[document.documentElement.lang];
+            const t = window.STRINGS[document.getElementById("ui-lang").value];
             const fill = (value, verb) => String(value).replace(/\{verb\}/g, verb);
             if (body.status === "not_english") {
               const lang = t.languages[body.language?.code] || body.language?.name;
@@ -106,20 +96,21 @@ const server = http.createServer(async (req, res) => {
             } };
           }, fixture.body);
           const checks = { ...observed.checks, oneMockRequest: requests - starting === 1,
-            inputPreserved: await page.inputValue("#rule") === fixture.text };
+            inputPreserved: await page.inputValue("#rule") === fixture.text,
+            langTag: await page.getAttribute("html", "lang") === langTags[locale] };
           let disclosed;
           if (fixture.body.status === "ok") {
             await page.locator("#out > details > summary").click();
             checks.disclosureOpens = await page.locator("#out > details").evaluate((e) => e.open && e.querySelectorAll("dd").length > 0);
             checks.factorValuesPreserved = await page.evaluate((factors) => {
-              const t = window.STRINGS[document.documentElement.lang];
+              const t = window.STRINGS[document.getElementById("ui-lang").value];
               const values = [...document.querySelectorAll("#out dd")].map((e) => e.textContent);
               return ["is_rule", "F3", "F8", "F1", "F2", "F7"].filter((key) => factors[key] !== undefined)
                 .every((key, i) => values[i] === (factors[key] === null ? t.undetermined : String(factors[key])));
             }, fixture.body.factors);
             if (fixture.body.factors.rule_role) {
               disclosed = await page.evaluate((role) => {
-                const t = window.STRINGS[document.documentElement.lang];
+                const t = window.STRINGS[document.getElementById("ui-lang").value];
                 const label = [...document.querySelectorAll("#out dt")].find((e) => e.textContent === t.factors.rule_role);
                 const expected = t.ruleRoles[role.choice] + " (" + t.confidence + " " + role.confidence + ")";
                 return { label: label?.textContent, value: label?.nextElementSibling?.textContent,
@@ -161,10 +152,12 @@ const server = http.createServer(async (req, res) => {
     if (browser) await browser.close();
     server.closeAllConnections();
     await new Promise((resolve) => server.close(resolve));
-    report.mockRequests = requests;
-    report.passed = !report.errors.length && report.scenarios.length === packet.cases.length * 18 && report.scenarios.every((s) => s.passed);
+    report.mockRequests = requests; Object.assign(report, site.audit());
+    report.passed = !report.errors.length && report.scenarios.length === packet.cases.length * 18 && report.scenarios.every((s) => s.passed) &&
+      report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, scenarios: report.scenarios.length, mockRequests: requests, errors: report.errors,
+      providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,
       failed: report.scenarios.filter((s) => !s.passed).map((s) => [s.layout, s.locale, s.id, s.checks]) }));
     if (!report.passed) process.exitCode = 1;
   }
