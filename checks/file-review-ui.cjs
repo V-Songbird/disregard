@@ -5,15 +5,13 @@
 const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path");
 const http = require("node:http"), { createHash } = require("node:crypto");
 const { chromium } = require(process.env.DISREGARD_PLAYWRIGHT_MODULE || "playwright");
-const reviewAssets = require("./browser-assets.cjs");
+const { localSite, locales, langTags, loopbackOnlyArgs } = require("./browser-assets.cjs");
 const root = path.resolve(__dirname, ".."), target = process.argv[2] && path.resolve(process.argv[2]);
 if (!target || fs.existsSync(target)) throw new Error("Pass a new report path: node checks/file-review-ui.cjs <new-report.json>");
 fs.mkdirSync(path.dirname(target), { recursive: true });
-const files = ["index.html", "style.css", "i18n.js", ...reviewAssets];
-const assets = Object.fromEntries(files.map(file => [file === "index.html" ? "/" : "/" + file, file]));
-const report = { browser: "installed Edge", providerRequests: 0, clipboard: "simulated writeText success/rejection; system clipboard untouched",
-  sourceHashes: Object.fromEntries([...files.map(file => "public/" + file), "checks/file-review-ui.cjs"].map(file =>
-    [file, createHash("sha256").update(fs.readFileSync(path.join(root, file))).digest("hex")])),
+const site = localSite();
+const report = { browser: "installed Edge", clipboard: "simulated writeText success/rejection; system clipboard untouched",
+  sourceHashes: { ...site.hashes, "checks/file-review-ui.cjs": createHash("sha256").update(fs.readFileSync(__filename)).digest("hex") },
   checks: [], pageErrors: [], screenshots: [] };
 const sample = "# Project instructions\n\n- Always try to use functional components.\n- Run `node --test` before submitting changes.\n- Never log passwords.\n\n## Before deployment\n\n- Run `npm run deploy`.\n\n> Run an example command.\n\n@OTHER.md";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
@@ -45,10 +43,7 @@ const server = http.createServer(async (req, res) => {
     else reply(entry);
     return;
   }
-  const file = assets[req.url];
-  if (!file) { res.writeHead(404); res.end(); return; }
-  res.writeHead(200, { "Content-Type": file.endsWith(".css") ? "text/css" : file.endsWith(".js") ? "text/javascript" : "text/html" });
-  res.end(fs.readFileSync(path.join(root, "public", file)));
+  site.serve(req, res);
 });
 function check(name, actual, expected = true) {
   let passed = true; try { assert.deepEqual(actual, expected); } catch { passed = false; }
@@ -72,12 +67,12 @@ async function reset(page) {
   try {
     await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
     const url = "http://127.0.0.1:" + server.address().port;
-    browser = await chromium.launch({ channel: "msedge", headless: true }); report.version = browser.version();
-    for (const layout of ["desktop", "mobile"]) for (const locale of ["en", "es", "zh", "hi", "ar", "fr"]) {
+    browser = await chromium.launch({ channel: "msedge", headless: true, args: loopbackOnlyArgs }); report.version = browser.version();
+    for (const layout of ["desktop", "mobile"]) for (const locale of locales) {
       mode = "ok"; requests = []; maxActive = active;
       const context = await browser.newContext({ viewport: layout === "mobile" ? { width: 375, height: 812 } : { width: 1280, height: 900 }, locale: "en-US" });
       const page = await context.newPage(); page.on("pageerror", error => report.pageErrors.push(error.message));
-      await context.route("**/*", route => new URL(route.request().url()).origin === url ? route.continue() : route.abort());
+      site.watch(context, url);
       await page.addInitScript(() => {
         window.copiedPrompt = null; window.denyClipboard = false;
         Object.defineProperty(navigator, "clipboard", { value: { writeText: async text => {
@@ -100,9 +95,10 @@ async function reset(page) {
       check(prefix + " context-dependent command not exported", !text.includes("npm run deploy"));
       check(prefix + " copying adds no requests", requests.length, 3);
       check(prefix + " full locale keys", await page.evaluate(() => {
-        const t = STRINGS[document.documentElement.lang].file;
+        const t = STRINGS[document.getElementById("ui-lang").value].file;
         return document.getElementById("file-prepare").textContent === t.prepare && document.querySelector(".copy-prompt").textContent === t.copy;
       }));
+      check(prefix + " lang tag", await page.getAttribute("html", "lang"), langTags[locale]);
       await page.evaluate(() => { window.denyClipboard = true; });
       await page.locator("#file-export .copy-prompt").click();
       check(prefix + " failed copy selects manual prompt", await page.evaluate(() => {
@@ -117,7 +113,7 @@ async function reset(page) {
         await page.locator("#file-export .prompt-preview").evaluate(node => { node.open = false; });
         await page.evaluate(() => scrollTo(0, 0));
         const screenshot = target.replace(/\.json$/, `-${layout}-${locale}.png`);
-        await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot));
+        await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
       }
       await page.fill("#file-source", sample + "\n");
       check(prefix + " editing invalidates report and prompt", await page.locator("#file-report").isHidden() && await page.locator(".copy-prompt").count() === 0);
@@ -209,9 +205,11 @@ async function reset(page) {
   finally {
     releaseAll(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
-    report.passed = !report.fatal && !report.pageErrors.length && report.checks.length > 100 && report.checks.every(check => check.passed);
+    Object.assign(report, site.audit());
+    report.passed = !report.fatal && !report.pageErrors.length && report.checks.length > 100 && report.checks.every(check => check.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
-    console.log(JSON.stringify({ passed: report.passed, checks: report.checks.length, failed: report.checks.filter(check => !check.passed), pageErrors: report.pageErrors, fatal: report.fatal, output: target }));
+    console.log(JSON.stringify({ passed: report.passed, checks: report.checks.length, failed: report.checks.filter(check => !check.passed), pageErrors: report.pageErrors,
+      providerRequests: report.providerRequests, unknownRequests: report.unknownRequests, fatal: report.fatal, output: target }));
     if (!report.passed) process.exitCode = 1;
   }
 })();

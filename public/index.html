@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Disregard</title>
 <meta name="description" content="Review an agent instruction file or one rule, then copy an evidence-based refactoring prompt for your AI agent.">
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="/style.css">
 <script src="/i18n.js"></script>
 <script src="/file-i18n.js"></script>
@@ -90,16 +91,20 @@
   function initialLocale() {
     try {
       const saved = localStorage.getItem("disregard.lang");
-      if (saved && window.STRINGS[saved]) return saved;
+      if (saved && Object.hasOwn(window.STRINGS, saved)) return saved;
     } catch { /* private mode, or storage blocked */ }
     for (const tag of navigator.languages || [navigator.language || "en"]) {
       const code = String(tag).toLowerCase().split("-")[0];
-      if (window.STRINGS[code]) return code;
+      if (Object.hasOwn(window.STRINGS, code)) return code;
     }
     return "en";
   }
 
   const fill = (s, vars) => String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
+
+  // A key the server sent indexes a translation table only when the table
+  // defines it itself, so an inherited name such as "constructor" takes the fallback.
+  const own = (table, key) => (Object.hasOwn(table, key) ? table[key] : undefined);
 
   const el = (tag, className, text) => {
     const n = document.createElement(tag);
@@ -110,7 +115,9 @@
 
   function applyLocale(code) {
     t = window.STRINGS[code];
-    document.documentElement.lang = code;
+    // The attribute names the variety and script the strings are written in;
+    // translation lookup and the stored choice keep the short key.
+    document.documentElement.lang = { es: "es-MX", zh: "zh-Hans" }[code] || code;
     document.documentElement.dir = t.dir;
     document.title = t.title;
     for (const node of document.querySelectorAll("[data-i18n]")) {
@@ -125,7 +132,6 @@
     updateCount();
     renderView();
     reviewUI?.refresh();
-    try { localStorage.setItem("disregard.lang", code); } catch { /* nothing to do */ }
   }
 
   function updateCount() {
@@ -159,7 +165,7 @@
   // someone about to rewrite a rule needs the fix, not the arithmetic that
   // found it, and a bare "F8 0.8" is a number they have to interpret for us.
   function findingCard(f) {
-    const copy = t.findings[f.id];
+    const copy = own(t.findings, f.id);
     if (!copy) return null;
     const vars = { verb: f.verb };
     const li = el("li", LEAD.has(f.id) ? "finding lead" : "finding");
@@ -178,12 +184,12 @@
       dl.append(el("dt", null, t.factors[key]), el("dd", null, value));
     }
     if (factors.rule_role) {
-      const role = t.ruleRoles[factors.rule_role.choice] || factors.rule_role.choice;
+      const role = own(t.ruleRoles, factors.rule_role.choice) || factors.rule_role.choice;
       dl.append(el("dt", null, t.factors.rule_role),
         el("dd", null, role + " (" + t.confidence + " " + factors.rule_role.confidence + ")"));
     }
     if (factors.primitive) {
-      const name = t.primitives[factors.primitive.choice] || factors.primitive.choice;
+      const name = own(t.primitives, factors.primitive.choice) || factors.primitive.choice;
       dl.append(el("dt", null, t.factors.primitive),
         el("dd", null, name + " (" + t.confidence + " " + factors.primitive.confidence + ")"));
     }
@@ -196,7 +202,7 @@
 
     if (body.status === "not_english") {
       const code = body.language && body.language.code;
-      const lang = (code && t.languages[code]) || (body.language && body.language.name);
+      const lang = (code && own(t.languages, code)) || (body.language && body.language.name);
       out.append(banner(t.notEnglishTitle,
         lang ? fill(t.notEnglishBody, { lang: lang }) : t.notEnglishUnknown));
       return;
@@ -233,7 +239,7 @@
     else if (view.kind === "busy") out.replaceChildren(banner(t.busyTitle, t.busyBody));
     else if (view.kind === "empty") out.replaceChildren(banner(t.emptyTitle, t.emptyBody));
     else if (view.kind === "error") {
-      out.replaceChildren(banner(t.errorTitle, fill(t.errors[view.code] || t.errors.failed, { max: MAX })));
+      out.replaceChildren(banner(t.errorTitle, fill(own(t.errors, view.code) || t.errors.failed, { max: MAX })));
     } else out.replaceChildren();
   }
 
@@ -328,7 +334,11 @@
     option.value = code;
     picker.append(option);
   }
-  picker.addEventListener("change", () => applyLocale(picker.value));
+  // Only an explicit pick is saved; the language detected at start-up is not.
+  picker.addEventListener("change", () => {
+    applyLocale(picker.value);
+    try { localStorage.setItem("disregard.lang", picker.value); } catch { /* nothing to do */ }
+  });
 
   picker.value = initialLocale();
   applyLocale(picker.value);

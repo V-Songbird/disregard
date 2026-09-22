@@ -4,19 +4,16 @@
 // Uses installed Edge, local assets and fake scoring responses only.
 const fs = require("node:fs"), path = require("node:path"), http = require("node:http"), crypto = require("node:crypto");
 const { chromium } = require(process.env.DISREGARD_PLAYWRIGHT_MODULE || "playwright");
-const reviewAssets = require("./browser-assets.cjs");
+const { localSite, loopbackOnlyArgs } = require("./browser-assets.cjs");
 const root = path.resolve(__dirname, ".."), output = process.argv[2];
 if (!output || process.argv.length !== 3) throw new Error("Usage: node checks/theme-accessibility.cjs <new-report.json>");
 const target = path.resolve(output);
 if (fs.existsSync(target)) throw new Error("Refusing to overwrite an existing report");
 fs.mkdirSync(path.dirname(target), { recursive: true });
-const files = { "/": "index.html", "/research": "research.html", "/privacy": "privacy.html", "/terms": "terms.html", "/style.css": "style.css", "/i18n.js": "i18n.js" };
-for (const asset of reviewAssets) files["/" + asset] = asset;
-const assets = Object.fromEntries(Object.entries(files).map(([url, name]) => [url, fs.readFileSync(path.join(root, "public", name))]));
+const site = localSite({ "/research": "research.html", "/privacy": "privacy.html", "/terms": "terms.html" });
 const result = { status: "ok", findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9,
   rule_role: { choice: "direct_action", confidence: 0.9 }, primitive: { choice: "rule", confidence: 0.9 } } };
-const report = { browser: "installed Edge", providerRequests: 0, sourceHashes: Object.fromEntries(Object.values(files).map((name) =>
-  ["public/" + name, crypto.createHash("sha256").update(fs.readFileSync(path.join(root, "public", name))).digest("hex")])),
+const report = { browser: "installed Edge", sourceHashes: { ...site.hashes },
   pages: [], filePages: [], keyboard: [], pageErrors: [], screenshots: [] };
 report.sourceHashes["checks/theme-accessibility.cjs"] = crypto.createHash("sha256").update(fs.readFileSync(__filename)).digest("hex");
 report.keyboardScope = "Synthesized Edge keydown/keyup events, including repeat=true after the first response settles; loopback responses only. Not physical-keyboard, IME or screen-reader acceptance.";
@@ -35,11 +32,7 @@ const server = http.createServer(async (req, res) => {
     if (mode === "hold") waiting.push(res); else reply(res);
     return;
   }
-  const asset = assets[req.url];
-  if (!asset) { res.writeHead(404); res.end(); return; }
-  const name = files[req.url];
-  res.writeHead(200, { "Content-Type": name.endsWith(".css") ? "text/css" : name.endsWith(".js") ? "text/javascript" : "text/html" });
-  res.end(asset);
+  site.serve(req, res);
 });
 async function colors(page) {
   return page.evaluate(() => {
@@ -197,10 +190,11 @@ async function keyboard(page, theme, layout, locale) {
   try {
     await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
     const url = "http://127.0.0.1:" + server.address().port;
-    browser = await chromium.launch({ channel: "msedge", headless: true }); report.version = browser.version();
+    browser = await chromium.launch({ channel: "msedge", headless: true, args: loopbackOnlyArgs }); report.version = browser.version();
     for (const theme of ["light", "dark"]) for (const layout of ["desktop", "mobile", "scaled"]) {
       for (const [route, locale] of [["/", "en"], ["/", "ar"], ["/research", "en"], ["/privacy", "en"], ["/terms", "en"]]) {
         const context = await browser.newContext({ locale: "en-US", colorScheme: theme, viewport: layout === "mobile" ? { width: 375, height: 812 } : { width: 1280, height: 900 } });
+        site.watch(context, url);
         const page = await context.newPage(); page.on("pageerror", (e) => report.pageErrors.push(e.message));
         await page.goto(url + route);
         if (layout === "scaled") await page.evaluate(() => { document.documentElement.style.zoom = "2"; });
@@ -211,7 +205,7 @@ async function keyboard(page, theme, layout, locale) {
             passed: fileMeasured.text.every(c => c.passed) && !fileMeasured.overflow });
           if (theme === "dark" && layout === "desktop" && locale === "en") {
             const screenshot = target.replace(/\.json$/, "-dark-file.png");
-            await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot));
+            await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
           await page.click("#mode-rule");
         }
@@ -230,10 +224,11 @@ async function keyboard(page, theme, layout, locale) {
   finally {
     release(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));
-    report.mockRequests = requests;
-    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 12 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed);
+    report.mockRequests = requests; Object.assign(report, site.audit());
+    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 12 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, pages: report.pages.length, keyboardJourneys: report.keyboard.length, mockRequests: requests,
+      providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,
       failingPages: report.pages.filter((p) => !p.passed).map((p) => ({ theme: p.theme, layout: p.layout, route: p.route, locale: p.locale,
         text: p.text.filter((t) => !t.passed), placeholder: p.placeholder, boundary: p.boundary })),
       failingKeyboard: report.keyboard.filter((k) => !k.passed).map((k) => ({ theme: k.theme, layout: k.layout, locale: k.locale, checks: k.checks.filter((c) => !c.passed) })), fatal: report.fatal }));

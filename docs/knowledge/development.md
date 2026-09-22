@@ -10,6 +10,8 @@ related_files:
   - checks/file-review-ui.cjs
   - checks/recommendation-ui.cjs
   - checks/theme-accessibility.cjs
+  - checks/locale-screens.cjs
+  - checks/browser-assets.cjs
 ---
 
 # Development
@@ -63,6 +65,12 @@ These scripts require an installed Microsoft Edge browser and a Playwright packa
 available to Node. They launch Edge explicitly with `channel: "msedge"` and use
 local HTTP servers with mock scoring responses; no provider key is needed.
 
+Edge starts with a proxy address that never resolves, so requests to any other host
+fail before leaving the machine. Every check fails when a page requests another host,
+counted as `providerRequests` in its report, or when its local server receives a request
+for anything other than a served file or `/api/score`, listed as `unknownRequests`.
+Each server reads `public/` once per run and reports the hashes of the files it served.
+
 If Playwright is not available, install it in an external tools directory or an
 ignored local directory. For example, from the repository root:
 
@@ -90,6 +98,7 @@ node checks/request-ui.cjs .private/checks/request-ui.json
 node checks/file-review-ui.cjs .private/checks/file-review-ui.json
 node checks/recommendation-ui.cjs .private/checks/recommendation-ui.json
 node checks/theme-accessibility.cjs .private/checks/theme-accessibility.json
+node checks/locale-screens.cjs .private/checks/locale-screens.json
 ```
 
 Reports and associated screenshots stay in the ignored `.private/` directory.
@@ -99,10 +108,14 @@ Choose another filename when repeating a check.
 - `file-review-ui.cjs` checks parsing previews, coverage, cancellation, retries, and prompt export.
 - `recommendation-ui.cjs` checks synthetic findings across locales and layouts using the bundled public fixtures.
 - `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior.
+- `locale-screens.cjs` screenshots each file and single-rule journey state in all six locales at desktop and mobile widths, in a new folder named after the report. It fails on a page error, horizontal page overflow, a state it cannot reach, a `lang` tag that does not match the selected locale, an unknown local request, or a blocked request to another host.
 
 Browser checks use viewport emulation, not physical mobile devices. Prompt clipboard
 tests simulate successful and rejected writes; they do not prove operating-system
-clipboard permission or the receiving agent's behavior.
+clipboard permission or the receiving agent's behavior. Locale screenshots are for
+visual review: the check does not detect text clipped inside an element or judge
+translations. Native controls, such as the file picker, show the browser's language
+rather than the interface language.
 
 ## Implementation map
 
