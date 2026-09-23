@@ -129,7 +129,11 @@
       const children = descendants(node);
       let state = 'ready';
       let reason;
-      if (/(?:^|[\s("'`])@[^\s<>()"'`]+/.test(text)) {
+      if (!text || (node.type === 'item' && !/[\p{L}\p{N}]/u.test(text.replace(/^\[[ xX]\]/, '')))) {
+        // A list item with no letter or number after an optional task checkbox,
+        // such as an empty item, '[ ]' or '**', has nothing to score.
+        state = 'skipped'; reason = 'empty_item';
+      } else if (/(?:^|[\s("'`])@[^\s<>()"'`]+/.test(text)) {
         state = 'skipped'; reason = 'unresolved_reference';
       } else if (looksLikeTable(text)) {
         state = 'skipped'; reason = 'table';
@@ -197,7 +201,7 @@
         precedingScope = node.next && node.next.type === 'list' ? normalized(node) : '';
       } else {
         const reasons = { code_block: 'code', block_quote: 'quote', html_block: 'html', thematic_break: 'separator' };
-        addNode(node, 'skipped', reasons[node.type] || 'unsupported_block', headings.filter(Boolean), '');
+        addNode(node, 'skipped', reasons[node.type], headings.filter(Boolean), '');
         precedingScope = '';
       }
     }

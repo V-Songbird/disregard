@@ -48,6 +48,7 @@ const docs = {
   results: ["# Project instructions", "", ...[...outcomes.keys()].map(item)].join("\n"),
   batch: Array.from({ length: 5 }, (_, i) => item(`Keep module ${i + 1} small.`)).join("\n"),
 };
+const limitedRule = "Keep module 1 small.";
 
 const report = { browser: "installed Edge", network: "loopback mock; other hosts are unreachable",
   clipboard: "simulated writeText; system clipboard untouched",
@@ -57,8 +58,10 @@ let mode = "ok", requests = 0;
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
-    let raw = ""; for await (const chunk of req) raw += chunk;
-    if (mode === "hold") return; // Left pending; the next page load or cancel aborts it.
+    const raw = await site.readBody(req);
+    // Left pending; closing the page or a stop aborts it. In limited mode only the first batch item
+    // is refused, so the same unit shows the pause in every run whichever request lands first.
+    if (raw === null || mode === "hold" || (mode === "limited" && JSON.parse(raw).rule !== limitedRule)) return;
     const decision = mode === "limited" ? { status: 429, body: { code: "rate_limited" } } : outcomes.get(JSON.parse(raw).rule) || { body: several };
     res.writeHead(decision.status || 200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(decision.body));
@@ -67,6 +70,16 @@ const server = http.createServer(async (req, res) => {
   site.serve(req, res);
 });
 
+// A failure keeps the error's first line, plus the call-log lines naming the locator Playwright
+// waited for and the last element condition it reported, without the rest of the log.
+const colour = new RegExp(String.fromCharCode(27) + "\\[[0-9;]*m", "g");
+const failure = (error) => {
+  const lines = String(error.message).replace(colour, "").split("\n").map((line) => line.trim().replace(/^-\s*/, ""));
+  const waited = lines.find((line) => line.startsWith("waiting for locator("));
+  const condition = lines.filter((line) => line.startsWith("element ")).pop();
+  const detail = [waited, condition].filter(Boolean).join("; ");
+  return detail ? lines[0] + " (" + detail + ")" : lines[0];
+};
 const ruleSettled = (page) => page.waitForFunction(() => document.getElementById("out").getAttribute("aria-busy") === "false");
 const fileSettled = (page) => page.waitForFunction(() => document.getElementById("file-cancel").hidden);
 const openUnits = (page) => page.evaluate(() => document.querySelectorAll(".instruction-unit").forEach((unit) => { unit.open = true; }));
@@ -131,22 +144,26 @@ report.states = states.map(([state]) => state);
           if (window.denyClipboard) throw new DOMException("denied", "NotAllowedError");
         } } });
       });
-      const page = await context.newPage(); page.setDefaultTimeout(10000);
-      let current;
-      page.on("pageerror", (error) => report.pageErrors.push({ state: current, locale, layout, message: error.message }));
       for (const [state, steps] of states) {
-        current = state; mode = "ok";
+        mode = "ok";
+        // Each state gets a fresh page. Closing one skips the leave-page prompt that held results
+        // or requests raise, so no navigation waits on that prompt.
+        const page = await context.newPage(); page.setDefaultTimeout(10000);
+        page.on("pageerror", (error) => report.pageErrors.push({ state, locale, layout, message: error.message }));
         try {
           await page.goto(origin); await page.selectOption("#ui-lang", locale);
           await steps(page);
           await page.mouse.move(0, 0); // Off every control, so hover never differs between runs.
+          // Filling can leave the source textarea scrolled by a few pixels; show it from the top.
+          await page.evaluate(() => { const source = document.getElementById("file-source"); if (source) source.scrollTop = 0; });
           const measured = await page.evaluate(() => ({ lang: document.documentElement.lang, dir: document.documentElement.dir,
             scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }));
           const screenshot = path.join(shotDir, locale, layout + "-" + state + ".png");
           await page.screenshot({ path: screenshot, fullPage: true });
           report.shots.push({ state, locale, layout, screenshot: path.relative(root, screenshot).replaceAll("\\", "/"),
             ...measured, overflow: measured.scrollWidth > measured.clientWidth });
-        } catch (error) { report.failures.push({ state, locale, layout, message: error.message.split("\n")[0] }); }
+        } catch (error) { report.failures.push({ state, locale, layout, message: failure(error) }); }
+        finally { await page.close(); }
       }
       await context.close();
     }

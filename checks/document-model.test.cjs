@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
 const { parseDocument, summarize, LIMITS } = require('../public/document-model.js');
+const commonmark = require('../public/vendor/commonmark-0.31.2.min.js');
 
 function hasCode(code) {
   return error => error.code === code && error.message === code;
@@ -168,6 +169,57 @@ test('rejects empty input and limits eligible rules without silently dropping an
   assert.throws(() => parseDocument(Array(41).fill('- Preserve requirements.').join('\n')), hasCode('too_many_rules'));
 });
 
+// Every stated copy of the limits agrees with LIMITS: the single-rule MAX in public/index.html,
+// MAX_RULE_CHARS in lib/analyze.js, and the numbers README.md and public/research.html state. Prose
+// is matched by number and unit, so rewording keeps the test green while a changed number fails it.
+test('stated limits match LIMITS in public/document-model.js', () => {
+  const read = (file) => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+  const max = Number(/const MAX = (\d+);/.exec(read('public/index.html'))?.[1]);
+  assert.deepEqual({ max, maxRuleChars: require('../lib/analyze.js').MAX_RULE_CHARS },
+    { max: LIMITS.ruleChars, maxRuleChars: LIMITS.ruleChars });
+  const number = String.raw`(?<![\w-])(\d[\d,]*)`;
+  const kinds = {
+    kib: [new RegExp(number + String.raw`\s*KiB\b`, 'g'), LIMITS.fileBytes / 1024],
+    blocks: [new RegExp(number + String.raw`\s+(?:[\w-]+\s+)?blocks\b`, 'g'), LIMITS.units],
+    excerpts: [new RegExp(number + String.raw`\s+(?:[\w-]+\s+)?excerpts\b`, 'g'), LIMITS.rules],
+    ruleLength: [new RegExp(number + String.raw`\s+(?:[\w-]+\s+){0,2}(?:units|characters)\b`, 'g'), LIMITS.ruleChars],
+  };
+  const stated = new Set(), wrong = [];
+  for (const file of ['README.md', 'public/research.html']) {
+    const text = read(file).replace(/\s+/g, ' ');
+    for (const [kind, [pattern, expected]] of Object.entries(kinds)) {
+      for (const match of text.matchAll(pattern)) {
+        stated.add(kind);
+        if (Number(match[1].replaceAll(',', '')) !== expected) wrong.push(`${file}: "${match[0]}" instead of ${expected}`);
+      }
+    }
+  }
+  assert.deepEqual(wrong, []);
+  assert.deepEqual([...stated].sort(), Object.keys(kinds).sort(), 'README.md and public/research.html no longer state every limit this test checks');
+});
+
+// The API contract states the handler's own limits: the rule limit as MAX_RULE_CHARS and the request
+// body limit as MAX_BODY_BYTES in KiB, both from api/score.js. Words between a number and its unit must
+// contain a letter, so "between 1 and 2000 … units" reads 2000, not 1.
+test('docs/apis/score.md states the limits api/score.js enforces', () => {
+  const { MAX_RULE_CHARS, MAX_BODY_BYTES } = require('../api/score.js');
+  const text = fs.readFileSync(path.join(__dirname, '..', 'docs/apis/score.md'), 'utf8').replace(/\s+/g, ' ');
+  const number = String.raw`(?<![\w-])(\d[\d,]*)`, words = String.raw`(?:[\w-]*[A-Za-z][\w-]*\s+)`;
+  const kinds = {
+    ruleLength: [new RegExp(number + String.raw`\s+` + words + String.raw`{0,3}(?:units|characters)\b`, 'g'), MAX_RULE_CHARS],
+    bodyKib: [new RegExp(number + String.raw`\s*KiB\b`, 'g'), MAX_BODY_BYTES / 1024],
+  };
+  const stated = new Set(), wrong = [];
+  for (const [kind, [pattern, expected]] of Object.entries(kinds)) {
+    for (const match of text.matchAll(pattern)) {
+      stated.add(kind);
+      if (Number(match[1].replaceAll(',', '')) !== expected) wrong.push(`docs/apis/score.md: "${match[0]}" instead of ${expected}`);
+    }
+  }
+  assert.deepEqual(wrong, []);
+  assert.deepEqual([...stated].sort(), Object.keys(kinds).sort(), 'docs/apis/score.md no longer states both limits this test checks');
+});
+
 test('rejects binary/control characters and invalid source labels before extraction', () => {
   for (const source of ['\0rule', 'rule\u0007', 'PK\u0003\u0004']) assert.throws(() => parseDocument(source), hasCode('invalid_source'));
   assert.throws(() => parseDocument('Keep requirements.', 'x'.repeat(201)), hasCode('invalid_source'));
@@ -240,4 +292,81 @@ test('vendored distribution and license match the recorded source hashes', () =>
     const actual = crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname, '../public/vendor', file))).digest('hex');
     assert.equal(actual, expected, file);
   }
+});
+
+// The adapter has no fallback skip reason, so every top-level block type the
+// parser can produce needs its own branch or skip reason in document-model.js.
+const TOP_LEVEL_BLOCKS = ['block_quote', 'code_block', 'heading', 'html_block', 'list', 'paragraph', 'thematic_break'];
+
+test('the parser produces no top-level block type the adapter does not handle', () => {
+  const table = new commonmark.Parser().blocks;
+  assert.ok(table, 'the parser no longer exposes its block table; check its top-level block types by hand');
+  const types = Object.keys(table).filter(type => type !== 'document' && type !== 'item').sort();
+  assert.deepEqual(types, TOP_LEVEL_BLOCKS, 'the parser\'s top-level block types changed; give each new type a branch or a skip reason in public/document-model.js, then update TOP_LEVEL_BLOCKS');
+});
+
+test('every block construct is extracted and no skipped unit lacks a reason', () => {
+  const source = [
+    '# ATX heading', '',
+    'Setext heading', '==============', '',
+    'A paragraph.', '',
+    '- Bullet item.', '',
+    '1. Ordered item.', '',
+    '> Quoted text.', '',
+    '```sh', 'npm test', '```', '',
+    '    indented code', '',
+    '<div>HTML block</div>', '',
+    '***', '',
+    '[reference]: https://example.com',
+  ].join('\n');
+  const topLevel = new Set();
+  for (let node = new commonmark.Parser().parse(source).firstChild; node; node = node.next) topLevel.add(node.type);
+  assert.deepEqual([...topLevel].sort(), TOP_LEVEL_BLOCKS, 'the sample must contain every top-level block type');
+  const report = parseDocument(source);
+  const unexplained = report.units.filter(unit => unit.state === 'skipped' && !unit.reason).map(unit => `${unit.kind} at line ${unit.startLine}`);
+  assert.deepEqual(unexplained, [], 'give each skipped block a skip reason in public/document-model.js');
+  assertSourceCoverage(report);
+});
+
+test('empty and whitespace-only list items are skipped with a reason, not sent for scoring', () => {
+  for (const source of ['- ', '* ', '-      ', '*\t\t']) {
+    const report = parseDocument(source);
+    assert.deepEqual(report.units.map(({ startLine, endLine, rawText, rule, state, reason }) => ({ startLine, endLine, rawText, rule, state, reason })),
+      [{ startLine: 1, endLine: 1, rawText: source, rule: '', state: 'skipped', reason: 'empty_item' }], JSON.stringify(source));
+    assertSourceCoverage(report);
+  }
+});
+
+test('a list mixing empty and real items skips only the empty ones', () => {
+  const source = '- Keep requirements.\n- \n-    \n- Run the tests.';
+  const report = parseDocument(source);
+  assert.deepEqual(report.units.map(({ startLine, state, reason, rule }) => ({ startLine, state, rule, ...(reason ? { reason } : {}) })), [
+    { startLine: 1, state: 'ready', rule: 'Keep requirements.' },
+    { startLine: 2, state: 'skipped', rule: '', reason: 'empty_item' },
+    { startLine: 3, state: 'skipped', rule: '', reason: 'empty_item' },
+    { startLine: 4, state: 'ready', rule: 'Run the tests.' },
+  ]);
+  assertSourceCoverage(report);
+});
+
+test('list items holding only a task checkbox, markup or punctuation are skipped as empty', () => {
+  for (const source of ['- [ ]', '- [x]', '- [X]', '- **', '- ...', '* [ ] **']) {
+    const report = parseDocument(source);
+    assert.deepEqual(report.units.map(({ startLine, endLine, rawText, rule, state, reason }) => ({ startLine, endLine, rawText, rule, state, reason })),
+      [{ startLine: 1, endLine: 1, rawText: source, rule: '', state: 'skipped', reason: 'empty_item' }], JSON.stringify(source));
+    assertSourceCoverage(report);
+  }
+});
+
+test('a list mixing word-free items, task items and real items skips only the word-free ones', () => {
+  const source = '- Keep requirements.\n- [ ]\n- [x] Update the changelog.\n- **\n- Run the tests.';
+  const report = parseDocument(source);
+  assert.deepEqual(report.units.map(({ startLine, state, reason, rule }) => ({ startLine, state, rule, ...(reason ? { reason } : {}) })), [
+    { startLine: 1, state: 'ready', rule: 'Keep requirements.' },
+    { startLine: 2, state: 'skipped', rule: '', reason: 'empty_item' },
+    { startLine: 3, state: 'requires_context', rule: '[x] Update the changelog.', reason: 'task_item' },
+    { startLine: 4, state: 'skipped', rule: '', reason: 'empty_item' },
+    { startLine: 5, state: 'ready', rule: 'Run the tests.' },
+  ]);
+  assertSourceCoverage(report);
 });

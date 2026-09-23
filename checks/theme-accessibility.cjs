@@ -25,10 +25,18 @@ function reply(res) {
   res.end(JSON.stringify(mode === "error" ? { code: "upstream" } : result));
 }
 function release() { while (waiting.length) reply(waiting.shift()); }
+// Resolves once the server holds `count` requests with their bodies read, so a stop cannot
+// abort one in transit and request counts read afterwards are final.
+async function holding(count) {
+  for (const end = Date.now() + 10000; waiting.length < count;) {
+    if (Date.now() > end) throw new Error("Timed out waiting for " + count + " held requests");
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
-    for await (const _ of req) { /* controlled local fixture */ }
+    if (await site.readBody(req) === null) return;
     if (mode === "hold") waiting.push(res); else reply(res);
     return;
   }
@@ -183,6 +191,93 @@ async function keyboard(page, theme, layout, locale) {
   await page.locator("body").click({ position: { x: 1, y: 1 } });
   mode = "ok"; release(); await settled(page);
   check("completion respects a deliberate blank-page click", await page.evaluate(() => document.activeElement === document.body));
+
+  // Stop controls reached by keyboard while a mocked request is held, activated with Enter in one
+  // journey and Space in another, in each mode. Escape is deliberately unbound and leaves the analysis running.
+  const ruleState = () => page.evaluate(() => {
+    const t = window.STRINGS[document.getElementById("ui-lang").value], out = document.getElementById("out"), stop = document.getElementById("rule-cancel");
+    return { busy: out.getAttribute("aria-busy"), title: out.querySelector(".banner strong")?.textContent, body: out.querySelector(".banner p")?.textContent,
+      stop: stop.textContent, hidden: stop.hidden, readOnly: document.getElementById("rule").readOnly, rule: document.getElementById("rule").value,
+      t: { busyBody: t.busyBody, stoppedTitle: t.stoppedTitle, stoppedBody: t.stoppedBody } };
+  });
+  const ruleText = await page.inputValue("#rule");
+  const ruleStopped = async (name, before) => {
+    const s = await ruleState();
+    check(name + " renders the stopped state", s.busy === "false" && s.hidden && !s.readOnly && s.rule === ruleText &&
+      s.title === s.t.stoppedTitle && s.body === s.t.stoppedBody && requests === before);
+    check(name + " focuses the field", await activeId(page) === "rule");
+  };
+  await page.locator("#go").focus(); mode = "hold"; await page.keyboard.press("Enter"); await holding(1);
+  check("Enter on submit moves focus to rule stop", await activeId(page) === "rule-cancel");
+  const ruleStopFocus = (await colors(page)).focus; focus.push(ruleStopFocus);
+  check("rule stop has visible unobscured focus", ruleStopFocus?.passed && ruleStopFocus.unobscured);
+  const busy = await ruleState();
+  check("busy text names the rule stop control", busy.body === busy.t.busyBody && busy.body.includes(busy.stop));
+  await page.keyboard.press("Escape"); await page.waitForTimeout(100);
+  check("Escape leaves the rule analysis running", (await ruleState()).busy === "true" && await activeId(page) === "rule-cancel");
+  if (await activeId(page) !== "rule-cancel") await page.locator("#rule-cancel").focus();
+  let before = requests; await page.keyboard.press("Enter"); await ruleStopped("Enter on rule stop", before);
+  mode = "ok"; release();
+  await page.locator("#rule").focus(); mode = "hold"; await page.keyboard.press("Control+Enter"); await holding(1);
+  await page.keyboard.press("Tab");
+  check("tab from the pending field reaches rule stop", await activeId(page) === "rule-cancel");
+  if (await activeId(page) !== "rule-cancel") await page.locator("#rule-cancel").focus();
+  before = requests; await page.keyboard.press("Space"); await ruleStopped("Space on rule stop", before);
+  mode = "ok"; release();
+
+  const fileState = () => page.evaluate(() => ({ hidden: document.getElementById("file-cancel").hidden,
+    progress: document.getElementById("file-progress").textContent, stopped: window.STRINGS[document.getElementById("ui-lang").value].file.stopped,
+    states: [...document.querySelectorAll(".instruction-unit")].map((unit) => unit.dataset.state).join() }));
+  // After the reader's Stop, the report heading holds focus: the status line announces the stop once,
+  // a second press of the same key sends nothing, and the retry control is the next Tab stop.
+  const fileStopped = async (name, before, key) => {
+    await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+    const s = await fileState();
+    check(name + " renders the stopped state", s.progress === s.stopped && s.states === "cancelled,cancelled,cancelled" && requests === before);
+    check(name + " moves focus to the report heading", await page.evaluate(() => document.activeElement === document.querySelector("#file-report h2")));
+    const headingFocus = (await colors(page)).focus; focus.push(headingFocus);
+    check(name + " heading has visible unobscured focus", headingFocus?.passed && headingFocus.unobscured);
+    await page.keyboard.press(key); await page.waitForTimeout(300);
+    const again = await fileState();
+    check(name + " second " + key + " sends nothing", again.hidden && again.states === "cancelled,cancelled,cancelled" && requests === before);
+    // Stop a run the second press started, so the remaining checks still run.
+    if (!again.hidden) { await page.locator("#file-cancel").click(); await page.waitForFunction(() => document.getElementById("file-cancel").hidden); }
+    check(name + " announces the stop once", await page.evaluate(() => window.__stopAnnouncements) === 1);
+    await page.keyboard.press("Tab");
+    check(name + " retry control is the next Tab stop", await activeId(page) === "file-start");
+    if (await activeId(page) !== "file-start") await page.locator("#file-start").focus();
+  };
+  // Counts the times the status line changes to the stop message after each reset.
+  const watchStops = () => page.evaluate(() => {
+    window.__stopAnnouncements = 0;
+    if (window.__stopObserver) return;
+    const progress = document.getElementById("file-progress");
+    window.__stopObserver = new MutationObserver(() => {
+      if (progress.textContent === window.STRINGS[document.getElementById("ui-lang").value].file.stopped) window.__stopAnnouncements++;
+    });
+    window.__stopObserver.observe(progress, { childList: true, characterData: true, subtree: true });
+  });
+  await page.locator("#mode-file").focus(); await page.keyboard.press("Enter");
+  check("Enter switches to file mode", await page.locator("#file-panel").isVisible());
+  await page.fill("#file-source", ["module0", "module1", "module2"].map((name) => "- Use " + name + " for storage.").join("\n"));
+  await page.locator("#file-prepare").focus(); await page.keyboard.press("Enter");
+  check("preview moves focus to start", await activeId(page) === "file-start");
+  if (await activeId(page) !== "file-start") await page.locator("#file-start").focus();
+  mode = "hold"; await page.keyboard.press("Enter"); await holding(2);
+  check("Enter on start moves focus to file stop", await activeId(page) === "file-cancel");
+  const fileStopFocus = (await colors(page)).focus; focus.push(fileStopFocus);
+  check("file stop has visible unobscured focus", fileStopFocus?.passed && fileStopFocus.unobscured);
+  await page.keyboard.press("Escape"); await page.waitForTimeout(100);
+  check("Escape leaves the file analysis running", !(await fileState()).hidden && await activeId(page) === "file-cancel");
+  if (await activeId(page) !== "file-cancel") await page.locator("#file-cancel").focus();
+  await watchStops(); before = requests; await page.keyboard.press("Enter"); await fileStopped("Enter on file stop", before, "Enter");
+  mode = "ok"; release();
+  mode = "hold"; await page.keyboard.press("Space"); await holding(2);
+  await page.keyboard.press("Shift+Tab"); await page.keyboard.press("Tab");
+  check("tab reaches file stop while pending", await activeId(page) === "file-cancel");
+  if (await activeId(page) !== "file-cancel") await page.locator("#file-cancel").focus();
+  await watchStops(); before = requests; await page.keyboard.press("Space"); await fileStopped("Space on file stop", before, "Space");
+  mode = "ok"; release();
   return { theme, layout, locale, checks, focus, heldEnter, passed: checks.every((c) => c.passed) };
 }
 (async () => {

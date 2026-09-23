@@ -5,6 +5,7 @@ related_files:
   - public/vendor/commonmark-0.31.2.min.js
   - public/vendor/commonmark-LICENSE.txt
   - public/document-model.js
+  - checks/document-model.test.cjs
 ---
 
 # CommonMark parser
@@ -22,5 +23,9 @@ AST source locations are used; the application never renders uploaded Markdown.
 - License SHA-256: `6cc4b9b28cf68e5bd20f9e94859a85cde35095ef4f9d0f7385b0b6166642f50b`.
 
 Updates require an explicit version change, fresh hashes, and the extraction suite.
+`checks/document-model.test.cjs` lists the seven top-level block types the adapter
+handles and fails when a new version can produce another. The adapter has no
+fallback skip reason, so give a new type a branch or a skip reason in
+`public/document-model.js` before adding it to that list.
 CommonMark has no native tables or YAML frontmatter: the adapter excludes these
 extensions explicitly and retains their raw source in the coverage report.
