@@ -16,7 +16,7 @@ if (!output) throw new Error("Usage: node checks/request-ui.cjs <new-report.json
 const reportPath = path.resolve(output);
 if (fs.existsSync(reportPath)) throw new Error("Refusing to overwrite an existing report: " + reportPath);
 fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-const site = localSite();
+const site = localSite({ "/privacy": "privacy.html" });
 const report = { browser: "installed Edge", network: "localhost mocks only", checks: [], pageErrors: [], scenarios: [], screenshots: [] };
 report.sourceHashes = { ...site.hashes, "checks/request-ui.cjs": createHash("sha256").update(fs.readFileSync(__filename)).digest("hex") };
 const good = { status: "ok", findings: [], factors: { F3: 4 } };
@@ -30,7 +30,7 @@ function respond(res, status = 200, body = good) {
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
-    for await (const _ of req) { /* drain the bounded test input */ }
+    if (await site.readBody(req) === null) return;
     if (mode === "hold") waiting.push(res);
     else if (mode === "body") {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -58,6 +58,14 @@ function release() {
     else respond(res);
   }
 }
+// Resolves once the server holds `count` requests with their bodies read, so request counts
+// read afterwards are final and release() reaches them.
+async function holding(count) {
+  for (const end = Date.now() + 10000; waiting.length < count;) {
+    if (Date.now() > end) throw new Error("Timed out waiting for " + count + " held requests");
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
 async function state(page) {
   return page.evaluate(() => {
     const locale = document.getElementById("ui-lang").value;
@@ -67,10 +75,21 @@ async function state(page) {
       body: out.querySelector("p")?.textContent, busy: out.getAttribute("aria-busy"),
       disabled: document.getElementById("go").disabled, button: document.getElementById("go").textContent,
       readOnly: document.getElementById("rule").readOnly, rule: document.getElementById("rule").value,
+      stop: [document.getElementById("rule-cancel").hidden, document.getElementById("rule-cancel").textContent],
+      focus: document.activeElement?.id || "", changes: window.__outChanges,
       empty: out.childElementCount === 0, overflow: document.documentElement.scrollWidth > innerWidth,
-      expected: { busyTitle: t.busyTitle, submitBusy: t.submitBusy, emptyTitle: t.emptyTitle,
+      expected: { busyTitle: t.busyTitle, submitBusy: t.submitBusy, submit: t.submit, emptyTitle: t.emptyTitle, stop: t.file.cancel,
+        stoppedTitle: t.stoppedTitle, stoppedBody: t.stoppedBody,
         cleanTitle: t.cleanTitle, upstream: t.errors.upstream, timeout: t.errors.timeout, network: t.errors.network,
         tooLong: t.errors.too_long.replace("{max}", "2000") } };
+  });
+}
+// Counts the batches of changes to the live region from now on.
+async function watchOut(page) {
+  await page.evaluate(() => {
+    window.__outChanges = 0;
+    new MutationObserver(() => { window.__outChanges++; })
+      .observe(document.getElementById("out"), { childList: true, subtree: true, characterData: true });
   });
 }
 async function settle(page) { await page.waitForFunction(() => document.getElementById("out").getAttribute("aria-busy") === "false"); }
@@ -107,9 +126,8 @@ async function localized(page, locale, kind) {
         mode = "hold";
         await page.fill("#rule", rule);
         const start = requests;
-        const received = page.waitForRequest("**/api/score");
         await page.click("#go");
-        await received;
+        await holding(1);
         await page.locator("#rule").press(" ");
         await page.selectOption("#ui-lang", locale);
         const switched = await state(page);
@@ -124,6 +142,7 @@ async function localized(page, locale, kind) {
         check(label + " busy controls", [busy.busy, busy.disabled, busy.readOnly, busy.rule], ["true", true, true, rule]);
         check(label + " busy localized", [busy.title, busy.button], [busy.expected.busyTitle, busy.expected.submitBusy]);
         check(label + " busy fits", busy.overflow, false);
+        check(label + " stop control shown and labelled while pending", busy.stop, [false, busy.expected.stop]);
         if (layout === "mobile" && ["es", "ar"].includes(locale)) {
           const screenshot = path.join(path.dirname(reportPath), path.basename(reportPath, ".json") + "-busy-" + locale + ".png");
           await page.screenshot({ path: screenshot, fullPage: true });
@@ -133,6 +152,7 @@ async function localized(page, locale, kind) {
         await settle(page);
         const done = await state(page);
         check(label + " result restores controls", [done.title, done.disabled, done.readOnly], [done.expected.cleanTitle, false, false]);
+        check(label + " stop control hidden after completion", done.stop[0], true);
         await page.fill("#rule", "Run `npm test`.");
         check(label + " edits clear old result", (await state(page)).empty, true);
 
@@ -171,9 +191,85 @@ async function localized(page, locale, kind) {
         await page.locator("#rule").press("Meta+Enter");
         await settle(page);
         check(label + " recovers without reload", (await state(page)).title, done.expected.cleanTitle);
+
+        // Stop by click: the field is released and focused, and the live region changes once.
+        mode = "hold";
+        await page.click("#go"); await holding(1);
+        await watchOut(page);
+        await page.click("#rule-cancel");
+        const stopped = await state(page);
+        check(label + " click stop releases and focuses the field", [stopped.busy, stopped.readOnly, stopped.disabled, stopped.button, stopped.focus, stopped.stop[0]],
+          ["false", false, false, stopped.expected.submit, "rule", true]);
+        check(label + " click stop is announced once", [stopped.title, stopped.body, stopped.changes],
+          [stopped.expected.stoppedTitle, stopped.expected.stoppedBody, 1]);
+        check(label + " stopped state fits", stopped.overflow, false);
+        release();
+        await page.waitForTimeout(150);
+        check(label + " nothing renders after stop", [(await state(page)).title, (await state(page)).changes], [stopped.expected.stoppedTitle, 1]);
         await context.close();
       }
     }
+
+    // Keyboard stops: a fresh Enter stops and the live region changes once; a held Enter does not
+    // stop; a new request succeeds. The keyboard journeys in theme-accessibility.cjs check focus
+    // moving to the stop control, Tab reaching it, and Enter and Space stops in every theme and layout.
+    const stopContext = await browser.newContext({ locale: "en-US" });
+    site.watch(stopContext, url);
+    const stopPage = await stopContext.newPage();
+    stopPage.on("pageerror", (e) => report.pageErrors.push(e.message));
+    await stopPage.goto(url);
+    await stopPage.click("#mode-rule");
+    await stopPage.fill("#rule", "Use `const`.");
+    mode = "hold";
+    await stopPage.locator("#go").focus();
+    await stopPage.keyboard.press("Enter"); await holding(1);
+    await watchOut(stopPage);
+    await stopPage.keyboard.press("Enter");
+    const entered = await state(stopPage);
+    check("Enter on stop releases and focuses the field", [entered.busy, entered.readOnly, entered.focus, entered.title, entered.changes],
+      ["false", false, "rule", entered.expected.stoppedTitle, 1]);
+    release();
+    await stopPage.locator("#go").focus();
+    const beforeHeld = requests;
+    await stopPage.keyboard.down("Enter"); await holding(1);
+    await stopPage.keyboard.down("Enter");
+    await stopPage.waitForTimeout(100);
+    const heldEnter = await state(stopPage);
+    check("held Enter does not stop the request", [heldEnter.busy, heldEnter.focus, heldEnter.title, requests - beforeHeld],
+      ["true", "rule-cancel", heldEnter.expected.busyTitle, 1]);
+    await stopPage.keyboard.up("Enter");
+    mode = "success"; release(); await settle(stopPage);
+    const resumed = await state(stopPage);
+    check("a new request after stop renders and returns focus to submit", [resumed.title, resumed.focus, resumed.stop[0]],
+      [resumed.expected.cleanTitle, "go", true]);
+    // Single-rule results are not a file review: following the privacy-notice link never asks.
+    const leaveAsked = [];
+    const noteLeave = (dialog) => { leaveAsked.push(dialog.type()); return dialog.accept(); };
+    stopPage.on("dialog", noteLeave);
+    await Promise.all([stopPage.waitForURL("**/privacy"), stopPage.click("#promise a")]);
+    stopPage.off("dialog", noteLeave);
+    check("single-rule results leave without a prompt", leaveAsked, []);
+    await stopContext.close();
+
+    // A response that arrives after stop never renders, even when the fetch ignores the abort.
+    const lateStopContext = await browser.newContext({ locale: "en-US" });
+    site.watch(lateStopContext, url);
+    await lateStopContext.addInitScript(() => {
+      window.fetch = () => new Promise((resolve) => setTimeout(() => resolve(new Response(
+        JSON.stringify({ status: "ok", findings: [], factors: { F3: 4 } }), { status: 200, headers: { "Content-Type": "application/json" } })), 300));
+    });
+    const latePage = await lateStopContext.newPage();
+    latePage.on("pageerror", (e) => report.pageErrors.push(e.message));
+    await latePage.goto(url);
+    await latePage.click("#mode-rule");
+    await latePage.fill("#rule", "Use `const`.");
+    await latePage.click("#go");
+    await watchOut(latePage);
+    await latePage.click("#rule-cancel");
+    await latePage.waitForTimeout(600);
+    const ignored = await state(latePage);
+    check("late response after stop never renders", [ignored.title, ignored.changes, ignored.busy], [ignored.expected.stoppedTitle, 1, "false"]);
+    await lateStopContext.close();
 
     const editedContext = await browser.newContext({ locale: "en-US" });
     site.watch(editedContext, url);
@@ -191,7 +287,7 @@ async function localized(page, locale, kind) {
       input.value = "Use `let`.";
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    await edited.waitForTimeout(100);
+    await holding(1); await edited.waitForTimeout(100);
     check("direct requestSubmit remains single-flight", requests - beforeEdit, 1);
     release();
     await settle(edited);
@@ -209,7 +305,7 @@ async function localized(page, locale, kind) {
       const original = window.setTimeout;
       window.__deadlineMs = [];
       window.setTimeout = (fn, ms, ...args) => {
-        if (ms === 35000) { window.__deadlineMs.push(ms); return original(fn, 100, ...args); }
+        if (ms === 35000) { window.__deadlineMs.push(ms); return original(fn, window.__fullDeadline ? ms : 100, ...args); }
         return original(fn, ms, ...args);
       };
     });
@@ -238,6 +334,9 @@ async function localized(page, locale, kind) {
         await page.selectOption("#ui-lang", "en");
       }
     }
+    // The malformed and retry responses get the real deadline, so they settle on the response
+    // they assert rather than race the shortened timer.
+    await page.evaluate(() => { window.__fullDeadline = true; });
     mode = "broken";
     await page.click("#go");
     await settle(page);
@@ -346,8 +445,8 @@ async function localized(page, locale, kind) {
         const t = window.STRINGS.en, out = document.getElementById("out");
         const value = (label) => [...out.querySelectorAll("dt")].find((dt) => dt.textContent === label)?.nextElementSibling?.textContent;
         return { cards: out.querySelectorAll("li.finding").length, role: value(t.factors.rule_role), primitive: value(t.factors.primitive),
-          banner: out.querySelector(".banner p")?.textContent, expected: { role: "constructor (" + t.confidence + " 0.9)",
-            primitive: "toString (" + t.confidence + " 0.8)", language: t.notEnglishBody.replace("{lang}", "Klingon"),
+          banner: out.querySelector(".banner p")?.textContent, expected: { role: "constructor (confidence 0.9)",
+            primitive: "toString (confidence 0.8)", language: "This looks like Klingon. Scoring is evaluated on English rules, so this text was not scored. Check the language or translate the rule, then try again.",
             error: t.errors.failed.replace("{max}", "2000") } };
       }));
     }
@@ -359,6 +458,52 @@ async function localized(page, locale, kind) {
     check("inherited error code shows the generic failure", keyError.banner, keyError.expected.error);
     check("inherited server keys raise no page error", keyErrors, []);
     await keyContext.close();
+
+    // /review-ui.js fails to load: in every locale the strings render, a single-rule analysis runs
+    // with the numbers the loaded page shows, and the prompt area says the prompt is unavailable.
+    const scored = { status: "ok", findings: [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }],
+      factors: { F1: 0.2, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.95,
+        primitive: { choice: "rule", confidence: 0.9 }, rule_role: { choice: "direct_action", confidence: 0.9 } } };
+    const shownRule = async (blocked, locale) => {
+      const reviewContext = await browser.newContext({ locale: "en-US" });
+      site.watch(reviewContext, url);
+      if (blocked) await reviewContext.route("**/review-ui.js", (route) => route.abort());
+      const reviewPage = await reviewContext.newPage();
+      const errors = [];
+      reviewPage.on("pageerror", (e) => { errors.push(e.message); report.pageErrors.push(e.message); });
+      await reviewPage.goto(url);
+      await reviewPage.selectOption("#ui-lang", locale);
+      const strings = await reviewPage.evaluate(() => {
+        const t = window.STRINGS[document.getElementById("ui-lang").value];
+        return document.title === t.title && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === t[node.dataset.i18n]) &&
+          document.getElementById("mode-rule").textContent === t.file.ruleMode;
+      });
+      await reviewPage.click("#mode-rule");
+      await reviewPage.fill("#rule", "Always try to use functional components.");
+      mode = "canned"; canned = { status: 200, body: scored };
+      const before = requests;
+      await reviewPage.click("#go");
+      await settle(reviewPage);
+      const shown = await reviewPage.evaluate(() => {
+        const out = document.getElementById("out");
+        return { counter: document.getElementById("rule-count").textContent, finding: out.querySelector("li.finding h2")?.textContent,
+          values: [...out.querySelectorAll("dd")].map((dd) => dd.textContent), labels: [...out.querySelectorAll("dt")].map((dt) => dt.textContent),
+          prompt: out.querySelector(".prompt-panel")?.textContent, copy: out.querySelectorAll(".copy-prompt").length,
+          expected: window.STRINGS[document.getElementById("ui-lang").value].file.unavailable };
+      });
+      await reviewContext.close();
+      return { strings, requests: requests - before, errors, ...shown };
+    };
+    for (const locale of locales) {
+      const loaded = await shownRule(false, locale), blocked = await shownRule(true, locale);
+      check(locale + " blocked review-ui.js renders every string", blocked.strings, true);
+      check(locale + " blocked review-ui.js runs a single-rule analysis", [blocked.requests, blocked.finding], [1, loaded.finding]);
+      check(locale + " blocked review-ui.js formats numbers as the loaded page does",
+        [blocked.counter, blocked.labels, blocked.values], [loaded.counter, loaded.labels, loaded.values]);
+      check(locale + " blocked review-ui.js says the prompt is unavailable", [blocked.prompt, blocked.copy], [blocked.expected, 0]);
+      check(locale + " blocked review-ui.js raises no page error", blocked.errors, []);
+    }
+    mode = "success";
     check("no browser exceptions", report.pageErrors, []);
   } catch (error) {
     report.fatal = { message: error.message, stack: error.stack };

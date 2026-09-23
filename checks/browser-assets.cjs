@@ -31,6 +31,7 @@ assets.localSite = (pages = {}) => {
   const served = Object.fromEntries(Object.entries(routes).map(([route, file]) => [route, { file: "public/" + file,
     type: types[path.extname(file).slice(1)], body: fs.readFileSync(path.join(__dirname, "..", "public", file)) }]));
   const unknownRequests = [], externalRequests = [];
+  let abortedRequests = 0;
   return {
     hashes: Object.fromEntries(Object.values(served).map(({ file, body }) => [file, createHash("sha256").update(body).digest("hex")])),
     serve(req, res) {
@@ -44,7 +45,15 @@ assets.localSite = (pages = {}) => {
         if (url.protocol.startsWith("http") && url.origin !== origin) externalRequests.push(url.href);
       });
     },
-    audit: () => ({ providerRequests: externalRequests.length, externalRequests, unknownRequests,
+    // Reads a mock request's body as text. A client that resets the connection mid-body, as a
+    // stopped analysis can, resolves null and is counted in the audit; any other error rejects.
+    async readBody(req) {
+      let body = "";
+      try { for await (const chunk of req) body += chunk; }
+      catch (error) { if (error.code !== "ECONNRESET") throw error; abortedRequests++; return null; }
+      return body;
+    },
+    audit: () => ({ providerRequests: externalRequests.length, externalRequests, unknownRequests, abortedRequests,
       networkClean: !externalRequests.length && unknownRequests.every((entry) => allowedUnknownRequests.includes(entry)) }),
   };
 };

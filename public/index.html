@@ -40,6 +40,7 @@
       placeholder="Always try to use functional components."></textarea>
     <div class="row">
       <button type="submit" id="go" data-i18n="submit"></button>
+      <button type="button" id="rule-cancel" class="secondary" hidden></button>
       <span class="count" id="rule-count"></span>
     </div>
   </form>
@@ -73,6 +74,7 @@
   const form = document.getElementById("ask");
   const input = document.getElementById("rule");
   const go = document.getElementById("go");
+  const cancel = document.getElementById("rule-cancel");
   const count = document.getElementById("rule-count");
   const out = document.getElementById("out");
   const picker = document.getElementById("ui-lang");
@@ -81,9 +83,11 @@
   let t = window.STRINGS.en;
 
   // Retain every display state so locale changes also translate errors and
-  // pending/empty messages. A request owns the field until it settles.
+  // pending/empty messages. A request owns the field until it settles or the
+  // reader stops it; a stopped request's response never renders.
   let view = { kind: "idle" };
   let pending = false;
+  let request = null;
   let reviewUI;
 
   // The reader's own language if we speak it, else English. A stored choice
@@ -112,12 +116,48 @@
   // defines it itself, so an inherited name such as "constructor" takes the fallback.
   const own = (table, key) => (Object.hasOwn(table, key) ? table[key] : undefined);
 
+  // Displayed numbers share the file review's format for the page language. Without
+  // review-ui.js, the same format: Latin digits, String()'s digits and decimals, no grouping.
+  const review = window.DisregardReview;
+  const number = review ? review.number : (value) => typeof value !== "number" ? String(value) :
+    new Intl.NumberFormat(document.documentElement.lang, { numberingSystem: "latn", useGrouping: false, maximumFractionDigits: 20 }).format(value);
+
   const el = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;
     if (text !== undefined) n.textContent = text;
     return n;
   };
+
+  // Without review-ui.js the single-rule prompt is unavailable, as when its prompt script fails.
+  const promptPanel = review ? review.promptPanel : (report, strings) => {
+    const panel = el("section", "prompt-panel");
+    panel.append(el("p", "hint", strings.unavailable));
+    return panel;
+  };
+
+  // Without review-ui.js no file can be read: file mode says so and sends nothing, and the
+  // mode switch still reaches the single-rule form.
+  function unavailableReview({ host }) {
+    let mode = "file", ruleBusy = false;
+    const modeFile = document.getElementById("mode-file"), modeRule = document.getElementById("mode-rule");
+    const rulePanel = document.getElementById("rule-panel");
+    const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
+    host.append(error);
+    function refresh() {
+      const strings = t.file;
+      modeFile.textContent = strings.fileMode; modeRule.textContent = strings.ruleMode;
+      document.getElementById("input-mode").setAttribute("aria-label", strings.modeLabel);
+      modeFile.setAttribute("aria-pressed", String(mode === "file"));
+      modeRule.setAttribute("aria-pressed", String(mode === "rule"));
+      modeFile.disabled = modeRule.disabled = ruleBusy;
+      host.hidden = mode !== "file"; rulePanel.hidden = mode !== "rule";
+      error.textContent = strings.parser_unavailable;
+    }
+    modeFile.addEventListener("click", () => { if (!ruleBusy) { mode = "file"; refresh(); } });
+    modeRule.addEventListener("click", () => { if (!ruleBusy) { mode = "rule"; refresh(); } });
+    return { refresh, setRuleBusy(value) { ruleBusy = value; refresh(); } };
+  }
 
   function applyLocale(code) {
     t = window.STRINGS[code];
@@ -142,10 +182,12 @@
 
   function updateCount() {
     const n = input.value.length;
-    count.textContent = fill(t.counter, { n: n, max: MAX });
+    count.textContent = fill(t.counter, { n: number(n), max: number(MAX) });
     count.classList.toggle("over", n > MAX);
     go.disabled = pending || n > MAX;
     go.textContent = pending ? t.submitBusy : t.submit;
+    cancel.hidden = !pending;
+    cancel.textContent = t.file.cancel;
     input.readOnly = pending;
     out.setAttribute("aria-busy", String(pending));
     reviewUI?.setRuleBusy(pending);
@@ -180,24 +222,28 @@
     return li;
   }
 
+  // Each factor label names its scale; the bounds render through number() like the values.
+  const SCALES = { F3: [0, 4], F8: [0, 3], F1: [0, 1], F2: [0, 1], F7: [0, 1] };
+
   function factorList(factors) {
     const box = el("details");
     box.append(el("summary", null, t.measured));
     const dl = el("dl", "factors");
     for (const key of ["is_rule", "F3", "F8", "F1", "F2", "F7"]) {
       if (factors[key] === undefined) continue;
-      const value = factors[key] === null ? t.undetermined : String(factors[key]);
-      dl.append(el("dt", null, t.factors[key]), el("dd", null, value));
+      const value = factors[key] === null ? t.undetermined : number(factors[key]);
+      const label = SCALES[key] ? fill(t.factors[key], { min: number(SCALES[key][0]), max: number(SCALES[key][1]) }) : t.factors[key];
+      dl.append(el("dt", null, label), el("dd", null, value));
     }
     if (factors.rule_role) {
       const role = own(t.ruleRoles, factors.rule_role.choice) || factors.rule_role.choice;
       dl.append(el("dt", null, t.factors.rule_role),
-        el("dd", null, role + " (" + t.confidence + " " + factors.rule_role.confidence + ")"));
+        el("dd", null, fill(t.confidence, { choice: role, value: number(factors.rule_role.confidence) })));
     }
     if (factors.primitive) {
       const name = own(t.primitives, factors.primitive.choice) || factors.primitive.choice;
       dl.append(el("dt", null, t.factors.primitive),
-        el("dd", null, name + " (" + t.confidence + " " + factors.primitive.confidence + ")"));
+        el("dd", null, fill(t.confidence, { choice: name, value: number(factors.primitive.confidence) })));
     }
     box.append(dl);
     return box;
@@ -232,7 +278,7 @@
       out.append(list);
     }
     out.append(factorList(body.factors || {}));
-    if (view.rule) out.append(window.DisregardReview.promptPanel({
+    if (view.rule) out.append(promptPanel({
       schemaVersion: 1, sourceName: "Instruction excerpt (source file not provided)", sourceText: view.rule,
       units: [{ id: "rule", startLine: 1, endLine: view.rule.split(/\r\n|\r|\n/).length,
         startOffset: 0, endOffset: view.rule.length, rawText: view.rule, rule: view.rule,
@@ -243,9 +289,10 @@
   function renderView() {
     if (view.kind === "result") render(view.body);
     else if (view.kind === "busy") out.replaceChildren(banner(t.busyTitle, t.busyBody));
+    else if (view.kind === "stopped") out.replaceChildren(banner(t.stoppedTitle, t.stoppedBody));
     else if (view.kind === "empty") out.replaceChildren(banner(t.emptyTitle, t.emptyBody));
     else if (view.kind === "error") {
-      out.replaceChildren(banner(t.errorTitle, fill(own(t.errors, view.code) || t.errors.failed, { max: MAX })));
+      out.replaceChildren(banner(t.errorTitle, fill(own(t.errors, view.code) || t.errors.failed, { max: number(MAX) })));
     } else out.replaceChildren();
   }
 
@@ -271,43 +318,71 @@
       return;
     }
 
-    // Disabling the focused button moves focus to the document in Chromium.
-    // Restore it after this request only if the reader has not moved elsewhere.
+    // Disabling the focused button moves focus to the document in Chromium, so
+    // the stop control takes it for the request. Return it to the submit button
+    // afterwards only if the reader has not moved elsewhere.
     let restoreSubmitFocus = document.activeElement === go;
+    const current = request = { controller: new AbortController(), stopped: false };
     pending = true;
     updateCount();
     showView({ kind: "busy" });
+    if (restoreSubmitFocus) cancel.focus();
     const preserveReaderFocus = () => { restoreSubmitFocus = false; };
     if (restoreSubmitFocus) {
       document.addEventListener("pointerdown", preserveReaderFocus, { once: true });
       document.addEventListener("focusin", preserveReaderFocus, { once: true });
     }
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const timeout = setTimeout(() => current.controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
       const res = await fetch("/api/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rule: rule }),
-        signal: controller.signal,
+        signal: current.controller.signal,
       });
       const body = await res.json();
+      // A stopped request never renders, even when its response still arrives.
+      if (current.stopped) return;
       // Also discard responses after a programmatic edit of the read-only field.
       if (input.value !== submitted) showView({ kind: "idle" });
       else if (res.ok) showView({ kind: "result", body, rule });
       else showView({ kind: "error", code: body?.code });
     } catch {
+      if (current.stopped) return;
       showView(input.value !== submitted ? { kind: "idle" }
-        : { kind: "error", code: controller.signal.aborted ? "timeout" : "network" });
+        : { kind: "error", code: current.controller.signal.aborted ? "timeout" : "network" });
     } finally {
       clearTimeout(timeout);
       document.removeEventListener("pointerdown", preserveReaderFocus);
       document.removeEventListener("focusin", preserveReaderFocus);
-      pending = false;
-      updateCount();
-      if (restoreSubmitFocus && document.hasFocus() && document.activeElement === document.body && !go.disabled) go.focus();
+      // Stopping already released the form, and a new request may own it now.
+      if (!current.stopped) {
+        request = null;
+        pending = false;
+        updateCount();
+        const lost = document.activeElement === document.body || document.activeElement === cancel;
+        if (restoreSubmitFocus && document.hasFocus() && lost && !go.disabled) go.focus();
+      }
     }
+  });
+
+  // Stop abandons the pending request: it aborts the fetch, releases the field
+  // and announces the stop once through the live region.
+  cancel.addEventListener("click", () => {
+    if (!request) return;
+    request.stopped = true;
+    request.controller.abort();
+    request = null;
+    pending = false;
+    updateCount();
+    showView({ kind: "stopped" });
+    input.focus();
+  });
+
+  // The held Enter that started a request must not stop it; a fresh press still does.
+  cancel.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.repeat && !event.isComposing) event.preventDefault();
   });
 
   // Focus may return here before a held Enter is released. Its repeated
@@ -330,7 +405,7 @@
     updateCount();
   });
 
-  reviewUI = window.DisregardReview.create({
+  reviewUI = (review ? review.create : unavailableReview)({
     host: document.getElementById("file-panel"), getStrings: () => t,
     findingCard, factorList,
   });

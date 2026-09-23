@@ -8,6 +8,31 @@
     return node;
   };
   const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match);
+  // As in public/index.html: a key the server sent indexes a translation table
+  // only when the table defines it itself, so "constructor" takes the fallback.
+  const own = (table, key) => (Object.hasOwn(table, key) ? table[key] : undefined);
+  // Displayed numbers follow the page language: one shared format per language tag,
+  // Latin digits, the digits and decimals String() gives, and no grouping.
+  const formats = new Map();
+  const number = (value) => {
+    if (typeof value !== "number") return String(value);
+    const tag = document.documentElement.lang;
+    if (!formats.has(tag)) formats.set(tag, new Intl.NumberFormat(tag, { numberingSystem: "latn", useGrouping: false, maximumFractionDigits: 20 }));
+    return formats.get(tag).format(value);
+  };
+  // A counted label has one form per plural category of the page language, chosen from the raw count.
+  const counted = (forms, count, values = { n: number(count) }) =>
+    fill(forms[new Intl.PluralRules(document.documentElement.lang).select(count)] ?? forms.other, values);
+  // Excerpt text as a reader compares it with the text sent: LF line endings, no indentation, and
+  // for a list item no leading marker. Scoring drops those, so they alone never show the sent text.
+  const comparable = (text, item) => {
+    const lines = text.replace(/\r\n?/g, "\n").split("\n").map((line) => line.trimStart()).join("\n").trim();
+    return item ? lines.replace(/^(?:[-+*]|\d{1,9}[.)])[ \t]+/, "") : lines;
+  };
+  // Without the prompt script, a scored result is still checked for the parts this page shows.
+  const displayable = (result) => Array.isArray(result.findings) &&
+    result.findings.every((finding) => finding !== null && typeof finding === "object") &&
+    (result.factors === undefined || (result.factors !== null && typeof result.factors === "object"));
 
   function promptPanel(report, t) {
     const panel = el("section", "prompt-panel");
@@ -93,10 +118,18 @@
     host.append(form, error, output);
 
     const t = () => getStrings().file;
+    // A message's limits come from the document model and render through number(). Without the
+    // model no file can be read, so the hint and byte counter hide and an upload reports that failure.
+    const limits = model?.LIMITS;
+    const withLimits = (text) => limits ? fill(text, { kib: number(limits.fileBytes / 1024),
+      excerpts: number(limits.rules), chars: number(limits.ruleChars) }) : text;
     // Textarea values normalize CRLF/CR to LF. Retain an uploaded UTF-8
     // snapshot until the reader actually edits its displayed text.
     const sourceText = () => uploadedSource && source.value === uploadedSource.displayed ? uploadedSource.text : source.value;
-    const retryable = (unit) => ["ready", "error", "cancelled"].includes(unit.state);
+    // A unit that holds a scoring result is never sent again. Nor is one whose failure a new request
+    // would repeat; preparing the file again is the reader's way to re-run it.
+    const retryable = (unit) => !unit.result && ["ready", "error", "cancelled"].includes(unit.state) &&
+      !["unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
     const isCurrent = (snapshot, token) => report === snapshot && token === revision &&
       sourceText() === snapshot.sourceText && (name.value.trim() || "AGENTS.md") === snapshot.sourceName;
 
@@ -110,31 +143,35 @@
       host.hidden = mode !== "file"; rulePanel.hidden = mode !== "rule";
       source.readOnly = name.readOnly = busy;
       upload.disabled = busy; prepare.disabled = busy;
-      label.textContent = strings.source; hint.textContent = strings.sourceHint;
+      label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
       uploadLabel.textContent = strings.upload; nameLabel.textContent = strings.name; prepare.textContent = strings.prepare;
       const bytes = new TextEncoder().encode(sourceText()).length;
-      count.textContent = fill(strings.bytes, { n: bytes, max: 65536 });
-      count.classList.toggle("over", bytes > 65536);
-      error.textContent = errorCode ? (strings[errorCode] || strings.invalid_source) : "";
+      count.textContent = limits ? fill(strings.bytes, { n: number(bytes), max: number(limits.fileBytes) }) : ""; count.hidden = !limits;
+      count.classList.toggle("over", Boolean(limits) && bytes > limits.fileBytes);
+      error.textContent = errorCode ? withLimits(strings[errorCode] || strings.invalid_source) : "";
       error.hidden = !errorCode;
       output.hidden = !report;
       cancel.hidden = !busy; cancel.textContent = strings.cancel;
       if (!report) return;
       reportTitle.textContent = strings.preview; reportHint.textContent = strings.previewHint;
       const summary = model.summarize(report);
-      coverage.textContent = fill(strings.coverage, { ...summary, remaining: summary.total - summary.scored });
+      coverage.textContent = fill(strings.coverage.text, { scored: counted(strings.coverage.scored, summary.scored),
+        flagged: number(summary.flagged), remaining: counted(strings.coverage.remaining, summary.total - summary.scored) });
       const remaining = report.units.filter(retryable).length;
-      start.textContent = fill(everRan ? strings.retry : strings.start, { n: remaining });
+      start.textContent = counted(everRan ? strings.retry : strings.start, remaining);
       start.hidden = busy || !remaining;
-      progress.textContent = busy ? fill(strings.running, { done: runDone, total: runTotal }) :
+      progress.textContent = busy ? counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) }) :
         message ? strings[message] : remaining ? "" : strings.none;
     }
 
     function renderUnit(unit, row) {
       const strings = t();
       row.summary.replaceChildren();
-      const location = el("span", "unit-location", fill(strings.lines, { start: unit.startLine, end: unit.endLine }));
-      const state = el("span", "unit-state", strings.states[unit.state] || strings.states.skipped);
+      const location = el("span", "unit-location", unit.startLine === unit.endLine ? fill(strings.line, { line: number(unit.startLine) }) :
+        fill(strings.lines, { start: number(unit.startLine), end: number(unit.endLine) }));
+      // A response that arrived but failed validation was not scored; its request did not fail.
+      const invalid = unit.state === "error" && ["invalid_result", "unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
+      const state = el("span", "unit-state", invalid ? strings.states.skipped : strings.states[unit.state] || strings.states.skipped);
       const title = el("span", "unit-title", unit.rawText.trim().split(/\r\n|\r|\n/)[0]);
       title.dir = "auto";
       row.summary.append(location, state, title);
@@ -142,15 +179,21 @@
       row.content.replaceChildren();
       const original = el("pre", "source-excerpt", unit.rawText); original.dir = "auto";
       row.content.append(original);
-      if (unit.context.length) row.content.append(el("p", "hint", strings.context + ": " + unit.context.join(" / ")));
+      if (unit.context.length) row.content.append(el("p", "hint", fill(strings.context,
+        { path: unit.context.reduce((outer, inner) => fill(strings.contextPath, { outer, inner })) })));
       if (unit.state !== "ok") {
+        // The single-rule banner's language lookup and fallback.
+        const language = unit.result?.language;
+        const lang = (language?.code && own(getStrings().languages, language.code)) || language?.name;
         const reason = unit.state === "review" ? getStrings().reviewBody :
           unit.state === "refused" ? getStrings().refusedBody :
-          unit.state === "not_english" ? getStrings().notEnglishUnknown :
-          strings.reasons[unit.reason] || strings.states[unit.state];
-        row.content.append(el("p", "hint", unit.state === "error" ?
-          (["invalid_result", "unsupported_finding", "prompt_too_large"].includes(unit.errorCode) ? strings[unit.errorCode] || strings.unavailable :
-            getStrings().errors[unit.errorCode] || getStrings().errors.failed) : reason));
+          unit.state === "not_english" ? (lang ? fill(getStrings().notEnglishBody, { lang }) : getStrings().notEnglishUnknown) :
+          // File mode words the unknown-finding and timeout failures for an excerpt.
+          unit.state === "error" ? own(strings.unitErrors, unit.errorCode) ||
+            (invalid ? strings[unit.errorCode] : own(getStrings().errors, unit.errorCode) || getStrings().errors.failed) :
+          strings.reasons[unit.reason];
+        // Ready, pending and stopped units have nothing to add to their state label.
+        if (reason) row.content.append(el("p", "hint", withLimits(reason)));
       }
       if (unit.state === "ok") {
         if (unit.result.findings.length) {
@@ -163,7 +206,7 @@
         } else row.content.append(el("p", "hint", strings.unchanged));
         row.content.append(factorList(unit.result.factors || {}));
       }
-      if (unit.rule && unit.rule !== unit.rawText.trim()) {
+      if (unit.rule && comparable(unit.rule, false) !== comparable(unit.rawText, unit.kind === "item")) {
         const detail = el("details"); detail.append(el("summary", null, strings.ruleSent), el("pre", "source-excerpt", unit.rule));
         row.content.append(detail);
       }
@@ -205,7 +248,9 @@
       const file = upload.files[0]; if (!file) return;
       invalidate(); const token = revision;
       if (!/\.md$/i.test(file.name)) errorCode = "invalid_file";
-      else if (file.size > 65536) errorCode = "file_too_large";
+      // Without the document model there is no limit to check and no reader for the file.
+      else if (!limits) errorCode = "parser_unavailable";
+      else if (file.size > limits.fileBytes) errorCode = "file_too_large";
       else {
         try {
           const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer());
@@ -222,7 +267,8 @@
       event.preventDefault(); if (busy) return;
       invalidate();
       try { report = model.parseDocument(sourceText(), name.value.trim() || "AGENTS.md"); }
-      catch (error) { errorCode = error.code || "invalid_source"; }
+      // Without the document model script, the page failed to load, not the reader's file.
+      catch (error) { errorCode = error.code || (model ? "invalid_source" : "parser_unavailable"); }
       renderReport();
       if (report) {
         if (!start.hidden) start.focus();
@@ -264,14 +310,18 @@
               if ([429, 503].includes(response.status) || body?.code === "not_configured") stop("limited");
             } else if (["ok", "not_english", "review", "refused"].includes(body?.status)) {
               if (body.status === "ok") {
-                // Validate the consumed evidence before showing a completed unit.
-                window.DisregardPrompt.buildPrompt({ ...snapshot, units: [{ ...unit, state: "ok", result: body }] }, window.STRINGS.en);
+                // Validate the consumed evidence before showing a completed unit. If the prompt
+                // script did not load, check what this page shows and keep the result.
+                if (window.DisregardPrompt) window.DisregardPrompt.buildPrompt({ ...snapshot, units: [{ ...unit, state: "ok", result: body }] }, window.STRINGS.en);
+                else if (!displayable(body)) throw Object.assign(new Error("invalid_result"), { code: "invalid_result" });
               }
               unit.state = body.status; unit.result = body;
             } else throw new Error("invalid response");
           } catch (error) {
             unit.state = stopped ? "cancelled" : "error";
-            unit.errorCode = error.code || (controller.signal.aborted ? "timeout" : "network");
+            // An aborted fetch rejects with a DOMException whose legacy numeric code is 20;
+            // the deadline's abort is a timeout, as in the single-rule view.
+            unit.errorCode = controller.signal.aborted ? "timeout" : error.code || "network";
           } finally {
             clearTimeout(timer); active.delete(controller); runDone++;
             if (isCurrent(snapshot, token)) { renderUnit(unit, rows.get(unit.id)); controls(); }
@@ -292,7 +342,10 @@
           controls();
           exported.replaceChildren(promptPanel(report, t()));
           if (document.activeElement === cancel || document.activeElement === document.body) {
-            if (!start.hidden) start.focus({ preventScroll: true });
+            // After the reader's Stop, the heading takes focus so a second press starts nothing; the
+            // retry control is the next Tab stop. Scrolling keeps that focus in view.
+            if (message === "stopped") { reportTitle.tabIndex = -1; reportTitle.focus(); }
+            else if (!start.hidden) start.focus({ preventScroll: true });
             else { reportTitle.tabIndex = -1; reportTitle.focus({ preventScroll: true }); }
           }
         } else { report = null; renderReport(); }
@@ -305,7 +358,15 @@
     });
     modeFile.addEventListener("click", () => { if (!busy && !ruleBusy) { mode = "file"; controls(); } });
     modeRule.addEventListener("click", () => { if (!busy && !ruleBusy) { mode = "rule"; controls(); } });
+    // The review lives only in this page, and getting its results back repeats paid
+    // requests. Leaving asks first while requests are in flight or results are held;
+    // a preview without results, or no review at all, leaves without a prompt.
+    window.addEventListener("beforeunload", (event) => {
+      if (!busy && !report?.units.some((unit) => unit.result)) return;
+      event.preventDefault();
+      event.returnValue = true; // Browsers that predate preventDefault here.
+    });
     return { refresh: renderReport, setRuleBusy(value) { ruleBusy = value; controls(); } };
   }
-  window.DisregardReview = { create, promptPanel };
+  window.DisregardReview = { create, promptPanel, number };
 })();

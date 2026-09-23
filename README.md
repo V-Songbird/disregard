@@ -24,7 +24,7 @@ The preview shows one excerpt with its source line. Expected labels:
 
 ```text
 Ready
-Analyze 1 instructions
+Analyze 1 instruction
 ```
 
 Previewing runs locally and needs no API key. If the parser cannot load, the page reports that failure instead of showing excerpts.
