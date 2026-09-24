@@ -48,6 +48,16 @@
     return nodes;
   }
 
+  // Claude Code's import parsing skips code spans and fenced code blocks. When a
+  // block contains code, a match in the source counts only if the parsed text
+  // outside that code has one too.
+  const REFERENCE = /(?:^|[\s("'`])@[^\s<>()"'`]+/;
+  function referencesFile(text, children) {
+    const outsideCode = children.filter(child => child.type !== 'code' && child.type !== 'code_block');
+    return REFERENCE.test(text) && (outsideCode.length === children.length
+      || outsideCode.some(child => [child.literal, child.destination, child.title].some(value => REFERENCE.test(value || ''))));
+  }
+
   // These identify dependency risks, not whether a paragraph is an instruction.
   function contextualHeading(text) {
     return /\b(?:if|when|unless|before|after|during|while|until|except|only|windows|macos|linux)\b|^(?:for|on|in|under)\b/i.test(text);
@@ -133,7 +143,7 @@
         // A list item with no letter or number after an optional task checkbox,
         // such as an empty item, '[ ]' or '**', has nothing to score.
         state = 'skipped'; reason = 'empty_item';
-      } else if (/(?:^|[\s("'`])@[^\s<>()"'`]+/.test(text)) {
+      } else if (referencesFile(text, children)) {
         state = 'skipped'; reason = 'unresolved_reference';
       } else if (looksLikeTable(text)) {
         state = 'skipped'; reason = 'table';
