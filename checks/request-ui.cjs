@@ -75,6 +75,7 @@ async function state(page) {
       body: out.querySelector("p")?.textContent, busy: out.getAttribute("aria-busy"),
       disabled: document.getElementById("go").disabled, button: document.getElementById("go").textContent,
       readOnly: document.getElementById("rule").readOnly, rule: document.getElementById("rule").value,
+      modes: [document.getElementById("mode-file").disabled, document.getElementById("mode-rule").disabled],
       stop: [document.getElementById("rule-cancel").hidden, document.getElementById("rule-cancel").textContent],
       focus: document.activeElement?.id || "", changes: window.__outChanges,
       empty: out.childElementCount === 0, overflow: document.documentElement.scrollWidth > innerWidth,
@@ -139,7 +140,7 @@ async function localized(page, locale, kind) {
         await page.waitForTimeout(100);
         const busy = await state(page);
         check(label + " single request", requests - start, 1);
-        check(label + " busy controls", [busy.busy, busy.disabled, busy.readOnly, busy.rule], ["true", true, true, rule]);
+        check(label + " busy controls", [busy.busy, busy.disabled, busy.readOnly, busy.rule, busy.modes], ["true", true, true, rule, [true, true]]);
         check(label + " busy localized", [busy.title, busy.button], [busy.expected.busyTitle, busy.expected.submitBusy]);
         check(label + " busy fits", busy.overflow, false);
         check(label + " stop control shown and labelled while pending", busy.stop, [false, busy.expected.stop]);
@@ -151,7 +152,7 @@ async function localized(page, locale, kind) {
         release();
         await settle(page);
         const done = await state(page);
-        check(label + " result restores controls", [done.title, done.disabled, done.readOnly], [done.expected.cleanTitle, false, false]);
+        check(label + " result restores controls", [done.title, done.disabled, done.readOnly, done.modes], [done.expected.cleanTitle, false, false, [false, false]]);
         check(label + " stop control hidden after completion", done.stop[0], true);
         await page.fill("#rule", "Run `npm test`.");
         check(label + " edits clear old result", (await state(page)).empty, true);
@@ -460,7 +461,8 @@ async function localized(page, locale, kind) {
     await keyContext.close();
 
     // /review-ui.js fails to load: in every locale the strings render, a single-rule analysis runs
-    // with the numbers the loaded page shows, and the prompt area says the prompt is unavailable.
+    // with the numbers the loaded page shows and holds the mode switch as it does, and the prompt
+    // area says the prompt is unavailable.
     const scored = { status: "ok", findings: [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }],
       factors: { F1: 0.2, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.95,
         primitive: { choice: "rule", confidence: 0.9 }, rule_role: { choice: "direct_action", confidence: 0.9 } } };
@@ -480,10 +482,15 @@ async function localized(page, locale, kind) {
       });
       await reviewPage.click("#mode-rule");
       await reviewPage.fill("#rule", "Always try to use functional components.");
-      mode = "canned"; canned = { status: 200, body: scored };
+      mode = "hold";
       const before = requests;
       await reviewPage.click("#go");
+      await holding(1);
+      const modes = () => reviewPage.evaluate(() => ["mode-file", "mode-rule"].map((id) => document.getElementById(id).disabled));
+      const busyModes = await modes();
+      respond(waiting.shift(), 200, scored);
       await settle(reviewPage);
+      const doneModes = await modes();
       const shown = await reviewPage.evaluate(() => {
         const out = document.getElementById("out");
         return { counter: document.getElementById("rule-count").textContent, finding: out.querySelector("li.finding h2")?.textContent,
@@ -492,12 +499,13 @@ async function localized(page, locale, kind) {
           expected: window.STRINGS[document.getElementById("ui-lang").value].file.unavailable };
       });
       await reviewContext.close();
-      return { strings, requests: requests - before, errors, ...shown };
+      return { strings, requests: requests - before, errors, modes: [busyModes, doneModes], ...shown };
     };
     for (const locale of locales) {
       const loaded = await shownRule(false, locale), blocked = await shownRule(true, locale);
       check(locale + " blocked review-ui.js renders every string", blocked.strings, true);
       check(locale + " blocked review-ui.js runs a single-rule analysis", [blocked.requests, blocked.finding], [1, loaded.finding]);
+      check(locale + " blocked review-ui.js holds the mode switch while the rule runs", [blocked.modes, loaded.modes], [[[true, true], [false, false]], [[true, true], [false, false]]]);
       check(locale + " blocked review-ui.js formats numbers as the loaded page does",
         [blocked.counter, blocked.labels, blocked.values], [loaded.counter, loaded.labels, loaded.values]);
       check(locale + " blocked review-ui.js says the prompt is unavailable", [blocked.prompt, blocked.copy], [blocked.expected, 0]);

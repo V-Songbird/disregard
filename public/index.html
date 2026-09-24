@@ -136,27 +136,30 @@
     return panel;
   };
 
-  // Without review-ui.js no file can be read: file mode says so and sends nothing, and the
-  // mode switch still reaches the single-rule form.
+  // Without review-ui.js no file can be read: file mode says so and sends nothing.
   function unavailableReview({ host }) {
-    let mode = "file", ruleBusy = false;
-    const modeFile = document.getElementById("mode-file"), modeRule = document.getElementById("mode-rule");
-    const rulePanel = document.getElementById("rule-panel");
     const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
     host.append(error);
-    function refresh() {
-      const strings = t.file;
-      modeFile.textContent = strings.fileMode; modeRule.textContent = strings.ruleMode;
-      document.getElementById("input-mode").setAttribute("aria-label", strings.modeLabel);
-      modeFile.setAttribute("aria-pressed", String(mode === "file"));
-      modeRule.setAttribute("aria-pressed", String(mode === "rule"));
-      modeFile.disabled = modeRule.disabled = ruleBusy;
-      host.hidden = mode !== "file"; rulePanel.hidden = mode !== "rule";
-      error.textContent = strings.parser_unavailable;
-    }
-    modeFile.addEventListener("click", () => { if (!ruleBusy) { mode = "file"; refresh(); } });
-    modeRule.addEventListener("click", () => { if (!ruleBusy) { mode = "rule"; refresh(); } });
-    return { refresh, setRuleBusy(value) { ruleBusy = value; refresh(); } };
+    return { refresh() { error.textContent = t.file.parser_unavailable; } };
+  }
+
+  // The page owns the file/rule mode switch, so it works with or without review-ui.js. A
+  // request running in either mode holds the switch until it settles.
+  const modeFile = document.getElementById("mode-file"), modeRule = document.getElementById("mode-rule");
+  const filePanel = document.getElementById("file-panel"), rulePanel = document.getElementById("rule-panel");
+  let mode = "file", fileBusy = false;
+
+  function modeControls() {
+    modeFile.textContent = t.file.fileMode; modeRule.textContent = t.file.ruleMode;
+    document.getElementById("input-mode").setAttribute("aria-label", t.file.modeLabel);
+    modeFile.setAttribute("aria-pressed", String(mode === "file"));
+    modeRule.setAttribute("aria-pressed", String(mode === "rule"));
+    modeFile.disabled = modeRule.disabled = pending || fileBusy;
+    filePanel.hidden = mode !== "file"; rulePanel.hidden = mode !== "rule";
+  }
+
+  for (const [button, next] of [[modeFile, "file"], [modeRule, "rule"]]) {
+    button.addEventListener("click", () => { if (!pending && !fileBusy) { mode = next; modeControls(); } });
   }
 
   function applyLocale(code) {
@@ -190,7 +193,7 @@
     cancel.textContent = t.file.cancel;
     input.readOnly = pending;
     out.setAttribute("aria-busy", String(pending));
-    reviewUI?.setRuleBusy(pending);
+    modeControls();
   }
 
   // Everything below writes with textContent. The `echo` field hands back text
@@ -406,8 +409,8 @@
   });
 
   reviewUI = (review ? review.create : unavailableReview)({
-    host: document.getElementById("file-panel"), getStrings: () => t,
-    findingCard, factorList,
+    host: filePanel, getStrings: () => t,
+    findingCard, factorList, onBusy(value) { fileBusy = value; modeControls(); },
   });
 
   for (const code of LOCALES) {
