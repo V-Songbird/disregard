@@ -46,7 +46,8 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
 - Scoring supports English instructions; the interface supports six languages.
 - Files may contain up to 64 KiB, 256 structural blocks, and 40 eligible excerpts.
 - Each scored excerpt is limited to 2000 UTF-16 code units.
-- Context-dependent, refused, skipped, or failed excerpts remain explicitly unreviewed.
+- An excerpt that depends only on a conditional heading or an introducing paragraph is scored with that section context stated first.
+  Other context-dependent, refused, skipped, or failed excerpts remain explicitly unreviewed.
 - Findings are separate signals. There is no overall grade or guarantee of correctness.
 
 `TYPESAFE_API_KEY` has no default and is required only for scoring.

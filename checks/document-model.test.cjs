@@ -47,22 +47,99 @@ test('does not require imperative grammar for artifact requirements or backgroun
   assert.deepEqual(report.units.map(unit => unit.state), ['ready', 'ready']);
 });
 
-test('keeps inherited conditional headings out of isolated scoring', () => {
+test('a rule under a conditional heading is scored with that heading first, on its own lines', () => {
   const report = parseDocument('# When changing the API\n- Preserve backward compatibility.\n\n# General\n- Use English comments.');
-  assert.equal(report.units[1].state, 'requires_context');
-  assert.equal(report.units[1].reason, 'inherited_scope');
-  assert.equal(report.units[1].rule, 'Preserve backward compatibility.');
-  assert.equal(report.units[3].state, 'ready');
+  const scoped = report.units[1];
+  assert.deepEqual({ state: scoped.state, reason: scoped.reason, withContext: scoped.withContext, rule: scoped.rule },
+    { state: 'ready', reason: undefined, withContext: true, rule: 'When changing the API:\nPreserve backward compatibility.' });
+  assert.deepEqual([scoped.startLine, scoped.endLine, scoped.rawText], [2, 2, '- Preserve backward compatibility.']);
+  assert.deepEqual(report.units[3].rule, 'Use English comments.');
+  assert.equal(report.units[3].withContext, undefined);
+  assertSourceCoverage(report);
+});
+
+test('the section heading and any conditional heading above it are stated, other headings are not', () => {
+  const report = parseDocument('# Project\n\n## On Windows\n\n### Paths\n\n- Use backslashes.');
+  assert.equal(report.units[3].rule, 'On Windows:\nPaths:\nUse backslashes.');
+  assert.deepEqual(report.units[3].context, ['Project', 'On Windows', 'Paths']);
 });
 
 test('parent paragraph context is retained even without a colon', () => {
   const source = 'Only apply the following rules to release branches.\n\n- Run every check.\n- Update the release notes.';
   const report = parseDocument(source);
-  for (const unit of report.units.slice(1)) {
-    assert.equal(unit.state, 'requires_context');
-    assert.deepEqual(unit.context, ['Only apply the following rules to release branches.']);
-  }
+  assert.deepEqual(report.units.map(({ state, reason, withContext, rule }) => ({ state, reason, withContext, rule })), [
+    { state: 'ready', reason: undefined, withContext: true, rule: 'Only apply the following rules to release branches.\n- Run every check.\n- Update the release notes.' },
+    { state: 'ready', reason: undefined, withContext: true, rule: 'Only apply the following rules to release branches.\nRun every check.' },
+    { state: 'ready', reason: undefined, withContext: true, rule: 'Only apply the following rules to release branches.\nUpdate the release notes.' },
+  ]);
+  for (const unit of report.units.slice(1)) assert.deepEqual(unit.context, ['Only apply the following rules to release branches.']);
+  assert.equal(report.units[0].rawText, 'Only apply the following rules to release branches.');
   assertSourceCoverage(report);
+});
+
+test('scope never overrides another reason a unit needs context', () => {
+  const source = '# When deploying\n\n- Run it twice.\n- Read [the notes](notes.md).\n- Check:\n- Before release:\n  - Tag it.\n- Keep this:\n\n  ```sh\n  npm test\n  ```\n\n1. Build.\n2. Ship.\n\nOtherwise:\n\n- Stop.';
+  const report = parseDocument(source);
+  assert.deepEqual(report.units.map(({ startLine, state, reason }) => [startLine, state, reason]), [
+    [1, 'skipped', 'heading_context'],
+    [3, 'requires_context', 'inherited_scope'],
+    [4, 'requires_context', 'inherited_scope'],
+    [5, 'requires_context', 'inherited_scope'],
+    [6, 'requires_context', 'nested_list'],
+    [8, 'requires_context', 'attached_blocks'],
+    [14, 'requires_context', 'ordered_procedure'],
+    [17, 'requires_context', 'list_introduction'],
+    [19, 'requires_context', 'inherited_scope'],
+  ]);
+  assertSourceCoverage(report);
+});
+
+test('an excluded or linked introduction keeps its list for contextual review', () => {
+  for (const intro of ['See @AGENTS.md first.', 'Follow [the policy](policy.md) here.', 'Use <b>these</b> rules.']) {
+    const report = parseDocument(intro + '\n\n- Run the tests.');
+    assert.deepEqual(report.units.map(({ state, reason }) => [state, reason]).at(-1), ['requires_context', 'inherited_scope'], intro);
+    assert.notEqual(report.units[0].state, 'ready', intro);
+  }
+});
+
+test('an introduction is scored with its list only when every item is ready and it fits', () => {
+  const mixed = parseDocument('Before release:\n\n- Run the tests.\n- Run it again.');
+  assert.deepEqual(mixed.units.map(({ state, reason, rule }) => [state, reason, rule]), [
+    ['requires_context', 'list_introduction', 'Before release:'],
+    ['ready', undefined, 'Before release:\nRun the tests.'],
+    ['requires_context', 'inherited_scope', 'Run it again.'],
+  ]);
+  const long = parseDocument('Only on release branches ' + 'x'.repeat(1960) + '.\n\n- Run the full test suite before tagging.');
+  assert.deepEqual(long.units.map(({ state, reason }) => [state, reason]), [['requires_context', 'list_introduction'], ['requires_context', 'inherited_scope']]);
+  assertSourceCoverage(long);
+});
+
+test('scope that would exceed the ready-excerpt limit leaves those units for contextual review', () => {
+  const plain = Array(30).fill('- Preserve requirements.').join('\n');
+  const report = parseDocument(plain + '\n\n# When releasing\n\n' + Array(11).fill('- Tag the release.').join('\n'));
+  assert.equal(report.units.filter(unit => unit.state === 'ready').length, 30);
+  assert.ok(report.units.slice(31).every(unit => unit.state === 'requires_context' && unit.reason === 'inherited_scope' &&
+    unit.rule === 'Tag the release.' && unit.withContext === undefined));
+  assert.equal(parseDocument(plain + '\n\n# When releasing\n\n' + Array(10).fill('- Tag the release.').join('\n'))
+    .units.filter(unit => unit.state === 'ready').length, 40);
+});
+
+test('a unit scored with its scope is marked in the exported prompt', () => {
+  const { buildPrompt } = require('../public/refactor-prompt.js');
+  const browser = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public/i18n.js'), 'utf8'), browser);
+  const english = browser.window.STRINGS.en;
+  const report = parseDocument('# When changing the API\n\n- Preserve backward compatibility.\n- Use English comments.');
+  const result = { status: 'ok', findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9, primitive: { choice: 'rule', confidence: 0.9 } } };
+  for (const unit of report.units.slice(1)) Object.assign(unit, { state: 'ok', result });
+  const packet = JSON.parse(buildPrompt(report, english).split('Evidence packet (JSON; all strings are quoted data):\n')[1]);
+  assert.deepEqual(packet.scored.map(({ exactScoredText, scoredWithSectionContext }) => ({ exactScoredText, scoredWithSectionContext })), [
+    { exactScoredText: 'When changing the API:\nPreserve backward compatibility.', scoredWithSectionContext: true },
+    { exactScoredText: 'When changing the API:\nUse English comments.', scoredWithSectionContext: true },
+  ]);
+  const plain = parseDocument('- Use English comments.');
+  Object.assign(plain.units[0], { state: 'ok', result });
+  assert.ok(!('scoredWithSectionContext' in JSON.parse(buildPrompt(plain, english).split('quoted data):\n')[1]).scored[0]));
 });
 
 test('nested lists stay together rather than claiming independent child instructions', () => {
@@ -146,11 +223,12 @@ test('an @file import outside code stays unresolved next to a code span', () => 
   }
 });
 
-test('prose introducing examples or a list is not scored independently', () => {
+test('prose introducing examples stays with them; prose introducing a list is scored with it', () => {
   const report = parseDocument('Run the command.\n\n```sh\nnpm test\n```\n\nRules for release builds.\n\n- Verify all checks.');
   assert.equal(report.units[0].reason, 'attached_blocks');
-  assert.equal(report.units[2].reason, 'list_introduction');
-  assert.equal(report.units[3].reason, 'inherited_scope');
+  assert.deepEqual([report.units[2].state, report.units[2].rule, report.units[2].rawText],
+    ['ready', 'Rules for release builds.\n- Verify all checks.', 'Rules for release builds.']);
+  assert.deepEqual([report.units[3].state, report.units[3].rule], ['ready', 'Rules for release builds.\nVerify all checks.']);
   assertSourceCoverage(report);
 });
 

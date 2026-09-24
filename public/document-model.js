@@ -63,8 +63,18 @@
     return /\b(?:if|when|unless|before|after|during|while|until|except|only|windows|macos|linux)\b|^(?:for|on|in|under)\b/i.test(text);
   }
 
+  // Text pointing back to earlier instructions. An introduction that does so is
+  // not a complete scope for its list.
+  function refersBack(text) {
+    return /^(?:otherwise|then|instead|also|else|in that case|as above|as below)\b|\b(?:above|previous|aforementioned|former|latter)\b/i.test(text);
+  }
+
   function dependentText(text) {
-    return /^(?:otherwise|then|instead|also|else|in that case|as above|as below)\b|\b(?:this|that|these|those|the following)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\b(?:it|them|above|below|previous|aforementioned|former|latter)\b/i.test(text);
+    return refersBack(text) || /\b(?:this|that|these|those|the following)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\b(?:it|them|below)\b/i.test(text);
+  }
+
+  function linksContext(children) {
+    return children.some(child => (child.type === 'link' || child.type === 'image') && /(?:\.md(?:[?#]|$)|^#)/i.test(child.destination || ''));
   }
 
   function looksLikeTable(text) {
@@ -133,12 +143,30 @@
       return text.trim();
     }
 
-    function candidate(node, extraContext, forcedReason) {
-      const context = headings.filter(Boolean).concat(extraContext || []);
+    // The scope stated before a scored rule: the section heading, any conditional
+    // heading above it, then an introducing paragraph. Each line ends in punctuation
+    // so the rule after it starts its own clause.
+    function scopeLines(intro) {
+      const parts = headings.filter((heading, index) => heading && (index === headings.length - 1 || contextualHeading(heading)));
+      return parts.concat(intro ? intro.text : []).map(part => /[.!?:]$/.test(part) ? part : part + ':');
+    }
+
+    // Units scored with their scope, and what they revert to if the file has too
+    // many ready units that way.
+    const scoped = [];
+    function withContext(unit, reason, text) {
+      unit.withContext = true;
+      scoped.push({ unit, reason, text });
+    }
+
+    // intro is the paragraph introducing a list item's list: { text, unit, readable }.
+    function candidate(node, intro, forcedReason) {
+      const context = headings.filter(Boolean).concat(intro ? intro.text : []);
       const text = normalized(node);
       const children = descendants(node);
       let state = 'ready';
       let reason;
+      let rule = text;
       if (!text || (node.type === 'item' && !/[\p{L}\p{N}]/u.test(text.replace(/^\[[ xX]\]/, '')))) {
         // A list item with no letter or number after an optional task checkbox,
         // such as an empty item, '[ ]' or '**', has nothing to score.
@@ -161,14 +189,23 @@
         state = 'requires_context'; reason = 'multiple_paragraphs';
       } else if (/^\[[ xX]\]\s/.test(text)) {
         state = 'requires_context'; reason = 'task_item';
-      } else if (context.some(contextualHeading) || (extraContext && extraContext.length)) {
-        state = 'requires_context'; reason = 'inherited_scope';
+      } else if (context.some(contextualHeading) || intro) {
+        // A scoped rule that depends on nothing else is scored with its scope first,
+        // unless its introduction was itself excluded or the result is too long.
+        const scopedText = (!intro || intro.readable) && scopeLines(intro).concat(text).join('\n');
+        if (scopedText && scopedText.length <= LIMITS.ruleChars && !dependentText(text) && !/:\s*$/.test(text) && !linksContext(children)) {
+          rule = scopedText;
+        } else {
+          state = 'requires_context'; reason = 'inherited_scope';
+        }
       } else if (dependentText(text) || /:\s*$/.test(text)) {
         state = 'requires_context'; reason = 'dependent_text';
-      } else if (children.some(child => (child.type === 'link' || child.type === 'image') && /(?:\.md(?:[?#]|$)|^#)/i.test(child.destination || ''))) {
+      } else if (linksContext(children)) {
         state = 'requires_context'; reason = 'linked_context';
       }
-      return addNode(node, state, reason, context, state === 'skipped' ? '' : text);
+      const unit = addNode(node, state, reason, context, state === 'skipped' ? '' : rule);
+      if (rule !== text) withContext(unit, 'inherited_scope', text);
+      return unit;
     }
 
     // YAML frontmatter is not CommonMark. Mask the recognized prefix without
@@ -186,33 +223,45 @@
     // A UTF-8 BOM is source data but must not prevent first-line Markdown syntax.
     if (parseSource[0] === '\uFEFF') parseSource = ' ' + parseSource.slice(1);
     const tree = new commonmark.Parser({ smart: false }).parse(parseSource);
-    let precedingScope = '';
+    let intro = null;
     for (let node = tree.firstChild; node; node = node.next) {
       if (node.type === 'heading') {
         headings.length = node.level;
         headings[node.level - 1] = inlineText(node);
         addNode(node, 'skipped', 'heading_context', headings.filter(Boolean), '');
-        precedingScope = '';
+        intro = null;
       } else if (node.type === 'list') {
-        const extraContext = precedingScope ? [precedingScope] : [];
         if (node.listType === 'ordered') {
-          candidate(node, extraContext, 'ordered_procedure');
+          candidate(node, intro, 'ordered_procedure');
         } else {
-          for (let item = node.firstChild; item; item = item.next) candidate(item, extraContext);
+          // An introduction is scored with its list after it when every item is ready.
+          let listed = intro && intro.readable && [intro.text];
+          for (let item = node.firstChild; item; item = item.next) {
+            if (candidate(item, intro).state !== 'ready') listed = null;
+            if (listed) listed.push('- ' + normalized(item).replace(/\n/g, '\n  '));
+          }
+          const introduced = listed && scopeLines(null).concat(listed).join('\n');
+          if (introduced && introduced.length <= LIMITS.ruleChars) {
+            withContext(intro.unit, 'list_introduction', intro.text);
+            intro.unit.state = 'ready'; delete intro.unit.reason; intro.unit.rule = introduced;
+          }
         }
-        precedingScope = '';
+        intro = null;
       } else if (node.type === 'paragraph') {
         const nextType = node.next && node.next.type;
         const dependency = nextType === 'list' ? 'list_introduction'
           : ['code_block', 'block_quote', 'html_block'].includes(nextType) ? 'attached_blocks' : undefined;
-        candidate(node, [], dependency);
+        const unit = candidate(node, null, dependency);
         // A paragraph introducing the next list may provide its condition even
-        // without a colon. Keep it separately; do not prepend it to scored text.
-        precedingScope = node.next && node.next.type === 'list' ? normalized(node) : '';
+        // without a colon. It is stated before each item unless it was excluded
+        // itself, points back to earlier text, or links to context not read here.
+        const text = normalized(node);
+        intro = nextType === 'list' ? { text, unit,
+          readable: unit.state !== 'skipped' && !refersBack(text) && !linksContext(descendants(node)) } : null;
       } else {
         const reasons = { code_block: 'code', block_quote: 'quote', html_block: 'html', thematic_break: 'separator' };
         addNode(node, 'skipped', reasons[node.type], headings.filter(Boolean), '');
-        precedingScope = '';
+        intro = null;
       }
     }
 
@@ -226,7 +275,16 @@
     }
     units.sort((left, right) => left.startOffset - right.startOffset);
     units.forEach((unit, index) => { unit.id = `unit-${index + 1}`; });
-    if (units.filter(unit => unit.state === 'ready').length > LIMITS.rules) fail('too_many_rules');
+    const ready = () => units.filter(unit => unit.state === 'ready').length;
+    // Scoring with scope never makes a file too large to review; it falls back to
+    // leaving those units for contextual review.
+    if (ready() > LIMITS.rules) {
+      for (const { unit, reason, text } of scoped) {
+        Object.assign(unit, { state: 'requires_context', reason, rule: text });
+        delete unit.withContext;
+      }
+    }
+    if (ready() > LIMITS.rules) fail('too_many_rules');
     return { schemaVersion: 1, sourceName: sourceName || 'AGENTS.md', sourceText: source, parserVersion: PARSER_VERSION, units };
   }
 

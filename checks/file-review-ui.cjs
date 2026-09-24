@@ -13,7 +13,10 @@ const site = localSite({ "/privacy": "privacy.html" });
 const report = { browser: "installed Edge", clipboard: "simulated writeText success/rejection; system clipboard untouched",
   sourceHashes: { ...site.hashes, "checks/file-review-ui.cjs": createHash("sha256").update(fs.readFileSync(__filename)).digest("hex") },
   checks: [], pageErrors: [], screenshots: [] };
-const sample = "# Project instructions\n\n- Always try to use functional components.\n- Run `node --test` before submitting changes.\n- Never log passwords.\n\n## Before deployment\n\n- Run `npm run deploy`.\n\n> Run an example command.\n\n@OTHER.md";
+// The deploy step names "it", so it needs its surrounding text as well as its heading and stays unscored.
+const sample = "# Project instructions\n\n- Always try to use functional components.\n- Run `node --test` before submitting changes.\n- Never log passwords.\n\n## Before deployment\n\n- Run it with `npm run deploy`.\n\n> Run an example command.\n\n@OTHER.md";
+// A step that needs only its conditional heading is scored with that heading stated first.
+const scopedDoc = "## Before deployment\n\n- Run the full test suite.", scopedRule = "Before deployment:\nRun the full test suite.";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [];
 function result(rule) {
@@ -275,6 +278,13 @@ async function unitHints(page) {
       await prepare(page, "- Keep requirements\n  across lines.\n- Keep one line.");
       check(prefix + " unit locations name a range or one line", await page.evaluate(() =>
         [...document.querySelectorAll(".instruction-unit .unit-location")].map((location) => location.textContent)), unitLocations[locale]);
+      await prepare(page, scopedDoc);
+      check(prefix + " a scoped excerpt is ready and says its text carries its section context", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file;
+        return [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state,
+          ...[...unit.querySelectorAll(".unit-content > details")].map((detail) =>
+            [detail.querySelector("summary").textContent === t.ruleSentContext, detail.querySelector("pre").textContent])]);
+      }), [["skipped"], ["ready", [true, scopedRule]]]);
       await page.click("#mode-rule"); await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
       await page.waitForFunction(() => document.querySelector("#out .banner strong")?.textContent === STRINGS[document.getElementById("ui-lang").value].notEnglishTitle);
       check(prefix + " single-rule banner renders the not-English sentence", await page.textContent("#out .banner p"), sentences.spanish);
@@ -577,6 +587,13 @@ async function unitHints(page) {
         check("the disclosed text is the text sent", requests.slice(beforeSent).map((entry) => entry.rule).sort(),
           ["Keep functions short.\nSplit long ones.", "Normalize this."]);
         check("scored units keep the same disclosures", await disclosed(), [[], ["Normalize this."]]);
+        await prepare(sentPage, scopedDoc);
+        const beforeScoped = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
+        check("a scoped excerpt is sent with its section context", requests.slice(beforeScoped).map((entry) => entry.rule), [scopedRule]);
+        const scopedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
+        check("the prompt marks the excerpt scored with its section context", scopedPacket.scored.map((unit) =>
+          [unit.sourceLines, unit.rawExcerpt, unit.exactScoredText, unit.scoredWithSectionContext]),
+          [[{ startLine: 3, endLine: 3 }, "- Run the full test suite.", scopedRule, true]]);
         await sentContext.close();
       }
       await context.close(); releaseAll();
