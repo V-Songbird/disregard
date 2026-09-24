@@ -71,6 +71,16 @@ test("a clean single-rule snapshot produces an exact review packet and allows no
   assert.deepEqual(data.coverage, { structuralUnits: 1, scoredUnits: 1, unscoredUnits: 0, states: { ok: 1 } });
 });
 
+test("the policy applies repository-settled edits and keeps questions for uncertain ones", () => {
+  const output = buildPrompt(report(), english);
+  assert.match(output, /retaining requirements, scope, exceptions, deliberate preferences/);
+  assert.match(output, /settles, apply that small edit instead of only raising it/);
+  assert.match(output, /Do not invent project commands, thresholds, facts, permissions, alternatives, exceptions, or host capabilities/);
+  assert.match(output, /Keep a question instead of an edit only when the change is genuinely uncertain/);
+  assert.match(output, /Do not treat an unavailable reference as resolved/);
+  assert.match(output, /the repository text that supports each change/);
+});
+
 test("all nine findings reuse canonical English explanations and retain measured metadata", () => {
   const cases = [
     ["not_a_rule", "is_rule"],
