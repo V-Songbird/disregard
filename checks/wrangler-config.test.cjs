@@ -10,6 +10,7 @@ const text = fs.readFileSync(`${__dirname}/../wrangler.jsonc`, "utf8");
 const config = JSON.parse(text.replace(/("(?:\\.|[^"\\])*")|\/\/[^\n]*|\/\*[\s\S]*?\*\//g, (_, string) => string ?? " "));
 
 const settings = [
+  ["workers_dev", true, "with routes present, Wrangler would otherwise turn the workers.dev address off"],
   ["preview_urls", false, "preview URLs would make every uploaded version public, including any without the rate limits"],
   ["observability.enabled", true, "without this block, a deploy leaves the Worker's existing logging, including invocation logs, unchanged"],
   ["observability.logs.enabled", true, "Workers Logs keeps the Worker's errors"],
@@ -23,6 +24,11 @@ for (const [setting, expected, reason] of settings) {
     assert.equal(actual, expected, `${setting} must be ${expected}: ${reason}.`);
   });
 }
+
+test("wrangler.jsonc serves the Worker on the disregard.dev custom domain", () => {
+  assert.deepEqual(config.routes, [{ pattern: "disregard.dev", custom_domain: true }],
+    "routes must declare disregard.dev as the only custom domain: a deploy applies the routes in this file.");
+});
 
 const limiters = [
   ["SCORE_CLIENT_LIMITER", "930021", 60, "per client IP address"],

@@ -15,7 +15,8 @@ in a public channel.
 
 ## In scope
 
-- The live service at <https://disregard-score.victor-villegas.workers.dev/>.
+- The live service at <https://disregard.dev/> and
+  <https://disregard-score.victor-villegas.workers.dev/>.
 - The code in this repository.
 
 Out of scope: TypeSafe, which does the scoring. Report those to TypeSafe.
