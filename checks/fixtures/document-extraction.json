@@ -40,14 +40,12 @@
         {
           "startLine": 3,
           "endLine": 3,
-          "state": "requires_context",
-          "reason": "inherited_scope"
+          "state": "ready"
         },
         {
           "startLine": 4,
           "endLine": 4,
-          "state": "requires_context",
-          "reason": "inherited_scope"
+          "state": "ready"
         },
         {
           "startLine": 6,
@@ -68,7 +66,48 @@
           "reason": "inherited_scope"
         }
       ],
-      "annotation": "A paragraph directly before a list is conservatively carried as parent context, including an unresolved reference. No contextual instruction is silently omitted."
+      "annotation": "Items under the conditional heading are scored with that heading stated first. A paragraph directly before a list is carried as parent context; an unresolved reference there keeps the item for contextual review. No contextual instruction is silently omitted."
+    },
+    {
+      "name": "An introduced list and an introduction that points back",
+      "sourceName": "AGENTS.md",
+      "source": "## Pull requests\n\nWhen you open a pull request:\n\n- Link the issue.\n- Keep the title under 72 characters.\n\nOtherwise:\n\n- Close the branch.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "ready"
+        },
+        {
+          "startLine": 5,
+          "endLine": 5,
+          "state": "ready"
+        },
+        {
+          "startLine": 6,
+          "endLine": 6,
+          "state": "ready"
+        },
+        {
+          "startLine": 8,
+          "endLine": 8,
+          "state": "requires_context",
+          "reason": "list_introduction"
+        },
+        {
+          "startLine": 10,
+          "endLine": 10,
+          "state": "requires_context",
+          "reason": "inherited_scope"
+        }
+      ],
+      "annotation": "Each item is scored after its section heading and introduction, and the introduction with its whole list; every range stays on its own lines. An introduction that points back to earlier text is not a complete scope, so it and its item stay for contextual review."
     },
     {
       "name": "Known arbitrary domain-heading limitation",
