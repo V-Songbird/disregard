@@ -78,14 +78,13 @@
     return panel;
   }
 
-  function create({ host, getStrings, findingCard, factorList }) {
+  // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
+  function create({ host, getStrings, findingCard, factorList, onBusy }) {
     const model = window.DisregardDocument;
-    let report = null, busy = false, ruleBusy = false, revision = 0, uploadedSource = null;
-    let mode = "file", errorCode = null, message = null, runTotal = 0, runDone = 0;
+    let report = null, busy = false, revision = 0, uploadedSource = null;
+    let errorCode = null, message = null, runTotal = 0, runDone = 0;
     let stopped = false, everRan = false;
     const active = new Set(), rows = new Map();
-    const modeFile = document.getElementById("mode-file"), modeRule = document.getElementById("mode-rule");
-    const rulePanel = document.getElementById("rule-panel");
     const form = el("form"); form.id = "file-form"; form.noValidate = true;
     const label = el("label"); label.htmlFor = "file-source";
     const hint = el("p", "hint"); hint.id = "file-hint";
@@ -135,12 +134,6 @@
 
     function controls() {
       const strings = t();
-      modeFile.textContent = strings.fileMode; modeRule.textContent = strings.ruleMode;
-      document.getElementById("input-mode").setAttribute("aria-label", strings.modeLabel);
-      modeFile.setAttribute("aria-pressed", String(mode === "file"));
-      modeRule.setAttribute("aria-pressed", String(mode === "rule"));
-      modeFile.disabled = modeRule.disabled = busy || ruleBusy;
-      host.hidden = mode !== "file"; rulePanel.hidden = mode !== "rule";
       source.readOnly = name.readOnly = busy;
       upload.disabled = busy; prepare.disabled = busy;
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
@@ -283,7 +276,7 @@
       const queue = snapshot.units.filter(retryable);
       if (!queue.length) return;
       let next = 0;
-      busy = true; stopped = false; everRan = true; message = null;
+      busy = true; onBusy(busy); stopped = false; everRan = true; message = null;
       runTotal = queue.length; runDone = 0; exported.replaceChildren(); controls();
       cancel.focus({ preventScroll: true });
       async function worker() {
@@ -330,7 +323,7 @@
       }
       try { await Promise.all([worker(), worker()]); }
       finally {
-        busy = false;
+        busy = false; onBusy(busy);
         if (isCurrent(snapshot, token)) {
           for (const unit of queue) if (["pending", "ready"].includes(unit.state)) {
             unit.state = "cancelled";
@@ -356,8 +349,6 @@
     for (const button of [start, prepare, cancel]) button.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.repeat && !event.isComposing) event.preventDefault();
     });
-    modeFile.addEventListener("click", () => { if (!busy && !ruleBusy) { mode = "file"; controls(); } });
-    modeRule.addEventListener("click", () => { if (!busy && !ruleBusy) { mode = "rule"; controls(); } });
     // The review lives only in this page, and getting its results back repeats paid
     // requests. Leaving asks first while requests are in flight or results are held;
     // a preview without results, or no review at all, leaves without a prompt.
@@ -366,7 +357,7 @@
       event.preventDefault();
       event.returnValue = true; // Browsers that predate preventDefault here.
     });
-    return { refresh: renderReport, setRuleBusy(value) { ruleBusy = value; controls(); } };
+    return { refresh: renderReport };
   }
   window.DisregardReview = { create, promptPanel, number };
 })();

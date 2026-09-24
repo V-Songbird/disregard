@@ -344,10 +344,13 @@ async function unitHints(page) {
         await page.dispatchEvent("#file-cancel", "keydown", { key: "Enter", code: "Enter", repeat: true, bubbles: true, cancelable: true });
         await page.keyboard.up("Enter");
         check("held Enter does not cancel", await page.locator("#file-cancel").isVisible());
+        const modesDisabled = () => page.evaluate(() => ["mode-file", "mode-rule"].map((id) => document.getElementById(id).disabled));
+        check("a running file review holds the mode switch", await modesDisabled(), [true, true]);
         check("pending and ready units repeat no state", (await unitHints(page)).map((unit) => [unit.state, unit.hints]),
           [["pending", []], ["pending", []], ["ready", []], ["ready", []], ["ready", []]]);
         await page.click("#file-cancel"); await settled(page);
         check("cancel sends at most 2", requests.length, 2);
+        check("a stopped file review releases the mode switch", await modesDisabled(), [false, false]);
         check("all cancelled units accounted", await page.locator('[data-state="cancelled"]').count(), 5);
         check("stopped units repeat no state", (await unitHints(page)).map((unit) => [unit.state, unit.hints]), Array(5).fill(["cancelled", []]));
         mode = "ok"; releaseAll(); await page.click("#file-start"); await settled(page);

@@ -122,6 +122,30 @@ test('inline @file references are unresolved without mistaking email addresses f
   assert.equal(parseDocument('Use owner@example.com in the contact field.').units[0].state, 'ready');
 });
 
+test('@ tokens inside code spans and code blocks are not file references', () => {
+  for (const source of [
+    'Install `@scope/name` before running the build.',
+    '- Pin `@scope/name` to an exact version.',
+    'Run ``npm install @scope/name`` before the build.',
+    'Email owner@example.com about `@scope/name` releases.',
+  ]) {
+    const report = parseDocument(source);
+    assert.equal(report.units.length, 1, source);
+    assert.equal(report.units[0].state, 'ready', source);
+    assert.equal(report.units[0].rule, source.replace(/^- /, ''), source);
+  }
+  const block = parseDocument('- Install the package:\n\n  ```sh\n  npm install @scope/name\n  ```');
+  assert.deepEqual(block.units.map(({ state, reason }) => ({ state, reason })), [{ state: 'requires_context', reason: 'attached_blocks' }]);
+  assertSourceCoverage(block);
+});
+
+test('an @file import outside code stays unresolved next to a code span', () => {
+  for (const source of ['Read @AGENTS.md and install `@scope/name`.', '- `@scope/name` follows @.claude/rules/style.md', '`@scope/name has no closing backtick.']) {
+    const report = parseDocument(source);
+    assert.deepEqual(report.units.map(({ state, reason, rule }) => ({ state, reason, rule })), [{ state: 'skipped', reason: 'unresolved_reference', rule: '' }], source);
+  }
+});
+
 test('prose introducing examples or a list is not scored independently', () => {
   const report = parseDocument('Run the command.\n\n```sh\nnpm test\n```\n\nRules for release builds.\n\n- Verify all checks.');
   assert.equal(report.units[0].reason, 'attached_blocks');
