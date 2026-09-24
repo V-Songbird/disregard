@@ -8,6 +8,11 @@
   // /api/score and typos.
   "assets": { "directory": "./public" },
 
+  // The public hostname, declared here so every deploy keeps it. With routes
+  // present Wrangler turns workers.dev off unless it is set explicitly.
+  "routes": [{ "pattern": "disregard.dev", "custom_domain": true }],
+  "workers_dev": true,
+
   // Serve only deployed versions: preview URLs would make every uploaded
   // version public, including any without the rate limits below. Only
   // `wrangler deploy` and `wrangler triggers deploy` apply this setting.

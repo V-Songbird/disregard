@@ -44,9 +44,12 @@ the version in `.nvmrc`. Tests establish the behavior they assert; they do not
 establish provider accuracy or the quality of an agent's resulting edits.
 
 `checks/wrangler-config.test.cjs` fails when [wrangler.jsonc](../../wrangler.jsonc)
-changes a release setting: preview URLs off, Workers Logs on with invocation logs and
+changes a release setting: the `disregard.dev` custom domain with `workers.dev` kept on,
+preview URLs off, Workers Logs on with invocation logs and
 traces off, and both rate-limit bindings with their namespaces and limits. It checks the
-file, not the settings of a deployed Worker.
+file, not the settings of a deployed Worker. `wrangler dev` ignores `routes`; a fork that
+deploys its own Worker must replace the `disregard.dev` route with a domain it owns, or
+remove it, and update the test.
 
 ## Local server
 
