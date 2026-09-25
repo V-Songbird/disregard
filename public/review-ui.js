@@ -40,15 +40,15 @@
   // The findings a row counts and names: a scored excerpt's own, none for background.
   const findings = (unit) => unit.state === "ok" && !background(unit) ? unit.result.findings : [];
 
-  function promptPanel(report, t) {
+  // File mode puts the panel under its own result heading and says where the prompt goes.
+  function promptPanel(report, t, file = false) {
     const panel = el("section", "prompt-panel");
     let prompt;
     try { prompt = window.DisregardPrompt.buildPrompt(report, window.STRINGS.en); }
     catch (error) { panel.append(el("p", "hint", t[error.code] || t.unavailable)); return panel; }
     if (!prompt) return panel;
-    const title = el("h2", null, t.prompt);
     const details = el("details", "prompt-preview");
-    const summary = el("summary", null, t.prompt);
+    const summary = el("summary", null, file ? t.showPrompt : t.prompt);
     const text = el("textarea", "prompt-text");
     text.value = prompt;
     text.readOnly = true;
@@ -80,7 +80,8 @@
         copy.textContent = t.copy;
       }
     });
-    panel.append(title, el("p", "hint", t.promptHint), copy, status, details);
+    if (!file) panel.append(el("h2", null, t.prompt));
+    panel.append(el("p", "hint", file ? t.promptUse : t.promptHint), copy, status, details);
     return panel;
   }
 
@@ -94,30 +95,35 @@
     const model = window.DisregardDocument;
     let report = null, busy = false, revision = 0, uploadedSource = null;
     let errorCode = null, message = null, runTotal = 0, runDone = 0;
-    let stopped = false, everRan = false, pacing = 0;
+    let stopped = false, pacing = 0;
     // Start times of this page's recent score requests, oldest first, across runs.
     const started = [];
     const active = new Set(), rows = new Map();
+    // Intake: one area takes pasted or typed text, a dropped file or a chosen one.
     const form = el("form"); form.id = "file-form"; form.noValidate = true;
-    const label = el("label"); label.htmlFor = "file-source";
+    const zone = el("div", "drop-zone"); zone.id = "file-drop"; zone.setAttribute("role", "group");
+    zone.setAttribute("aria-labelledby", "file-source-label");
+    const label = el("label"); label.id = "file-source-label"; label.htmlFor = "file-source";
     const hint = el("p", "hint"); hint.id = "file-hint";
-    const uploadLabel = el("label", "upload-label"); uploadLabel.htmlFor = "file-upload";
     const upload = el("input"); upload.type = "file"; upload.id = "file-upload"; upload.accept = ".md,text/markdown,text/plain";
-    const nameLabel = el("label"); nameLabel.htmlFor = "file-name";
-    const name = el("input"); name.id = "file-name"; name.type = "text"; name.value = "AGENTS.md"; name.maxLength = 200;
-    name.dir = "auto"; name.autocomplete = "off";
+    upload.hidden = true;
+    const choose = el("button", "secondary"); choose.id = "file-choose"; choose.type = "button";
     const source = el("textarea"); source.id = "file-source"; source.dir = "auto"; source.spellcheck = false;
     source.setAttribute("aria-describedby", "file-hint file-count");
     source.placeholder = "# Project instructions\n\n- Run `node --test` before submitting changes.\n- Never log passwords.";
-    const prepare = el("button"); prepare.id = "file-prepare"; prepare.type = "submit";
     const count = el("span", "count"); count.id = "file-count";
-    const actions = el("div", "row"); actions.append(prepare, count);
-    const fileFields = el("div", "file-fields");
-    const uploadField = el("div"); uploadField.append(uploadLabel, upload);
-    const nameField = el("div"); nameField.append(nameLabel, name);
-    fileFields.append(uploadField, nameField);
-    form.append(fileFields, label, hint, source, actions);
+    const dropHint = el("p", "drop-hint"); dropHint.hidden = true;
+    const intake = el("div", "row"); intake.append(choose, upload, count);
+    zone.append(label, hint, source, intake, dropHint);
+    // The one primary action. Nothing is sent before it is pressed, and the sentence beside it says what is.
+    const create = el("button"); create.id = "file-create"; create.type = "submit"; create.setAttribute("aria-describedby", "file-consent");
+    const consent = el("p", "hint"); consent.id = "file-consent";
+    const consentBefore = document.createTextNode(""), consentLink = el("a"), consentAfter = document.createTextNode("");
+    consentLink.href = "/privacy"; consent.append(consentBefore, consentLink, consentAfter);
+    const action = el("div", "file-action"); action.append(create, consent);
+    form.append(zone, action);
     const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
+    // Result: the prompt first, then how much of the file it covers; what was found stays in a closed disclosure.
     const output = el("section", "file-report"); output.id = "file-report";
     const reportTitle = el("h2"), reportHint = el("p", "hint"), coverage = el("p", "coverage");
     const lengthNote = el("div", "banner"); lengthNote.id = "file-length";
@@ -127,12 +133,22 @@
     const runActions = el("div", "row"); runActions.append(start, cancel);
     const list = el("div", "unit-list"); list.id = "file-units";
     const exported = el("div"); exported.id = "file-export";
+    // The name the prompt gives the file: the chosen or dropped file's, else AGENTS.md.
+    const nameLabel = el("label"); nameLabel.htmlFor = "file-name";
+    const nameHint = el("p", "hint"); nameHint.id = "file-name-hint";
+    const name = el("input"); name.id = "file-name"; name.type = "text"; name.value = "AGENTS.md"; name.maxLength = 200;
+    name.dir = "auto"; name.autocomplete = "off"; name.setAttribute("aria-describedby", "file-name-hint");
+    const nameField = el("div", "file-name"); nameField.append(nameLabel, nameHint, name);
+    const summaryLine = el("p", "file-summary"); summaryLine.id = "file-summary";
     // Once a row has findings, the reader may hide the rows without them, for this review only.
     const only = el("input"); only.type = "checkbox"; only.id = "file-filter";
     const onlyText = el("span"), onlyLabel = el("label", "unit-filter"); onlyLabel.append(only, onlyText);
     const showing = el("span", "count"); showing.id = "file-showing"; showing.setAttribute("role", "status");
     const filter = el("div", "row"); filter.append(onlyLabel, showing);
-    output.append(reportTitle, reportHint, coverage, lengthNote, progress, runActions, exported, filter, list);
+    const more = el("details", "file-details"); more.id = "file-details";
+    const moreSummary = el("summary");
+    more.append(moreSummary, reportHint, coverage, filter, list);
+    output.append(reportTitle, exported, progress, runActions, summaryLine, nameField, lengthNote, more);
     host.append(form, error, output);
 
     const t = () => getStrings().file;
@@ -145,37 +161,51 @@
     // snapshot until the reader actually edits its displayed text.
     const sourceText = () => uploadedSource && source.value === uploadedSource.displayed ? uploadedSource.text : source.value;
     // A unit that holds a scoring result is never sent again. Nor is one whose failure a new request
-    // would repeat; preparing the file again is the reader's way to re-run it.
+    // would repeat; editing the text and creating the prompt again re-runs it.
     const retryable = (unit) => !unit.result && ["ready", "error", "cancelled"].includes(unit.state) &&
       !["unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
-    const isCurrent = (snapshot, token) => report === snapshot && token === revision &&
-      sourceText() === snapshot.sourceText && (name.value.trim() || "AGENTS.md") === snapshot.sourceName;
+    // The file name only labels the file in the prompt, so changing it rebuilds the prompt and nothing else.
+    const isCurrent = (snapshot, token) => report === snapshot && token === revision && sourceText() === snapshot.sourceText;
 
     function controls() {
       const strings = t();
-      source.readOnly = name.readOnly = busy;
-      upload.disabled = busy; prepare.disabled = busy;
+      source.readOnly = busy;
+      upload.disabled = choose.disabled = busy;
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
-      uploadLabel.textContent = strings.upload; nameLabel.textContent = strings.name; prepare.textContent = strings.prepare;
-      const bytes = new TextEncoder().encode(sourceText()).length;
-      count.textContent = limits ? fill(strings.bytes, { n: number(bytes), max: number(limits.fileBytes) }) : ""; count.hidden = !limits;
-      count.classList.toggle("over", Boolean(limits) && bytes > limits.fileBytes);
+      choose.textContent = strings.upload; dropHint.textContent = strings.drop;
+      nameLabel.textContent = strings.name; nameHint.textContent = strings.nameHint;
+      // A report in hand hides the primary action, so pressing it again cannot repeat paid requests;
+      // editing the text clears the report and brings it back.
+      action.hidden = Boolean(report); create.textContent = strings.create; create.disabled = busy || !sourceText().trim();
+      const [before, after = ""] = strings.consent.split("{link}");
+      consentBefore.data = before; consentLink.textContent = strings.consentLink; consentAfter.data = after;
+      // The byte counter shows only near or over the limit; hidden, it has no text to describe the field with.
+      const bytes = new TextEncoder().encode(sourceText()).length, near = Boolean(limits) && bytes >= limits.fileBytes * 0.9;
+      count.textContent = near ? fill(strings.bytes, { n: number(bytes), max: number(limits.fileBytes) }) : ""; count.hidden = !near;
+      count.classList.toggle("over", near && bytes > limits.fileBytes);
       error.textContent = errorCode ? withLimits(strings[errorCode] || strings.invalid_source) : "";
       error.hidden = !errorCode;
       output.hidden = !report;
       cancel.hidden = !busy; cancel.textContent = strings.cancel;
       if (!report) return;
-      reportTitle.textContent = strings.preview; reportHint.textContent = strings.previewHint;
+      reportTitle.textContent = strings.promptTitle; moreSummary.textContent = strings.details; reportHint.textContent = strings.previewHint;
       const summary = model.summarize(report), context = report.units.filter(background).length;
       coverage.textContent = fill(context ? strings.coverage.textContext : strings.coverage.text, { scored: counted(strings.coverage.scored, summary.scored),
         flagged: number(summary.flagged - context), context: counted(strings.coverage.context, context),
         remaining: counted(strings.coverage.remaining, summary.total - summary.scored) });
       const remaining = report.units.filter(retryable).length;
-      start.textContent = counted(everRan ? strings.retry : strings.start, remaining);
+      start.textContent = counted(strings.retry, remaining);
       start.hidden = busy || !remaining;
       const running = busy && counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) });
+      // A finished run says whether it left parts a retry could score, or no scored part and so no prompt.
       progress.textContent = busy ? (pacing ? fill(strings.pacing, { progress: running }) : running) :
+        message === "done" ? (!summary.scored ? strings.none : remaining ? strings.partial : strings.done) :
         message ? strings[message] : remaining ? "" : strings.none;
+      // With a prompt: how much of the file it covers, and the name it gives the file.
+      const prompted = !busy && Boolean(exported.querySelector(".copy-prompt"));
+      nameField.hidden = summaryLine.hidden = !prompted;
+      const checked = counted(strings.checked, summary.total, { checked: number(summary.scored), n: number(summary.total) });
+      summaryLine.textContent = summary.scored < summary.total ? fill(strings.withRest, { checked, rest: strings.rest }) : checked;
       // Filtering keeps rows with findings, rows a retry would send and rows in flight.
       filter.hidden = !report.units.some((unit) => findings(unit).length);
       onlyText.textContent = strings.filter;
@@ -276,7 +306,7 @@
           const row = { details, summary, content }; rows.set(unit.id, row);
           renderUnit(unit, row); list.append(details);
         }
-        if (!busy) exported.append(promptPanel(report, t()));
+        if (!busy) exported.append(promptPanel(report, t(), true));
       }
       controls();
       if (focusedId) document.getElementById(focusedId)?.focus({ preventScroll: true });
@@ -289,43 +319,62 @@
 
     function invalidate() {
       revision++;
-      stop(); report = null; errorCode = null; message = null; everRan = false; only.checked = false;
+      stop(); report = null; errorCode = null; message = null; only.checked = false; more.open = false;
       renderReport();
     }
 
-    source.addEventListener("input", () => { uploadedSource = null; invalidate(); });
-    name.addEventListener("input", invalidate);
-    upload.addEventListener("change", async () => {
-      if (busy) return;
-      const file = upload.files[0]; if (!file) return;
-      invalidate(); const token = revision;
-      if (!/\.md$/i.test(file.name)) errorCode = "invalid_file";
-      // Without the document model there is no limit to check and no reader for the file.
-      else if (!limits) errorCode = "parser_unavailable";
-      else if (file.size > limits.fileBytes) errorCode = "file_too_large";
-      else {
-        try {
-          const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer());
-          if (token !== revision) return;
-          source.value = text; name.value = file.name;
-          uploadedSource = { text, displayed: source.value };
-          source.focus();
-        } catch { if (token === revision) errorCode = "read_failed"; }
-      }
-      upload.value = ""; controls();
+    // Pasted text keeps the default name; emptying the field forgets a loaded file's name.
+    source.addEventListener("input", () => { uploadedSource = null; if (!source.value) name.value = "AGENTS.md"; invalidate(); });
+    name.addEventListener("input", () => {
+      if (busy || !report) return;
+      report.sourceName = name.value.trim() || "AGENTS.md";
+      const open = exported.querySelector(".prompt-preview")?.open;
+      exported.replaceChildren(promptPanel(report, t(), true));
+      if (open) exported.querySelector(".prompt-preview").open = true;
+    });
+    // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
+    async function load(files) {
+      if (busy || !files.length) return;
+      const file = files[0], token = revision;
+      errorCode = files.length > 1 ? "one_file" : !/\.md$/i.test(file.name) ? "invalid_file" :
+        // Without the document model there is no limit to check and no reader for the file.
+        !limits ? "parser_unavailable" : file.size > limits.fileBytes ? "file_too_large" : null;
+      if (errorCode) { controls(); return; }
+      let text;
+      try { text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer()); }
+      catch { if (token === revision) { errorCode = "read_failed"; controls(); } return; }
+      if (token !== revision || busy) return;
+      invalidate();
+      source.value = text; name.value = file.name;
+      uploadedSource = { text, displayed: source.value };
+      source.focus(); controls();
+    }
+    choose.addEventListener("click", () => upload.click());
+    upload.addEventListener("change", async () => { await load([...upload.files]); upload.value = ""; });
+    // Only a dragged file is taken over; dragged text keeps the text box's own behavior.
+    const dragging = (on) => { zone.classList.toggle("dragging", on); dropHint.hidden = !on; };
+    const carriesFiles = (event) => Boolean(event.dataTransfer?.types.includes("Files"));
+    for (const type of ["dragenter", "dragover"]) zone.addEventListener(type, (event) => {
+      if (!carriesFiles(event)) return;
+      event.preventDefault(); event.dataTransfer.dropEffect = busy ? "none" : "copy"; dragging(!busy);
+    });
+    zone.addEventListener("dragleave", (event) => { if (!zone.contains(event.relatedTarget)) dragging(false); });
+    zone.addEventListener("drop", (event) => {
+      if (!carriesFiles(event)) return;
+      event.preventDefault(); dragging(false); load([...event.dataTransfer.files]);
     });
 
+    // Pressing the primary action reads the file here and starts scoring what can be scored.
     form.addEventListener("submit", (event) => {
-      event.preventDefault(); if (busy) return;
+      event.preventDefault(); if (busy || report) return;
       invalidate();
       try { report = model.parseDocument(sourceText(), name.value.trim() || "AGENTS.md"); }
       // Without the document model script, the page failed to load, not the reader's file.
       catch (error) { errorCode = error.code || (model ? "invalid_source" : "parser_unavailable"); }
       renderReport();
-      if (report) {
-        if (!start.hidden) start.focus();
-        else { reportTitle.tabIndex = -1; reportTitle.focus(); }
-      } else source.focus();
+      if (!report) source.focus();
+      else if (report.units.some(retryable)) run();
+      else { reportTitle.tabIndex = -1; reportTitle.focus(); }
     });
 
     async function run() {
@@ -335,9 +384,10 @@
       const queue = snapshot.units.filter(retryable);
       if (!queue.length) return;
       let next = 0;
-      busy = true; onBusy(busy); stopped = false; everRan = true; message = null;
+      busy = true; onBusy(busy); stopped = false; message = null;
       runTotal = queue.length; runDone = 0; exported.replaceChildren(); controls();
-      cancel.focus({ preventScroll: true });
+      // The stop control sits below the intake the primary action leaves, so focusing it scrolls it into view.
+      cancel.focus();
       async function worker() {
         while (!stopped && isCurrent(snapshot, token) && next < queue.length) {
           const now = Date.now();
@@ -404,12 +454,15 @@
           if (!message) message = "done";
           // Completed rows stay mounted: inspecting a factor while another
           // request settles must not close its disclosure or steal focus.
+          exported.replaceChildren(promptPanel(report, t(), true));
           controls();
-          exported.replaceChildren(promptPanel(report, t()));
           if (document.activeElement === cancel || document.activeElement === document.body) {
             // After the reader's Stop, the heading takes focus so a second press starts nothing; the
-            // retry control is the next Tab stop. Scrolling keeps that focus in view.
+            // retry control is the next Tab stop. Scrolling keeps that focus in view. A run that ends
+            // on its own hands focus to the prompt's Copy button when there is a prompt.
+            const copy = exported.querySelector(".copy-prompt");
             if (message === "stopped") { reportTitle.tabIndex = -1; reportTitle.focus(); }
+            else if (copy) copy.focus();
             else if (!start.hidden) start.focus({ preventScroll: true });
             else { reportTitle.tabIndex = -1; reportTitle.focus({ preventScroll: true }); }
           }
@@ -419,12 +472,12 @@
     start.addEventListener("click", run);
     cancel.addEventListener("click", () => stop());
     only.addEventListener("change", controls);
-    for (const button of [start, prepare, cancel]) button.addEventListener("keydown", (event) => {
+    for (const button of [start, create, cancel]) button.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.repeat && !event.isComposing) event.preventDefault();
     });
     // The review lives only in this page, and getting its results back repeats paid
     // requests. Leaving asks first while requests are in flight or results are held;
-    // a preview without results, or no review at all, leaves without a prompt.
+    // a review without results, or no review at all, leaves without a prompt.
     window.addEventListener("beforeunload", (event) => {
       if (!busy && !report?.units.some((unit) => unit.result)) return;
       event.preventDefault();

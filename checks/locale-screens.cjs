@@ -83,25 +83,38 @@ const failure = (error) => {
 };
 const ruleSettled = (page) => page.waitForFunction(() => document.getElementById("out").getAttribute("aria-busy") === "false");
 const fileSettled = (page) => page.waitForFunction(() => document.getElementById("file-cancel").hidden);
-const openUnits = (page) => page.evaluate(() => document.querySelectorAll(".instruction-unit").forEach((unit) => { unit.open = true; }));
+// Opens the "See what was found" disclosure and every row in it.
+const openUnits = (page) => page.evaluate(() => {
+  document.getElementById("file-details").open = true;
+  document.querySelectorAll(".instruction-unit").forEach((unit) => { unit.open = true; });
+});
 async function submitRule(page, text) {
   await page.click("#mode-rule"); await page.fill("#rule", text); await page.click("#go"); await ruleSettled(page);
 }
-async function prepareFile(page, text) { await page.fill("#file-source", text); await page.click("#file-prepare"); }
-async function analyzeFile(page, text) { await prepareFile(page, text); await page.click("#file-start"); await fileSettled(page); }
+// The one primary action reads the text and starts scoring.
+async function createFile(page, text) { await page.fill("#file-source", text); await page.click("#file-create"); }
+async function analyzeFile(page, text) { await createFile(page, text); await fileSettled(page); }
 async function runningFile(page) {
-  mode = "hold"; await prepareFile(page, docs.batch); await page.click("#file-start");
+  mode = "hold"; await createFile(page, docs.batch);
   await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
+}
+// A synthetic drag of one file onto the intake area, as a desktop file manager delivers it.
+async function dragFile(page, type, name) {
+  const transfer = await page.evaluateHandle((name) => {
+    const data = new DataTransfer(); data.items.add(new File(["- Keep functions short."], name, { type: "text/markdown" })); return data;
+  }, name);
+  await page.dispatchEvent("#file-drop", type, { dataTransfer: transfer });
 }
 // Each state starts from a fresh page load in the selected locale.
 const states = [
   ["file-landing", async () => {}],
-  ["file-error", (page) => page.click("#file-prepare")],
-  ["file-preview", async (page) => { await prepareFile(page, docs.preview); await openUnits(page); }],
+  ["file-drop", (page) => dragFile(page, "dragenter", "CLAUDE.md")],
+  ["file-error", (page) => dragFile(page, "drop", "notes.txt")],
   ["file-running", runningFile],
   ["file-stopped", async (page) => { await runningFile(page); await page.click("#file-cancel"); await fileSettled(page); }],
   ["file-limited", async (page) => { mode = "limited"; await analyzeFile(page, docs.batch); await openUnits(page); }],
-  ["file-results", async (page) => { await analyzeFile(page, docs.results); await openUnits(page); }],
+  ["file-results", (page) => analyzeFile(page, docs.results)],
+  ["file-details", async (page) => { await analyzeFile(page, docs.preview); await openUnits(page); }],
   ["file-copied", async (page) => {
     await analyzeFile(page, docs.results); await page.click("#file-export .copy-prompt");
     await page.waitForFunction(() => document.querySelector("#file-export .copy-status").textContent);
@@ -110,7 +123,7 @@ const states = [
     await analyzeFile(page, docs.results); await page.evaluate(() => { window.denyClipboard = true; });
     await page.click("#file-export .copy-prompt"); await page.waitForFunction(() => document.querySelector("#file-export .prompt-preview").open);
   }],
-  ["file-none", (page) => prepareFile(page, "@AGENTS.md")],
+  ["file-none", (page) => createFile(page, "@AGENTS.md")],
   ["rule-landing", (page) => page.click("#mode-rule")],
   ["rule-empty", async (page) => { await page.click("#mode-rule"); await page.click("#go"); }],
   ["rule-too-long", async (page) => {

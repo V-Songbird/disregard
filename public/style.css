@@ -99,13 +99,20 @@ button:not([disabled]):hover { filter: brightness(.88); }
 .mode-picker button { background: transparent; color: var(--muted); border: 1px solid var(--muted); }
 .mode-picker button[aria-pressed="true"] { color: var(--paper); background: var(--ink); border-color: var(--ink); }
 .mode-picker button:disabled { opacity: .65; }
-.file-fields { display: flex; gap: 1rem 2rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
-.file-fields > div { flex: 1 1 15rem; min-width: 0; }
-.file-fields label { font-size: .9rem; }
-.file-fields input { max-width: 100%; font: inherit; color: var(--ink); }
-.file-fields input[type="text"] { width: 100%; padding: .55rem .7rem; background: var(--card); border: 1px solid var(--muted); border-radius: .3rem; }
-input[type="file"] { width: 100%; font-size: .9rem; }
-input[type="file"]::file-selector-button { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--muted); border-radius: .3rem; padding: .55rem; margin-inline-end: .5rem; cursor: pointer; }
+.drop-zone { padding: 1rem; border: 2px dashed var(--line); border-radius: .5rem; }
+.drop-zone.dragging { border-color: var(--accent); background: var(--card); }
+.drop-hint { margin: .6rem 0 0; font-weight: 600; color: var(--accent); }
+.drop-zone button:disabled { opacity: .65; cursor: default; }
+#file-export:not(:empty) + #file-progress:not(:empty) { margin-top: 1rem; }
+.file-action { margin-top: 1.25rem; }
+.file-action .hint { margin: .6rem 0 0; }
+.file-name { margin-top: 1.25rem; }
+.file-name label { font-size: .9rem; }
+.file-name input { width: 100%; max-width: 24rem; padding: .55rem .7rem; font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--muted); border-radius: .3rem; }
+.file-summary { font-weight: 600; margin: 1rem 0 0; }
+#file-export .prompt-panel { border-top: 0; margin-top: 0; padding-top: 0; }
+.file-details { margin-top: 2rem; padding-top: .5rem; border-top: 1px solid var(--line); color: var(--ink); font-size: 1rem; }
+.file-details > summary { font-weight: 600; padding: .6rem 0; }
 #file-source { min-height: 13rem; }
 .file-error { color: var(--accent); }
 .file-report { margin-top: 2.25rem; }
@@ -137,6 +144,6 @@ button.secondary { color: var(--ink); background: var(--paper); border: 1px soli
 .factors dd { overflow-wrap: anywhere; }
 @media (max-width: 480px) {
   .mode-picker button { flex: 1 1 9rem; }
-  .file-report .row > button { width: 100%; }
+  .file-report .row > button, .file-action > button { width: 100%; }
   dl.factors { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
 }

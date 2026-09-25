@@ -103,41 +103,45 @@ const unitLocations = {
   en: ["Lines 1–2", "Line 3"], es: ["Líneas 1–2", "Línea 3"], zh: ["第 1–2 行", "第 3 行"],
   hi: ["पंक्तियाँ 1–2", "पंक्ति 3"], ar: ["الأسطر 1–2", "السطر 3"], fr: ["Lignes 1–2", "Ligne 3"],
 };
-// Counted labels written out per locale: start and retry buttons for 1, 2, 5 and 11 units, progress at
-// 0 and 1 of 2 finished, and coverage with 3 scored, 1 flagged, 5 left; 1 left; and 11 left. Row labels
-// for 1 and 2 findings, none and background, and coverage with 3 scored, 1 flagged, 1 background, 0 left.
+// Counted labels written out per locale: retry buttons for 1 and 2 units, progress at 0 and 1 of 2
+// finished, and coverage with 3 scored, 1 flagged, 5 left; 1 left; and 11 left. Row labels for 1 and
+// 2 findings, none and background, and coverage with 3 scored, 1 flagged, 1 background, 0 left.
 const countedLabels = {
-  en: { start1: "Analyze 1 instruction", start2: "Analyze 2 instructions", start5: "Analyze 5 instructions", start11: "Analyze 11 instructions",
-    retry1: "Analyze 1 remaining instruction", retry2: "Analyze 2 remaining instructions",
+  en: { retry1: "Analyze 1 remaining instruction", retry2: "Analyze 2 remaining instructions",
     running0: "Analyzing instructions… 0 of 2 finished.", running1: "Analyzing instructions… 1 of 2 finished.",
     coverage315: "3 analyzed · 1 with findings · 5 not analyzed", coverage001: "0 analyzed · 0 with findings · 1 not analyzed",
     coverage11: "0 analyzed · 0 with findings · 11 not analyzed" },
-  es: { start1: "Analizar 1 instrucción", start2: "Analizar 2 instrucciones", start5: "Analizar 5 instrucciones", start11: "Analizar 11 instrucciones",
-    retry1: "Analizar 1 instrucción pendiente", retry2: "Analizar 2 instrucciones pendientes",
+  es: { retry1: "Analizar 1 instrucción pendiente", retry2: "Analizar 2 instrucciones pendientes",
     running0: "Analizando instrucciones… 0 de 2 terminaron.", running1: "Analizando instrucciones… 1 de 2 terminó.",
     coverage315: "3 analizados · 1 con hallazgos · 5 sin analizar", coverage001: "0 analizados · 0 con hallazgos · 1 sin analizar",
     coverage11: "0 analizados · 0 con hallazgos · 11 sin analizar" },
-  zh: { start1: "分析 1 条指令", start2: "分析 2 条指令", start5: "分析 5 条指令", start11: "分析 11 条指令",
-    retry1: "分析剩余的 1 条指令", retry2: "分析剩余的 2 条指令",
+  zh: { retry1: "分析剩余的 1 条指令", retry2: "分析剩余的 2 条指令",
     running0: "正在分析指令…已完成 0 / 2 项。", running1: "正在分析指令…已完成 1 / 2 项。",
     coverage315: "已分析 3 项 · 1 项有发现 · 5 项未分析", coverage001: "已分析 0 项 · 0 项有发现 · 1 项未分析",
     coverage11: "已分析 0 项 · 0 项有发现 · 11 项未分析" },
-  hi: { start1: "1 निर्देश का विश्लेषण करें", start2: "2 निर्देशों का विश्लेषण करें", start5: "5 निर्देशों का विश्लेषण करें",
-    start11: "11 निर्देशों का विश्लेषण करें", retry1: "बाकी 1 निर्देश का विश्लेषण करें", retry2: "बाकी 2 निर्देशों का विश्लेषण करें",
+  hi: { retry1: "बाकी 1 निर्देश का विश्लेषण करें", retry2: "बाकी 2 निर्देशों का विश्लेषण करें",
     running0: "निर्देशों का विश्लेषण हो रहा है… 2 में से 0 पूरा हुआ।", running1: "निर्देशों का विश्लेषण हो रहा है… 2 में से 1 पूरा हुआ।",
     coverage315: "3 का विश्लेषण हुआ · 1 में निष्कर्ष मिले · 5 का विश्लेषण नहीं हुआ",
     coverage001: "0 का विश्लेषण हुआ · 0 में निष्कर्ष मिले · 1 का विश्लेषण नहीं हुआ",
     coverage11: "0 का विश्लेषण हुआ · 0 में निष्कर्ष मिले · 11 का विश्लेषण नहीं हुआ" },
-  ar: { start1: "تحليل تعليمة واحدة", start2: "تحليل تعليمتين", start5: "تحليل 5 تعليمات", start11: "تحليل 11 تعليمة",
-    retry1: "تحليل التعليمة المتبقية", retry2: "تحليل التعليمتين المتبقيتين",
+  ar: { retry1: "تحليل التعليمة المتبقية", retry2: "تحليل التعليمتين المتبقيتين",
     running0: "جارٍ تحليل التعليمات… اكتمل 0 من 2.", running1: "جارٍ تحليل التعليمات… اكتمل 1 من 2.",
     coverage315: "تم تحليل 3 · ظهرت ملاحظات في 1 · لم يُحلل 5", coverage001: "تم تحليل 0 · ظهرت ملاحظات في 0 · لم يُحلل 1",
     coverage11: "تم تحليل 0 · ظهرت ملاحظات في 0 · لم يُحلل 11" },
-  fr: { start1: "Analyser 1 instruction", start2: "Analyser 2 instructions", start5: "Analyser 5 instructions", start11: "Analyser 11 instructions",
-    retry1: "Analyser 1 instruction restante", retry2: "Analyser les 2 instructions restantes",
+  fr: { retry1: "Analyser 1 instruction restante", retry2: "Analyser les 2 instructions restantes",
     running0: "Analyse des instructions… 0 sur 2 terminée.", running1: "Analyse des instructions… 1 sur 2 terminée.",
     coverage315: "3 analysés · 1 avec des points à examiner · 5 non analysés", coverage001: "0 analysé · 0 avec des points à examiner · 1 non analysé",
     coverage11: "0 analysé · 0 avec des points à examiner · 11 non analysés" },
+};
+// The summary line under the prompt written out per locale: every part of a 3-part file checked, and
+// 3 of 5 checked with the rest left to the agent.
+const summaryLines = {
+  en: { all: "3 of 3 parts were checked.", rest: "3 of 5 parts were checked. Your agent will read the rest." },
+  es: { all: "Partes revisadas: 3 de 3.", rest: "Partes revisadas: 3 de 5. Tu agente leerá el resto." },
+  zh: { all: "已检查 3 个部分中的 3 个。", rest: "已检查 5 个部分中的 3 个。其余部分由你的智能体阅读。" },
+  hi: { all: "जाँचे गए हिस्से: 3 में से 3।", rest: "जाँचे गए हिस्से: 5 में से 3। बाकी हिस्से आपका एजेंट पढ़ेगा।" },
+  ar: { all: "الأجزاء التي فُحصت: 3 من 3.", rest: "الأجزاء التي فُحصت: 3 من 5. سيقرأ وكيلك الباقي." },
+  fr: { all: "Parties vérifiées\u00a0: 3 sur 3.", rest: "Parties vérifiées\u00a0: 3 sur 5. Votre agent lira le reste." },
 };
 // The length note's heading written out per locale for a file of 201 lines.
 const longTitles = {
@@ -181,7 +185,7 @@ const server = http.createServer(async (req, res) => {
     else if (mode === "partial" && rule.includes("module1")) reply(entry, 502, { code: "upstream" });
     else if (mode === "refused" && rule.includes("module1")) reply(entry, 200, { status: "refused", findings: [], echo: "DO NOT EXPORT THIS ECHO" });
     else if (mode === "invalid") reply(entry, 200, { status: "ok", findings: [], factors: {} });
-    else if (mode === "status") reply(entry, ...statusCases[rule]);
+    else if (mode === "status") reply(entry, ...(statusCases[rule] || []));
     else reply(entry);
     return;
   }
@@ -192,8 +196,23 @@ function check(name, actual, expected = true) {
   report.checks.push({ name, passed, actual, expected });
 }
 async function settled(page) { await page.waitForFunction(() => document.getElementById("file-cancel").hidden); }
-async function prepare(page, text = sample) {
-  await page.fill("#file-source", text); await page.click("#file-prepare");
+// The one primary action reads the text and starts scoring; analyze() also waits for the run to settle.
+async function create(page, text = sample) {
+  await page.fill("#file-source", text); await page.click("#file-create");
+}
+async function analyze(page, text = sample) { await create(page, text); await settled(page); }
+// Rows sit in the closed "See what was found" disclosure; opening it shows them.
+async function openDetails(page) {
+  if (!await page.locator("#file-details").evaluate((node) => node.open)) await page.click("#file-details > summary");
+}
+// A synthetic drag carrying the given files, as a desktop drag from the file manager delivers them.
+async function drag(page, type, files) {
+  const transfer = await page.evaluateHandle((files) => {
+    const data = new DataTransfer();
+    for (const file of files) data.items.add(new File([file.text], file.name, { type: "text/markdown" }));
+    return data;
+  }, files);
+  await page.dispatchEvent("#file-drop", type, { dataTransfer: transfer });
 }
 // Follows the privacy-notice link and answers any leave-page dialog, staying or leaving.
 async function followPrivacy(page, stay) {
@@ -245,16 +264,29 @@ async function unitHints(page) {
       await page.goto(url); await page.selectOption("#ui-lang", locale);
       const prefix = layout + " " + locale;
       check(prefix + " file mode is default", await page.locator("#file-panel").isVisible());
-      await prepare(page); check(prefix + " preview is local", requests.length, 0);
+      // The intake has no preview step and no file name field; the primary action waits for text.
+      const intake = () => page.evaluate(() => ({ preview: document.querySelectorAll("#file-prepare").length,
+        name: document.querySelectorAll("#file-form #file-name").length, disabled: document.getElementById("file-create").disabled,
+        report: document.getElementById("file-report").hidden }));
+      check(prefix + " the intake has one primary action and no preview or name field", await intake(),
+        { preview: 0, name: 0, disabled: true, report: true });
+      await page.fill("#file-source", sample);
+      check(prefix + " nothing is sent before the primary action", [requests.length, (await intake()).disabled, (await intake()).report], [0, false, true]);
+      // While requests are held, the queued and in-flight units repeat no state and the excluded ones keep their reasons.
+      mode = "hold"; await page.click("#file-create");
+      await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
       const preview = await unitHints(page);
       const reasons = await page.evaluate(() => Object.values(STRINGS[document.getElementById("ui-lang").value].file.reasons));
-      check(prefix + " ready units repeat no state", preview.filter((unit) => unit.state === "ready").map((unit) => unit.hints), [[], [], []]);
-      check(prefix + " excluded units keep their reasons", preview.filter((unit) => unit.state !== "ready")
+      const queued = preview.filter((unit) => ["ready", "pending"].includes(unit.state));
+      check(prefix + " pending and ready units repeat no state", queued.map((unit) => unit.hints), [[], [], []]);
+      check(prefix + " excluded units keep their reasons", preview.filter((unit) => !["ready", "pending"].includes(unit.state))
         .map((unit) => unit.hints.length === 1 && reasons.includes(unit.hints[0]) ? "reason" : unit.hints), Array(5).fill("reason"));
-      const ready = await page.locator('.instruction-unit[data-state="ready"]').count();
-      check(prefix + " 3 independent rules", ready, 3);
+      check(prefix + " 3 independent rules", queued.length, 3);
       check(prefix + " inherited scope excluded", await page.locator('.instruction-unit[data-state="requires_context"]').count(), 1);
-      await page.click("#file-start"); await settled(page);
+      check(prefix + " a running review hides the primary action and offers Stop", await page.evaluate(() =>
+        [document.getElementById("file-create").getClientRects().length, !document.getElementById("file-cancel").hidden,
+          document.activeElement.id]), [0, true, "file-cancel"]);
+      mode = "ok"; releaseAll(); await settled(page);
       const coverage315 = await page.textContent("#file-report .coverage");
       check(prefix + " scored rows label their finding count", await page.evaluate(() =>
         [...document.querySelectorAll('.instruction-unit[data-state="ok"] .unit-state')].map((label) => label.textContent)),
@@ -270,7 +302,7 @@ async function unitHints(page) {
       check(prefix + " copying adds no requests", requests.length, 3);
       check(prefix + " full locale keys", await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file;
-        return document.getElementById("file-prepare").textContent === t.prepare && document.querySelector(".copy-prompt").textContent === t.copy;
+        return document.getElementById("file-create").textContent === t.create && document.querySelector(".copy-prompt").textContent === t.copy;
       }));
       check(prefix + " lang tag", await page.getAttribute("html", "lang"), langTags[locale]);
       await page.evaluate(() => { window.denyClipboard = true; });
@@ -279,7 +311,7 @@ async function unitHints(page) {
         const text = document.querySelector("#file-export .prompt-text");
         return document.activeElement === text && text.selectionEnd === text.value.length && text.closest("details").open && text.dir === "ltr";
       }));
-      await page.locator(".instruction-unit").nth(1).locator("summary").first().click();
+      await openDetails(page); await page.locator(".instruction-unit").nth(1).locator("summary").first().click();
       check(prefix + " no overflow", await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       if (["es", "ar"].includes(locale)) {
         await page.evaluate(() => { window.denyClipboard = false; document.getElementById("file-source").scrollTop = 0; });
@@ -291,8 +323,7 @@ async function unitHints(page) {
       }
       await page.fill("#file-source", sample + "\n");
       check(prefix + " editing invalidates report and prompt", await page.locator("#file-report").isHidden() && await page.locator(".copy-prompt").count() === 0);
-      mode = "status"; await prepare(page, statusDoc); const start5 = await page.textContent("#file-start");
-      await page.click("#file-start"); await settled(page);
+      mode = "status"; await analyze(page, statusDoc);
       const afterStatus = await page.textContent("#file-start");
       const shown = (await unitHints(page)).map((unit) => [unit.state, unit.label, ...unit.hints]);
       const expected = await page.evaluate(() => {
@@ -308,30 +339,28 @@ async function unitHints(page) {
         ["error", "Not scored", "This excerpt was not scored because its result includes a finding this page does not support yet. Analyzing it again from this page returns the same result."]);
       // The unknown-finding unit leaves the bulk retry; only the inherited error remains to send.
       check(prefix + " unknown finding leaves the bulk retry", afterStatus, countedLabels[locale].retry1);
-      await prepare(page, "- Report an inherited error code.\n- Report an inherited error code.");
-      await page.click("#file-start"); await settled(page);
+      await analyze(page, "- Report an inherited error code.\n- Report an inherited error code.");
       const retry2 = await page.textContent("#file-start");
-      await prepare(page, "- Report an inherited error code."); const start1 = await page.textContent("#file-start");
-      await page.click("#file-start"); await settled(page);
+      await analyze(page, "- Report an inherited error code.");
       const retry1 = await page.textContent("#file-start"), coverage001 = await page.textContent("#file-report .coverage");
-      await prepare(page, batch.split("\n").slice(0, 2).join("\n")); const start2 = await page.textContent("#file-start");
-      mode = "hold"; await page.click("#file-start");
+      mode = "hold"; await create(page, batch.split("\n").slice(0, 2).join("\n"));
       await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
       const running0 = await page.textContent("#file-progress");
-      reply(waiting.shift()); await page.waitForSelector('[data-state="ok"]');
+      reply(waiting.shift()); await page.waitForSelector('[data-state="ok"]', { state: "attached" });
       const running1 = await page.textContent("#file-progress");
-      releaseAll(); await settled(page); mode = "status";
-      await prepare(page, Array.from({ length: 11 }, (_, i) => `- Use module${i} for storage.`).join("\n"));
-      check(prefix + " counted labels use each count's plural form", { start1, start2, start5, start11: await page.textContent("#file-start"),
-        retry1, retry2, running0, running1, coverage315, coverage001, coverage11: await page.textContent("#file-report .coverage") }, countedLabels[locale]);
-      await prepare(page, "- Keep requirements\n  across lines.\n- Keep one line.");
+      releaseAll(); await settled(page);
+      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is analyzed.
+      mode = "rate"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use module${i} for storage.`).join("\n")); mode = "status";
+      check(prefix + " counted labels use each count's plural form", { retry1, retry2, running0, running1, coverage315, coverage001,
+        coverage11: await page.textContent("#file-report .coverage") }, countedLabels[locale]);
+      await analyze(page, "- Keep requirements\n  across lines.\n- Keep one line.");
       check(prefix + " unit locations name a range or one line", await page.evaluate(() =>
         [...document.querySelectorAll(".instruction-unit .unit-location")].map((location) => location.textContent)), unitLocations[locale]);
       // Over the Claude Code guide's 200-line target, one note above the excerpts; at 200 lines, whose last
-      // line ends in a newline, none.
-      await prepare(page, longDoc(200));
+      // line ends in a newline, none. A rate limit keeps these runs to their first requests.
+      mode = "rate"; await analyze(page, longDoc(200));
       const at200 = await page.locator("#file-length").isHidden();
-      await prepare(page, longDoc(201));
+      await analyze(page, longDoc(201)); mode = "status";
       check(prefix + " only a file over 200 lines shows one length note above the excerpts", { at200, ...await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file.longFile, note = document.getElementById("file-length");
         return { notes: document.querySelectorAll("#file-report .banner").length, shown: !note.hidden && note.getClientRects().length > 0,
@@ -343,7 +372,21 @@ async function unitHints(page) {
         link: "https://code.claude.com/docs/en/memory#write-effective-instructions", above: true, fits: true });
       // Collapsed rows name what was found: the count and each headline, as text inside the one summary control.
       // A row whose only finding is not_a_rule reads as background and is counted apart from findings.
-      mode = "ok"; await prepare(page, summaryDoc); await page.click("#file-start"); await settled(page);
+      mode = "ok"; await analyze(page, summaryDoc);
+      // A run that ends on its own puts the prompt first with Copy focused, then the summary line and the
+      // file name; what was found waits, closed, in one disclosure that holds the coverage, filter and rows.
+      check(prefix + " the result leads with the prompt and keeps the details closed", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file, more = document.getElementById("file-details");
+        const order = ["#file-report > h2", "#file-export .copy-prompt", "#file-summary", "#file-name", "#file-details"].map((selector) => document.querySelector(selector));
+        return { focused: document.activeElement === order[1], heading: order[0].textContent === t.promptTitle,
+          ordered: order.every((node, i) => !i || Boolean(order[i - 1].compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)),
+          closed: !more.open, label: more.querySelector("summary").textContent === t.details,
+          inside: ["#file-units", "#file-filter", ".coverage"].every((selector) => more.contains(document.querySelector("#file-report " + selector))),
+          rowsHidden: [...document.querySelectorAll(".instruction-unit")].every((unit) => !unit.checkVisibility()),
+          primary: document.getElementById("file-create").getClientRects().length };
+      }), { focused: true, heading: true, ordered: true, closed: true, label: true, inside: true, rowsHidden: true, primary: 0 });
+      check(prefix + " the summary line counts every part as checked", await page.textContent("#file-summary"), summaryLines[locale].all);
+      await openDetails(page);
       const rows = await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value], units = [...document.querySelectorAll(".instruction-unit")];
         return { coverage: document.querySelector("#file-report .coverage").textContent,
@@ -362,9 +405,16 @@ async function unitHints(page) {
       // The findings filter appears once a row has findings, above the rows and off. With Space it keeps the rows
       // with findings and the one a retry would send, and says how many show; again, every row returns as it was.
       // Coverage, the retry control and the prompt, with its coverage gaps, read the same throughout.
-      mode = "partial"; await prepare(page, filterDoc);
+      mode = "hold"; await create(page, filterDoc);
       const filterBefore = await page.locator("#file-filter").isHidden();
-      await page.click("#file-start"); await settled(page);
+      mode = "partial"; for (const entry of waiting.splice(0)) reply(entry, ...(entry.rule.includes("module1") ? [502, { code: "upstream" }] : []));
+      await settled(page);
+      check(prefix + " a partial run says so beside the prompt and offers the retry", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file;
+        return [document.getElementById("file-progress").textContent === t.partial, document.getElementById("file-start").getClientRects().length > 0,
+          document.getElementById("file-summary").textContent];
+      }), [true, true, summaryLines[locale].rest]);
+      await openDetails(page);
       for (const index of [1, 3]) await page.locator(".instruction-unit > summary").nth(index).click();
       const filterView = () => page.evaluate(() => ({
         rows: [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state, unit.open, unit.getClientRects().length > 0]),
@@ -386,24 +436,25 @@ async function unitHints(page) {
       check(prefix + " filtering leaves coverage, retry and the prompt with its gaps unchanged", [filtered.unchanged, restored.unchanged,
         unfiltered.unchanged[2].includes("Scoring failed; no scored advice is available.")], [unfiltered.unchanged, unfiltered.unchanged, true]);
       check(prefix + " turning the filter off restores every row and its open state", restored, unfiltered);
-      await page.keyboard.press("Space"); await prepare(page, filterDoc);
-      check(prefix + " a new review starts with the filter off", await page.evaluate(() =>
-        [document.getElementById("file-filter").checked, document.querySelectorAll(".instruction-unit[hidden]").length]), [false, 0]);
+      await page.keyboard.press("Space"); await analyze(page, filterDoc);
+      check(prefix + " a new review starts with the filter off and the details closed", await page.evaluate(() =>
+        [document.getElementById("file-filter").checked, document.querySelectorAll(".instruction-unit[hidden]").length,
+          document.getElementById("file-details").open]), [false, 0, false]);
       mode = "status";
-      await prepare(page, scopedDoc);
-      check(prefix + " a scoped excerpt is ready and says its text carries its section context", await page.evaluate(() => {
+      await analyze(page, scopedDoc);
+      check(prefix + " a scoped excerpt is scored and says its text carries its section context", await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file;
         return [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state,
-          ...[...unit.querySelectorAll(".unit-content > details")].map((detail) =>
+          ...[...unit.querySelectorAll(".unit-content > details:has(> pre)")].map((detail) =>
             [detail.querySelector("summary").textContent === t.ruleSentContext, detail.querySelector("pre").textContent])]);
-      }), [["skipped"], ...scopedRules.map((rule) => ["ready", [true, rule]])]);
-      await prepare(page, linkedDoc);
-      check(prefix + " a read instruction for a linked file is ready and says the file was not read", await page.evaluate(() => {
+      }), [["skipped"], ...scopedRules.map((rule) => ["ok", [true, rule]])]);
+      await analyze(page, linkedDoc);
+      check(prefix + " a read instruction for a linked file is scored and says the file was not read", await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file;
         return [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state,
-          ...[...unit.querySelectorAll(".unit-content > p.hint")].map((p) =>
-            p.textContent === t.linkNotRead ? "linkNotRead" : p.textContent === t.reasons.linked_context ? "linked_context" : p.textContent)]);
-      }), [["ready", "linkNotRead"], ["requires_context", "linked_context"]]);
+          ...[...unit.querySelectorAll(".unit-content > p.hint")].map((p) => p.textContent === t.linkNotRead ? "linkNotRead" :
+            p.textContent === t.reasons.linked_context ? "linked_context" : p.textContent === t.unchanged ? "unchanged" : p.textContent)]);
+      }), [["ok", "linkNotRead", "unchanged"], ["requires_context", "linked_context"]]);
       await page.click("#mode-rule"); await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
       await page.waitForFunction(() => document.querySelector("#out .banner strong")?.textContent === STRINGS[document.getElementById("ui-lang").value].notEnglishTitle);
       check(prefix + " single-rule banner renders the not-English sentence", await page.textContent("#out .banner p"), sentences.spanish);
@@ -412,67 +463,102 @@ async function unitHints(page) {
         await reset(page);
         await page.locator("#file-upload").setInputFiles({ name: "CLAUDE.md", mimeType: "text/markdown", buffer: Buffer.from(sample) });
         check("upload retains exact text and filename", [await page.inputValue("#file-source"), await page.inputValue("#file-name")], [sample, "CLAUDE.md"]);
+        // Emptying the text forgets the loaded file's name, so pasted text takes the default.
+        await page.fill("#file-source", "");
+        check("emptying the text resets the file name to AGENTS.md", await page.inputValue("#file-name"), "AGENTS.md");
+        // Dropping a file: a drag carrying a file shows the drop state, leaving clears it, and a dropped .md file
+        // fills the text box and the file name without sending anything. A wrong drop says why and changes nothing.
+        await drag(page, "dragenter", [{ name: "RULES.md", text: "- Keep functions short." }]);
+        const dropState = () => page.evaluate(() => ({ zone: document.getElementById("file-drop").classList.contains("dragging"),
+          hint: [...document.querySelectorAll("#file-drop .drop-hint")].filter((node) => node.getClientRects().length).map((node) => node.textContent) }));
+        const dragged = await dropState();
+        await page.dispatchEvent("#file-drop", "dragleave", {});
+        check("a dragged file shows the drop state and leaving clears it", [dragged, await dropState()],
+          [{ zone: true, hint: ["Drop the file to read it."] }, { zone: false, hint: [] }]);
+        await drag(page, "drop", [{ name: "RULES.md", text: sample }]);
+        await page.waitForFunction(() => document.getElementById("file-name").value === "RULES.md");
+        check("a dropped .md file fills the text and name and sends nothing", [await page.inputValue("#file-source"), requests.length,
+          await page.locator("#file-error").isHidden(), await page.evaluate(() => document.activeElement.id)], [sample, 0, true, "file-source"]);
+        for (const [files, message] of [[[{ name: "notes.txt", text: "Use tabs." }], "Choose a plain-text Markdown (.md) file."],
+          [[{ name: "A.md", text: "Use tabs." }, { name: "B.md", text: "Use spaces." }], "Drop one file at a time."]]) {
+          await drag(page, "drop", files);
+          check("a wrong drop (" + files.map((file) => file.name).join(", ") + ") says why and keeps the text", [await page.textContent("#file-error"),
+            await page.inputValue("#file-source"), await page.inputValue("#file-name"), requests.length], [message, sample, "RULES.md", 0]);
+        }
         const windowsSource = "\uFEFF# Rules\r\n\r\n- Preserve requirements.\r\n";
         await page.locator("#file-upload").setInputFiles({ name: "AGENTS.md", mimeType: "text/markdown", buffer: Buffer.from(windowsSource) });
-        await page.click("#file-prepare"); await page.click("#file-start"); await settled(page);
+        await page.click("#file-create"); await settled(page);
         const windowsPrompt = await copyText(page);
         const expectedFingerprint = (() => { let h = 2166136261; for(let i=0;i<windowsSource.length;i++) h = Math.imul(h ^ windowsSource.charCodeAt(i),16777619)>>>0; return "fnv1a-utf16-"+h.toString(16).padStart(8,"0"); })();
         check("uploaded BOM and CRLF fingerprint preserved", windowsPrompt.includes(expectedFingerprint));
+        // The file name in the result labels the file in the prompt; changing it rebuilds the prompt and sends nothing.
+        const label = (text) => JSON.parse(text.split("quoted data):\n")[1]).source.label;
+        const beforeName = requests.length;
+        await page.fill("#file-name", "docs/CLAUDE.md");
+        check("the file name field in the result changes the prompt label and keeps the review", [label(windowsPrompt), label(await copyText(page)),
+          await page.locator("#file-report").isVisible(), requests.length - beforeName], ["AGENTS.md", "docs/CLAUDE.md", true, 0]);
         await page.locator("#file-upload").setInputFiles({name:"broken.md",mimeType:"text/markdown",buffer:Buffer.from([255,10,45,32,85,115,101,32,99,97,99,104,101,46])});
         check("invalid UTF-8 upload rejected without replacement", await page.locator("#file-error").isVisible());
         requests = [];
-        await prepare(page, "x".repeat(65537));
-        check("oversize file rejects locally", await page.locator("#file-error").isVisible() && requests.length === 0);
-        await prepare(page, Array.from({ length: 151 }, (_, i) => `- Use module${i}.`).join("\n"));
+        // The byte counter shows only near or over the 64 KiB limit.
+        await page.fill("#file-source", "x".repeat(1000));
+        const smallCount = await page.locator("#file-count").isHidden();
+        await page.fill("#file-source", "x".repeat(60000));
+        check("the byte counter shows only near the limit", [smallCount, await page.textContent("#file-count")], [true, "60000 / 65536 bytes"]);
+        await create(page, "x".repeat(65537));
+        check("oversize file rejects locally", await page.locator("#file-error").isVisible() && requests.length === 0 &&
+          await page.locator("#file-count.over").isVisible());
+        mode = "hold"; await create(page, Array.from({ length: 151 }, (_, i) => `- Use module${i}.`).join("\n"));
+        await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         const overLimit = await unitHints(page);
-        check("151 independent rules offer the first 150 and list the last over the limit", { error: await page.locator("#file-error").isVisible(),
-          sent: requests.length, ready: overLimit.filter((unit) => unit.state === "ready").length, last: overLimit.at(-1), start: await page.textContent("#file-start") },
-          { error: false, sent: 0, ready: 150, start: "Analyze 150 instructions", last: { state: "skipped", label: "Not scored",
+        check("151 independent rules send the first 150 and list the last over the limit", { error: await page.locator("#file-error").isVisible(),
+          sent: requests.length, queued: overLimit.filter((unit) => ["ready", "pending"].includes(unit.state)).length, last: overLimit.at(-1),
+          progress: await page.textContent("#file-progress") },
+          { error: false, sent: 2, queued: 150, progress: "Analyzing instructions\u2026 0 of 150 finished.", last: { state: "skipped", label: "Not scored",
             hints: ["Only the first 150 selected excerpts of a file are analyzed. Review this part in a separate file to analyze it."] } });
-        await prepare(page, "@AGENTS.md");
-        check("reference-only file offers no scoring", await page.locator("#file-start").isHidden() && await page.locator(".copy-prompt").count() === 0);
+        await page.click("#file-cancel"); await settled(page); mode = "ok"; releaseAll(); requests = [];
+        await create(page, "@AGENTS.md");
+        check("reference-only file sends nothing, offers no scoring and says there is no prompt", [requests.length, await page.locator("#file-start").isHidden(),
+          await page.locator(".copy-prompt").count(), await page.textContent("#file-progress")],
+          [0, true, 0, "No part of this file could be scored, so there is no prompt. \u201CSee what was found\u201D below says why."]);
 
-        await reset(page); mode = "partial"; await prepare(page, batch);
-        await page.click("#file-start"); await settled(page);
+        await reset(page); mode = "partial"; await analyze(page, batch);
         check("partial result retains 4 successes", await page.locator('.instruction-unit[data-state="ok"]').count(), 4);
-        // Runs that end on their own keep their focus: the retry control while units remain, else the heading.
-        check("a run that finishes with a failed unit keeps focus on the retry control", await page.evaluate(() => document.activeElement.id), "file-start");
+        // A run that ends on its own focuses Copy when there is a prompt; the retry for the failed unit is offered beside it.
+        check("a run that finishes with a failed unit focuses Copy and offers the retry", await page.evaluate(() =>
+          [document.activeElement.matches("#file-export .copy-prompt"), document.getElementById("file-start").textContent]), [true, "Analyze 1 remaining instruction"]);
         const beforeRetry = requests.length; mode = "ok";
         await page.click("#file-start"); await settled(page);
         check("retry only failed unit", requests.length - beforeRetry, 1);
-        check("a run that finishes every unit moves focus to the report heading",
-          await page.evaluate(() => document.activeElement === document.querySelector("#file-report h2")));
+        check("a run that finishes every unit moves focus to Copy",
+          await page.evaluate(() => document.activeElement.matches("#file-export .copy-prompt")));
 
-        await reset(page); mode = "refused"; await prepare(page, batch);
-        await page.click("#file-start"); await settled(page);
+        await reset(page); mode = "refused"; await analyze(page, batch);
         const partial = await copyText(page);
         check("refused data omitted with coverage", !partial.includes("DO NOT EXPORT THIS ECHO") && !partial.includes("Use module1") && partial.includes("refused"));
 
-        await reset(page); mode = "rate"; await prepare(page, batch);
-        await page.click("#file-start"); await settled(page);
+        await reset(page); mode = "rate"; await analyze(page, batch);
         check("rate limit stops unsent work", requests.length <= 2);
         check("a run that pauses on its own keeps focus on the retry control", await page.evaluate(() => document.activeElement.id), "file-start");
         check("rate-limited file has no prompt", await page.locator(".copy-prompt").count(), 0);
         for (const errorMode of ["html-rate", "empty-unavailable"]) {
-          await reset(page); mode = errorMode; await prepare(page, batch);
-          await page.click("#file-start"); await settled(page);
+          await reset(page); mode = errorMode; await analyze(page, batch);
           check(errorMode + " stops unsent requests without JSON", requests.length <= 2);
         }
 
-        await reset(page); mode = "hold"; await prepare(page, batch);
-        await page.click("#file-start");
+        await reset(page); mode = "hold"; await create(page, batch);
         await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         // Let one row finish and inspect it while another request is outstanding.
         reply(waiting.shift());
-        await page.waitForSelector('[data-state="ok"]');
+        await page.waitForSelector('[data-state="ok"]', { state: "attached" }); await openDetails(page);
         const completed = page.locator('[data-state="ok"]').first();
         await completed.locator("summary").first().click();
         await completed.locator(".unit-content details summary").first().click();
         mode = "ok"; releaseAll(); await settled(page);
         check("completion preserves focused factor disclosure", await page.evaluate(() => document.activeElement.tagName === "SUMMARY" && document.activeElement.parentElement.open && document.activeElement.closest(".unit-content") !== null));
 
-        await reset(page); mode = "hold"; await prepare(page, batch);
-        await page.focus("#file-start"); await page.keyboard.down("Enter");
+        await reset(page); mode = "hold"; await page.fill("#file-source", batch);
+        await page.focus("#file-create"); await page.keyboard.down("Enter");
         await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         await page.dispatchEvent("#file-cancel", "keydown", { key: "Enter", code: "Enter", repeat: true, bubbles: true, cancelable: true });
         await page.keyboard.up("Enter");
@@ -489,14 +575,13 @@ async function unitHints(page) {
         mode = "ok"; releaseAll(); await page.click("#file-start"); await settled(page);
         check("explicit resume reviews remaining units", await page.locator('[data-state="ok"]').count(), 5);
 
-        await reset(page); mode = "hold"; await prepare(page, batch);
-        await page.click("#file-start"); await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
+        await reset(page); mode = "hold"; await create(page, batch);
+        await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         await page.evaluate(() => { document.getElementById("file-source").value = "Use another file."; });
         releaseAll(); await settled(page);
         check("late responses after programmatic edit cannot export", await page.locator("#file-report").isHidden() && await page.locator(".copy-prompt").count() === 0);
 
-        await reset(page); mode = "invalid"; await prepare(page, "Use functional components.");
-        await page.click("#file-start"); await settled(page);
+        await reset(page); mode = "invalid"; await analyze(page, "Use functional components.");
         check("invalid scoring result fails safely", await page.locator('[data-state="error"]').count() === 1 && await page.locator(".copy-prompt").count() === 0);
         const unitText = (target) => target.evaluate(() => [...document.querySelectorAll(".instruction-unit")].map((unit) =>
           [unit.dataset.state, unit.querySelector(".unit-state").textContent, unit.querySelector(".unit-content > p.hint")?.textContent]));
@@ -511,8 +596,7 @@ async function unitHints(page) {
         const paced = await pacedContext.newPage(); paced.on("pageerror", (error) => report.pageErrors.push(error.message));
         await paced.goto(url);
         mode = "window"; windowCount = 0; const beforePaced = requests.length;
-        await prepare(paced, Array.from({ length: 70 }, (_, i) => `- Use module${i} for storage.`).join("\n"));
-        await paced.click("#file-start");
+        await create(paced, Array.from({ length: 70 }, (_, i) => `- Use module${i} for storage.`).join("\n"));
         await paced.waitForFunction(() => document.getElementById("file-progress").textContent.includes("Waiting") &&
           !document.querySelector('[data-state="pending"]'), null, { timeout: 10000 });
         await paced.waitForTimeout(300);
@@ -521,7 +605,7 @@ async function unitHints(page) {
           { sent: 55, ok: 55, progress: "Analyzing instructions… 55 of 70 finished. Waiting to stay within the request limit; the analysis continues within a minute." });
         windowCount = 0; await paced.clock.fastForward(60000); await settled(paced);
         check("a paced file finishes without a 429", { sent: requests.length - beforePaced, ok: await paced.locator('[data-state="ok"]').count(),
-          progress: await paced.textContent("#file-progress") }, { sent: 70, ok: 70, progress: "Analysis finished. Review the coverage before using the prompt." });
+          progress: await paced.textContent("#file-progress") }, { sent: 70, ok: 70, progress: "Analysis finished." });
         mode = "ok"; await pacedContext.close();
 
         // A request past the deadline shows the file-mode timeout message; its label still says the request failed.
@@ -540,7 +624,7 @@ async function unitHints(page) {
         });
         const deadline = await deadlineContext.newPage(); deadline.on("pageerror", (error) => report.pageErrors.push(error.message));
         await deadline.goto(url);
-        mode = "hold"; await prepare(deadline, "- Keep requirements."); await deadline.click("#file-start"); await settled(deadline);
+        mode = "hold"; await analyze(deadline, "- Keep requirements.");
         check("a request past the deadline shows the timeout message", await unitText(deadline),
           [["error", "Request failed", "The service took too long to respond, so this excerpt was not scored. You can analyze it again."]]);
         releaseAll();
@@ -549,13 +633,13 @@ async function unitHints(page) {
         for (const code of locales) {
           await deadline.selectOption("#ui-lang", code);
           mode = "retry"; let before = requests.length;
-          await prepare(deadline, retryDoc); await deadline.click("#file-start"); await settled(deadline);
+          await analyze(deadline, retryDoc);
           const firstRun = requests.length - before;
           const shown = await deadline.evaluate(() => {
             const t = STRINGS[document.getElementById("ui-lang").value].file;
             return { hints: [...document.querySelectorAll(".instruction-unit .unit-content > p.hint")].map((p) => p.textContent),
               expected: [t.unitErrors.unsupported_finding, t.invalid_result, t.prompt_too_large, t.unitErrors.timeout, t.unchanged],
-              progress: [document.getElementById("file-progress").textContent, t.done], coverage: document.querySelector("#file-report .coverage").textContent,
+              progress: [document.getElementById("file-progress").textContent, t.partial], coverage: document.querySelector("#file-report .coverage").textContent,
               retry: document.getElementById("file-start").textContent };
           });
           check(code + " file-mode failures show excerpt wording", shown.hints, shown.expected);
@@ -580,13 +664,15 @@ async function unitHints(page) {
         await page.click("#out .copy-prompt");
         check("single-rule prompt uses exact snapshot", (await page.evaluate(() => window.copiedPrompt)).includes("Always try to use functional components."));
 
-        // Leaving the page: with no review, or a preview without results, the link just navigates.
+        // Leaving the page: with no review, text not yet sent, or a review without results, the link just navigates.
         await page.goto(url);
         check("no review leaves without a prompt", await followPrivacy(page, false), { asked: [], path: "/privacy" });
-        await page.goto(url); await prepare(page, batch);
-        check("a preview without results leaves without a prompt", await followPrivacy(page, false), { asked: [], path: "/privacy" });
+        await page.goto(url); await page.fill("#file-source", batch);
+        check("text not yet sent leaves without a prompt", await followPrivacy(page, false), { asked: [], path: "/privacy" });
+        await page.goto(url); await create(page, "@AGENTS.md");
+        check("a review without results leaves without a prompt", await followPrivacy(page, false), { asked: [], path: "/privacy" });
         // Held results: the link asks first and staying keeps the review.
-        await page.goto(url); mode = "ok"; await prepare(page, batch); await page.click("#file-start"); await settled(page);
+        await page.goto(url); mode = "ok"; await analyze(page, batch);
         const stayed = await followPrivacy(page, true);
         check("held results ask before following the privacy link", { ...stayed, report: await page.locator("#file-report").isVisible() },
           { asked: ["beforeunload"], path: "/", report: true });
@@ -606,13 +692,13 @@ async function unitHints(page) {
         await page.reload();
         check("held results ask before a reload", { asked: reloaded, report: await page.locator("#file-report").isVisible() }, { asked: ["beforeunload"], report: false });
         // Requests in flight ask first; accepting follows the link in the same tab.
-        mode = "hold"; await prepare(page, batch); await page.click("#file-start");
+        mode = "hold"; await create(page, batch);
         await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         check("requests in flight ask before following the privacy link", await followPrivacy(page, true), { asked: ["beforeunload"], path: "/" });
         mode = "ok"; releaseAll(); await settled(page);
         check("accepting follows the privacy link in the same tab", await followPrivacy(page, false), { asked: ["beforeunload"], path: "/privacy" });
         // Closing the tab with held results asks first; staying keeps it open.
-        await page.goto(url); await prepare(page, batch); await page.click("#file-start"); await settled(page);
+        await page.goto(url); await analyze(page, batch);
         const closing = [];
         page.once("dialog", (dialog) => { closing.push(dialog.type()); return dialog.dismiss(); });
         await page.close({ runBeforeUnload: true });
@@ -627,8 +713,7 @@ async function unitHints(page) {
         const blocked = await blockedContext.newPage(); blocked.on("pageerror", (error) => report.pageErrors.push(error.message));
         await blocked.goto(url);
         requests = []; mode = "partial";
-        await prepare(blocked, "- Always try to use functional components.\n- Use module1 for storage.\n- Keep functions short.");
-        await blocked.click("#file-start"); await settled(blocked);
+        await analyze(blocked, "- Always try to use functional components.\n- Use module1 for storage.\n- Keep functions short.");
         const firstRun = requests.length;
         const kept = await blocked.evaluate(() => ({
           states: [...document.querySelectorAll(".instruction-unit")].map((unit) => unit.dataset.state),
@@ -652,7 +737,7 @@ async function unitHints(page) {
         const noModel = await noModelContext.newPage(); noModel.on("pageerror", (error) => report.pageErrors.push(error.message));
         for (const code of locales) {
           await noModel.goto(url); await noModel.selectOption("#ui-lang", code);
-          const before = requests.length; await prepare(noModel, batch);
+          const before = requests.length; await create(noModel, batch);
           check(code + " missing document model shows the file reader failure", await noModel.evaluate(() => {
             const error = document.getElementById("file-error");
             return !error.hidden && error.textContent === STRINGS[document.getElementById("ui-lang").value].file.parser_unavailable;
@@ -719,21 +804,23 @@ async function unitHints(page) {
             } } });
         });
         const sentPage = await sentContext.newPage(); sentPage.on("pageerror", (error) => report.pageErrors.push(error.message));
-        await sentPage.goto(url); mode = "ok";
-        await prepare(sentPage, "- Keep functions short.\n  Split long ones.\n- Normalize  this.\n- Keep tests fast.\n  - Avoid network calls.");
+        await sentPage.goto(url);
+        // Held requests show the disclosures while the excerpts wait to be sent.
+        const beforeSent = requests.length; mode = "hold";
+        await create(sentPage, "- Keep functions short.\n  Split long ones.\n- Normalize  this.\n- Keep tests fast.\n  - Avoid network calls.");
         const disclosed = () => sentPage.evaluate(() => [...document.querySelectorAll(".instruction-unit")].map((unit) =>
           [...unit.querySelectorAll(".unit-content > details")].filter((detail) => detail.querySelector("summary").textContent === STRINGS.en.file.ruleSent)
             .map((detail) => detail.querySelector("pre").textContent)));
+        await sentPage.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
         const previewed = await disclosed();
         check("a plain list item shows no text-sent disclosure", previewed[0], []);
         check("an item whose sent text differs beyond the marker shows it", previewed[1], ["Normalize this."]);
         check("a nested item sent as its own lines shows no text-sent disclosure", previewed[2], []);
-        const beforeSent = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
+        mode = "ok"; releaseAll(); await settled(sentPage);
         check("the disclosed text is the text sent", requests.slice(beforeSent).map((entry) => entry.rule).sort(),
           ["Keep functions short.\nSplit long ones.", "Keep tests fast.\n- Avoid network calls.", "Normalize this."]);
         check("scored units keep the same disclosures", await disclosed(), [[], ["Normalize this."], []]);
-        await prepare(sentPage, scopedDoc);
-        const beforeScoped = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
+        const beforeScoped = requests.length; await analyze(sentPage, scopedDoc);
         check("scoped excerpts are sent with their section context", requests.slice(beforeScoped).map((entry) => entry.rule).sort(), [...scopedRules].sort());
         const scopedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
         check("the prompt marks the excerpts scored with their section context", scopedPacket.scored.map((unit) =>
@@ -741,8 +828,7 @@ async function unitHints(page) {
           [[{ startLine: 3, endLine: 3 }, "- Run the full test suite.", scopedRules[0], true],
             [{ startLine: 5, endLine: 6 }, "1. Build the app.\n2. Ship it.", scopedRules[1], true],
             [{ startLine: 8, endLine: 9 }, "- Keep tests fast:\n  - Avoid network calls.", scopedRules[2], true]]);
-        await prepare(sentPage, linkedDoc);
-        const beforeLinked = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
+        const beforeLinked = requests.length; await analyze(sentPage, linkedDoc);
         check("a read instruction is sent as written", requests.slice(beforeLinked).map((entry) => entry.rule), [linkedRule]);
         const linkedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
         check("the prompt marks the excerpt whose linked file was not read", linkedPacket.scored.map((unit) =>

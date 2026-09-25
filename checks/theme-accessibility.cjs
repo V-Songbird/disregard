@@ -265,11 +265,15 @@ async function keyboard(page, theme, layout, locale) {
   await page.locator("#mode-file").focus(); await page.keyboard.press("Enter");
   check("Enter switches to file mode", await page.locator("#file-panel").isVisible());
   await page.fill("#file-source", ["module0", "module1", "module2"].map((name) => "- Use " + name + " for storage.").join("\n"));
-  await page.locator("#file-prepare").focus(); await page.keyboard.press("Enter");
-  check("preview moves focus to start", await activeId(page) === "file-start");
-  if (await activeId(page) !== "file-start") await page.locator("#file-start").focus();
+  // From the text box, Tab reaches the file chooser, then the primary action.
+  await page.locator("#file-source").focus();
+  for (const id of ["file-choose", "file-create"]) {
+    await page.keyboard.press("Tab"); check("tab reaches " + id, await activeId(page) === id);
+    const f = (await colors(page)).focus; focus.push(f); check(id + " visible unobscured focus", f?.passed && f.unobscured);
+  }
+  if (await activeId(page) !== "file-create") await page.locator("#file-create").focus();
   mode = "hold"; await page.keyboard.press("Enter"); await holding(2);
-  check("Enter on start moves focus to file stop", await activeId(page) === "file-cancel");
+  check("Enter on the primary action moves focus to file stop", await activeId(page) === "file-cancel");
   const fileStopFocus = (await colors(page)).focus; focus.push(fileStopFocus);
   check("file stop has visible unobscured focus", fileStopFocus?.passed && fileStopFocus.unobscured);
   await page.keyboard.press("Escape"); await page.waitForTimeout(100);
@@ -307,9 +311,20 @@ async function keyboard(page, theme, layout, locale) {
             const screenshot = target.replace(/\.json$/, "-dark-file.png");
             await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
-          // Scored rows: three state labels and the one finding headline shown while collapsed.
-          await page.fill("#file-source", fileDoc); await page.click("#file-prepare"); await page.click("#file-start");
+          // The drop state a dragged file shows on the intake area.
+          await page.fill("#file-source", fileDoc);
+          const transfer = await page.evaluateHandle(() => {
+            const data = new DataTransfer(); data.items.add(new File(["- Keep functions short."], "CLAUDE.md", { type: "text/markdown" })); return data;
+          });
+          await page.dispatchEvent("#file-drop", "dragenter", { dataTransfer: transfer });
+          const dropMeasured = await colors(page);
+          report.filePages.push({ theme, layout, locale, view: "drop state", ...dropMeasured,
+            passed: dropMeasured.text.every((c) => c.passed) && dropMeasured.text.some((c) => c.text === (locale === "en" ? "Drop the file to read it." : "أفلِت الملف لقراءته.")) && !dropMeasured.overflow });
+          await page.dispatchEvent("#file-drop", "dragleave", {});
+          // Scored rows, opened from the result's details: three state labels and the one finding headline shown while collapsed.
+          await page.click("#file-create");
           await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+          await page.click("#file-details > summary");
           const rowsMeasured = await colors(page);
           report.filePages.push({ theme, layout, locale, view: "scored rows", ...rowsMeasured,
             passed: rowsMeasured.text.every((c) => c.passed) && rowsMeasured.text.filter((c) => c.tag === "SPAN" && !c.id).length === 4 && !rowsMeasured.overflow });
@@ -335,7 +350,7 @@ async function keyboard(page, theme, layout, locale) {
     release(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));
     report.mockRequests = requests; Object.assign(report, site.audit());
-    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 24 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
+    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 36 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, pages: report.pages.length, keyboardJourneys: report.keyboard.length, mockRequests: requests,
       providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,
