@@ -327,7 +327,7 @@ async function unitHints(page) {
       const pathRulesFocused = await pathRulesView();
       await page.keyboard.press("Space");
       const pathRulesOn = await pathRulesView();
-      const added = pathRulesOn.prompt.indexOf("\nThe owner also asks for a proposal to move file-specific rules");
+      const added = pathRulesOn.prompt.indexOf("\nThe owner also asks whether some rules could move into path-scoped Claude Code rules.");
       await page.keyboard.press("Space");
       check(prefix + " the path-rules option is a labeled checkbox, off, and leaves the prompt without it",
         [await page.getByRole("checkbox", { name: /\.claude\/rules/ }).count(), plainPrompt.checked, plainPrompt.label, plainPrompt.prompt.includes(".claude/rules")],
