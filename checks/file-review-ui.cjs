@@ -34,7 +34,7 @@ function result(rule) {
     ...(hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : []),
     ...(vague ? [{ id: "no_concrete_anchor", factor: "F7", value: 0.1 }] : [])];
   return { status: "ok", findings,
-    factors: { F1: hedge ? 0.2 : 0.85, F2: 0.85, F3: 2, F7: vague ? 0.1 : 0.8, F8: 2, is_rule: background ? 0.3 : 0.95,
+    factors: { F1: hedge ? 0.2 : 0.85, F2: 0.85, F3: 2, F7: vague ? 0.1 : 0.8, F8: 2, is_rule: background ? 0.3 : 0.95, specificity: vague ? 0.1 : 0.9,
       primitive: { choice: "rule", confidence: 0.9 }, rule_role: { choice: background ? "background" : "direct_action", confidence: 0.9 } } };
 }
 // Not-English, inherited error code and unknown finding responses, keyed by the rule sent.
@@ -83,9 +83,9 @@ const notEnglishSentences = {
 // values of the first analyzed excerpt in page order, ending with the two confidence joins.
 const joinExamples = {
   fr: { context: "Titres environnants\u00a0: Project instructions / Before deployment",
-    values: ["0,95", "2", "2", "0,2", "0,85", "0,8", "une consigne d’action (confiance 0,9)", "une règle (confiance 0,9)"] },
+    values: ["0,95", "2", "2", "0,2", "0,85", "0,8", "0,9", "une consigne d’action (confiance 0,9)", "une règle (confiance 0,9)"] },
   ar: { context: "العناوين المحيطة: Project instructions / Before deployment",
-    values: ["0.95", "2", "2", "0.2", "0.85", "0.8", "تعليمات لتنفيذ إجراء (ثقة 0.9)", "قاعدة (ثقة 0.9)"] },
+    values: ["0.95", "2", "2", "0.2", "0.85", "0.8", "0.9", "تعليمات لتنفيذ إجراء (ثقة 0.9)", "قاعدة (ثقة 0.9)"] },
 };
 // Unit locations written out per locale: a list item across lines 1 and 2, then a one-line item on line 3.
 const unitLocations = {

@@ -16,7 +16,7 @@ function result(overrides = {}) {
   return {
     status: "ok",
     factors: {
-      F1: 1, F2: 0.85, F7: 0.8, F3: 2.21, F8: 2.11, is_rule: 0.9,
+      F1: 1, F2: 0.85, F7: 0.8, F3: 2.21, F8: 2.11, is_rule: 0.9, specificity: 0.93,
       primitive: { choice: "rule", confidence: 0.82 },
       rule_role: { choice: "direct_action", confidence: 0.87 },
       ...overrides,
@@ -233,6 +233,8 @@ test("malformed, contradictory, missing, and nonfinite scoring fields block expo
     (r) => { r.factors.primitive.confidence = 1.01; },
     (r) => { r.factors.primitive.choice = "tool"; },
     (r) => { r.factors.rule_role = {}; },
+    (r) => { r.factors.specificity = 1.01; },
+    (r) => { r.factors.specificity = null; },
   ];
   for (const mutate of mutations) {
     const response = result();
@@ -241,10 +243,13 @@ test("malformed, contradictory, missing, and nonfinite scoring fields block expo
   }
 });
 
-test("legacy successful results can omit the supplemental role without inventing it", () => {
-  const response = result();
-  delete response.factors.rule_role;
-  assert.ok(!Object.hasOwn(packet(buildPrompt(report(undefined, response), english)).scored[0].factors, "rule_role"));
+test("legacy successful results can omit the supplemental role and specificity without inventing them", () => {
+  assert.equal(packet(buildPrompt(report(), english)).scored[0].factors.specificity, 0.93);
+  for (const key of ["rule_role", "specificity"]) {
+    const response = result();
+    delete response.factors[key];
+    assert.ok(!Object.hasOwn(packet(buildPrompt(report(undefined, response), english)).scored[0].factors, key));
+  }
 });
 
 test("invalid ranges, duplicate ids, and untrimmed scored text cannot be exported", () => {

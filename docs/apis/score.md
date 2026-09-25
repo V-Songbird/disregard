@@ -84,11 +84,12 @@ consistently mean a better instruction.
 | `F7` | 0–1 | Concrete anchors recognized by local patterns. |
 | `F8` | 0–3 | Model judgment of enforceability; lower values mean more mechanical coverage. |
 | `is_rule` | 0–1 | Model judgment that the text directs the reader rather than describing background. |
+| `specificity` | 0–1 | Model judgment that the text is concrete enough to check whether it was followed. |
 | `primitive` | `{ choice, confidence }` | Suggested home: `rule`, `hook`, `skill`, or `subagent`; confidence is 0–1. |
 | `rule_role` | `{ choice, confidence }` | `direct_action`, `artifact_requirement`, `background`, or `unclear`; confidence is 0–1. |
 
-F1, F2, and F7 use deterministic local checks. F3, F8, classification, routing, and
-injection screening use one provider request. Fractional F3 and F8 values represent
+F1, F2, and F7 use deterministic local checks. F3, F8, `is_rule`, `specificity`,
+classification, routing, and injection screening use one provider request. Fractional F3 and F8 values represent
 weighted model judgments, not integer categories.
 
 The current implementation and criteria are in [analyze.js](../../lib/analyze.js),
@@ -111,10 +112,12 @@ User-facing descriptions belong to the interface, not the API response.
 | `no_trigger` | Whether the occasion needs clarification or the requirement intentionally applies continuously. |
 | `stall_risk` | Whether a prohibition needs an allowed alternative or stop condition. |
 | `hedge_dominance` | Whether softened wording is intentional for the action it qualifies. |
-| `no_concrete_anchor` | Whether the instruction names an adequate target that the matcher may have missed. |
+| `no_concrete_anchor` | Whether the instruction names something a reader could check, or only a quality or goal. |
 
 Routing is named at confidence 0.8 or greater. Otherwise, F8 values at or below 1.25
 can produce the generic `could_be_a_hook` finding. F3 below 1.5 produces `no_trigger`.
+`no_concrete_anchor` requires both a lexical miss, where the F7 matcher recognizes no
+concrete marker, and a `specificity` value below 0.5; its `value` is F7.
 An `is_rule` value below 0.5 produces `not_a_rule`, unless the supplemental classifier
 identifies an artifact requirement at confidence 0.8 or greater. `not_a_rule` is then
 the only finding: routing, `no_trigger`, and the local findings judge the shape of a

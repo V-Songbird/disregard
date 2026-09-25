@@ -9,7 +9,7 @@ const bindings = { TYPESAFE_API_KEY: "fake-worker-key" };
 const validRule = "Run prettier before committing.";
 const goodAnswers = { answers: { control: { noul: 0.01 }, premise: { noul: 0.02 }, is_rule: { noul: 0.99 },
   trigger_distance: { score: 4 }, enforceability: { score: 0 }, best_primitive: { choice: "hook", confidence: 0.9 },
-  candidate_role: { choice: "direct_action", confidence: 0.9 } },
+  candidate_role: { choice: "direct_action", confidence: 0.9 }, specificity: { noul: 0.96 } },
   usage: { input_tokens: 12 } };
 const request = (body, headers = {}) => new Request("https://fixture.invalid/api/score", { method: "POST", body, headers });
 const streamed = (body, headers = {}) => new Request("https://fixture.invalid/api/score", { method: "POST", body, headers, duplex: "half" });
@@ -188,7 +188,7 @@ test("HTTP response exposes supplemental role evidence and rejects missing role 
   const answers = { ...goodAnswers.answers, is_rule: { noul: 0.49 },
     candidate_role: { choice: "artifact_requirement", confidence: 0.8, debug: "SECRET-role" } };
   t.mock.method(globalThis, "fetch", async (_url, init) => {
-    assert.equal(Object.keys(JSON.parse(init.body).questions).length, 7);
+    assert.equal(Object.keys(JSON.parse(init.body).questions).length, 8);
     return Response.json({ answers });
   });
   const response = await handler(request(JSON.stringify({ rule: validRule })), bindings);

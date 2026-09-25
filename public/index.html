@@ -232,7 +232,7 @@
     const box = el("details");
     box.append(el("summary", null, t.measured));
     const dl = el("dl", "factors");
-    for (const key of ["is_rule", "F3", "F8", "F1", "F2", "F7"]) {
+    for (const key of ["is_rule", "F3", "F8", "F1", "F2", "F7", "specificity"]) {
       if (factors[key] === undefined) continue;
       const value = factors[key] === null ? t.undetermined : number(factors[key]);
       const label = SCALES[key] ? fill(t.factors[key], { min: number(SCALES[key][0]), max: number(SCALES[key][1]) }) : t.factors[key];

@@ -4,8 +4,8 @@
   "captureScreenshots": false,
   "checkPromptExport": true,
   "sourceHashes": {
-    "public/i18n.js": "98a5fb31e5a04a0986512a3f7639c406893ff2459b1eacc7e8402f703e90480a",
-    "public/refactor-prompt.js": "6c38227c71e1cbc0b8efc7019fe875a515c5edaa691eb96f635058b41ae965fd"
+    "public/i18n.js": "52c184b02fc3865f33a70f5af751bbc642d64b45959799812059d9d5a661fd99",
+    "public/refactor-prompt.js": "2e33bdedc52290f96ea91e436c488b60460f5969b3ef0c0b895d90399a5132dc"
   },
   "cases": [
     {
@@ -31,6 +31,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.25,
+          "specificity": 0.95,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -67,6 +68,7 @@
           "F3": 2.4,
           "F8": 0.2,
           "is_rule": 0.9,
+          "specificity": 0.95,
           "primitive": {
             "choice": "hook",
             "confidence": 0.88
@@ -103,6 +105,7 @@
           "F3": 2.4,
           "F8": 0.8,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.65
@@ -139,6 +142,7 @@
           "F3": 2.4,
           "F8": 2,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "skill",
             "confidence": 0.9
@@ -175,6 +179,7 @@
           "F3": 2.4,
           "F8": 2.5,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "subagent",
             "confidence": 0.91
@@ -209,6 +214,7 @@
           "F3": 0.7,
           "F8": 2.1,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -243,6 +249,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -278,6 +285,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.9,
+          "specificity": 0.95,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -312,6 +320,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.9,
+          "specificity": 0.12,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -340,6 +349,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.9,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -368,6 +378,7 @@
           "F3": 0,
           "F8": 0,
           "is_rule": 0,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89
@@ -396,6 +407,7 @@
           "F3": 2.4,
           "F8": 2.1,
           "is_rule": 0.1,
+          "specificity": 0.9,
           "primitive": {
             "choice": "rule",
             "confidence": 0.89

@@ -73,8 +73,12 @@
       factors[key] = value;
     }
     factors.primitive = choice(result.factors.primitive, PRIMITIVES);
-    // Older successful responses did not yet include the supplemental guard.
+    // Older successful responses did not yet include the supplemental guard or specificity.
     if (result.factors.rule_role !== undefined) factors.rule_role = choice(result.factors.rule_role, ROLES);
+    if (result.factors.specificity !== undefined) {
+      if (!inRange(result.factors.specificity, 1)) fail();
+      factors.specificity = result.factors.specificity;
+    }
 
     const seen = new Set();
     const findings = result.findings.map((finding) => {
@@ -185,6 +189,7 @@ Factor meanings:
 - F1 (0–1): recognized verb force. null means not determined; numeric 0 remains a measured zero. A deliberate preference need not become a command.
 - F2 (0–1): recognized prohibition framing, including possible alternatives. Preserve valid prohibitions; the value does not prove an alternative is required.
 - F7 (0–1): concreteness recognized by the lexical matcher. It can miss valid targets and observable requirements.
+- optional specificity (0–1): model judgment that the text is concrete enough to check whether it was followed. A low F7 without a no_concrete_anchor finding means this judgment found a checkable target the matcher missed.
 - F3 (0–4): trigger distance, from no recognized occasion toward a more specific trigger. Standing requirements can still be valid.
 - F8 (0–3): enforceability, from mechanically checkable work toward work requiring judgment. Higher is not a better quality score.
 - is_rule (0–1): how the text reads as an instruction. Declarative artifact requirements and useful background must not be discarded on this value alone.
