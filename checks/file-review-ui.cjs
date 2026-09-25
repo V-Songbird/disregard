@@ -20,6 +20,10 @@ const sample = "# Project instructions\n\n- Always try to use functional compone
 const scopedDoc = "## Before deployment\n\n- Run the full test suite.\n\n1. Build the app.\n2. Ship it.\n\n- Keep tests fast:\n  - Avoid network calls.";
 const scopedRules = ["Before deployment:\nRun the full test suite.", "Before deployment:\n1. Build the app.\n2. Ship it.",
   "Before deployment:\nKeep tests fast:\n- Avoid network calls."];
+// An instruction to read a linked Markdown file is scored as written and says that file was not read;
+// a link given only for reference still needs its context.
+const linkedRule = "Read and follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.";
+const linkedDoc = linkedRule + "\n\nSee [the notes](NOTES.md) for background.";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [];
 function result(rule) {
@@ -288,6 +292,13 @@ async function unitHints(page) {
           ...[...unit.querySelectorAll(".unit-content > details")].map((detail) =>
             [detail.querySelector("summary").textContent === t.ruleSentContext, detail.querySelector("pre").textContent])]);
       }), [["skipped"], ...scopedRules.map((rule) => ["ready", [true, rule]])]);
+      await prepare(page, linkedDoc);
+      check(prefix + " a read instruction for a linked file is ready and says the file was not read", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file;
+        return [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state,
+          ...[...unit.querySelectorAll(".unit-content > p.hint")].map((p) =>
+            p.textContent === t.linkNotRead ? "linkNotRead" : p.textContent === t.reasons.linked_context ? "linked_context" : p.textContent)]);
+      }), [["ready", "linkNotRead"], ["requires_context", "linked_context"]]);
       await page.click("#mode-rule"); await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
       await page.waitForFunction(() => document.querySelector("#out .banner strong")?.textContent === STRINGS[document.getElementById("ui-lang").value].notEnglishTitle);
       check(prefix + " single-rule banner renders the not-English sentence", await page.textContent("#out .banner p"), sentences.spanish);
@@ -600,6 +611,12 @@ async function unitHints(page) {
           [[{ startLine: 3, endLine: 3 }, "- Run the full test suite.", scopedRules[0], true],
             [{ startLine: 5, endLine: 6 }, "1. Build the app.\n2. Ship it.", scopedRules[1], true],
             [{ startLine: 8, endLine: 9 }, "- Keep tests fast:\n  - Avoid network calls.", scopedRules[2], true]]);
+        await prepare(sentPage, linkedDoc);
+        const beforeLinked = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
+        check("a read instruction is sent as written", requests.slice(beforeLinked).map((entry) => entry.rule), [linkedRule]);
+        const linkedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
+        check("the prompt marks the excerpt whose linked file was not read", linkedPacket.scored.map((unit) =>
+          [unit.exactScoredText, unit.linkedContentNotRead, unit.scoredWithSectionContext]), [[linkedRule, true, undefined]]);
         await sentContext.close();
       }
       await context.close(); releaseAll();
