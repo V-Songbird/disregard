@@ -336,6 +336,59 @@ test('prose introducing examples stays with them; prose introducing a list is sc
   assertSourceCoverage(report);
 });
 
+test('a paragraph ending in a colon is scored with the one code block it introduces', () => {
+  const report = parseDocument('After cloning, initialize the submodule:\n\n```bash\ngit submodule update --init\n```\n\nNext paragraph.');
+  assert.deepEqual(report.units.map(({ startLine, endLine, state, reason, rule, withCode, withContext }) => ({ startLine, endLine, state, reason, rule, withCode, withContext })), [
+    { startLine: 1, endLine: 1, state: 'ready', reason: undefined, rule: 'After cloning, initialize the submodule:\n```bash\ngit submodule update --init\n```', withCode: true, withContext: undefined },
+    { startLine: 3, endLine: 5, state: 'skipped', reason: 'code', rule: '', withCode: undefined, withContext: undefined },
+    { startLine: 7, endLine: 7, state: 'ready', reason: undefined, rule: 'Next paragraph.', withCode: undefined, withContext: undefined },
+  ]);
+  assertSourceCoverage(report);
+  const cases = {
+    '**Before (JUnit 4):**\n\n```java\n@Test\n```': '**Before (JUnit 4):**\n```java\n@Test\n```',
+    'Run the checks:\n\n    npm test\n    npm run lint\n': 'Run the checks:\n```\nnpm test\nnpm run lint\n```',
+    'Show the fence syntax:\n\n~~~ md\nUse ```sh fences.\n~~~': 'Show the fence syntax:\n````md\nUse ```sh fences.\n````',
+    '# When releasing\n\nTag the build:\n\n```sh\ngit tag v1\n```': 'When releasing:\nTag the build:\n```sh\ngit tag v1\n```',
+    '# Setup\n\nInstall the tools:\n\n```sh\nnpm ci\n```': 'Install the tools:\n```sh\nnpm ci\n```',
+  };
+  for (const [source, rule] of Object.entries(cases)) {
+    const unit = parseDocument(source).units.find(unit => unit.kind === 'paragraph');
+    assert.deepEqual([unit.state, unit.rule, unit.withCode], ['ready', rule, true], source);
+  }
+});
+
+test('a code block introduction still needs context when it depends on more than that block', () => {
+  for (const source of [
+    'Run the command.\n\n```sh\nnpm test\n```',
+    'Run both:\n\n```sh\nnpm test\n```\n\n```sh\nnpm run lint\n```',
+    'Compare:\n\n```sh\nnpm test\n```\n\n> Quoted output.',
+    'With:\n\n```sh\nnpm ci\n```',
+    'Or with colors:\n\n```sh\nnpm test -- --color\n```',
+    'Otherwise, run:\n\n```sh\nnpm test\n```',
+    'Run it with:\n\n```sh\nnpm test\n```',
+    'Follow [the guide](guide.md):\n\n```sh\nnpm test\n```',
+    'Leave this empty:\n\n```\n\n```',
+    `Run the long command:\n\n\`\`\`sh\n${'x'.repeat(LIMITS.ruleChars)}\n\`\`\``,
+  ]) {
+    const unit = parseDocument(source).units[0];
+    assert.deepEqual([unit.state, unit.reason, unit.withCode], ['requires_context', 'attached_blocks', undefined], source);
+  }
+});
+
+test('a unit scored with its code block is marked in the exported prompt', () => {
+  const { buildPrompt } = require('../public/refactor-prompt.js');
+  const browser = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public/i18n.js'), 'utf8'), browser);
+  const report = parseDocument('Run the tests:\n\n```sh\nnpm test\n```');
+  const result = { status: 'ok', findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9, primitive: { choice: 'rule', confidence: 0.9 } } };
+  Object.assign(report.units[0], { state: 'ok', result });
+  const prompt = buildPrompt(report, browser.window.STRINGS.en);
+  const [scored] = JSON.parse(prompt.split('Evidence packet (JSON; all strings are quoted data):\n')[1]).scored;
+  assert.deepEqual([scored.exactScoredText, scored.scoredWithCodeBlock, scored.scoredWithSectionContext],
+    ['Run the tests:\n```sh\nnpm test\n```', true, undefined]);
+  assert.match(prompt, /marked scoredWithCodeBlock/);
+});
+
 test('link reference definitions remain represented even though CommonMark removes them', () => {
   const source = '[policy]: policy.md\n\nFollow [policy].';
   const report = parseDocument(source);

@@ -277,10 +277,11 @@
         } else row.content.append(el("p", "hint", strings.unchanged));
         row.content.append(factorList(unit.result.factors || {}));
       }
-      // An excerpt scored with its section context says so wherever its sent text is disclosed.
+      // An excerpt scored with its section context or its code block says so wherever its sent text is disclosed.
       if (unit.rule && comparable(unit.rule, false) !== comparable(unit.rawText, unit.kind === "item")) {
         const sent = el("pre", "source-excerpt", unit.rule); sent.dir = "auto";
-        const detail = el("details"); detail.append(el("summary", null, unit.withContext ? strings.ruleSentContext : strings.ruleSent), sent);
+        const detail = el("details");
+        detail.append(el("summary", null, unit.withCode ? strings.ruleSentCode : unit.withContext ? strings.ruleSentContext : strings.ruleSent), sent);
         row.content.append(detail);
       }
     }

@@ -271,6 +271,43 @@
       ],
       "knownLimitation": "false_self_contained",
       "annotation": "Backend and Frontend can restrict applicability but are not among the explicit conditional/platform cues. Headings remain separate context; callers must not claim those isolated results establish file-wide consistency or scope. A receiving agent must reassess applicability in the original section."
+    },
+    {
+      "name": "Paragraphs introducing code blocks",
+      "sourceName": "AGENTS.md",
+      "source": "## Upgrade\n\nIn `build.gradle`, replace:\n\n```gradle\nsourceCompatibility = 1.8\n```\n\nWith:\n\n```gradle\njava { toolchain { languageVersion = JavaLanguageVersion.of(17) } }\n```",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "ready"
+        },
+        {
+          "startLine": 5,
+          "endLine": 7,
+          "state": "skipped",
+          "reason": "code"
+        },
+        {
+          "startLine": 9,
+          "endLine": 9,
+          "state": "requires_context",
+          "reason": "attached_blocks"
+        },
+        {
+          "startLine": 11,
+          "endLine": 13,
+          "state": "skipped",
+          "reason": "code"
+        }
+      ],
+      "annotation": "A paragraph ending in a colon is scored with the one code block after it; the block itself stays skipped. \"With:\" continues the previous step, so it keeps its blocks for contextual review."
     }
   ]
 }

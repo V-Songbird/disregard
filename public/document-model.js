@@ -313,10 +313,26 @@
         const dependency = nextType === 'list' ? 'list_introduction'
           : ['code_block', 'block_quote', 'html_block'].includes(nextType) ? 'attached_blocks' : undefined;
         const unit = candidate(node, null, dependency);
+        const text = normalized(node);
+        // A paragraph ending in ':' that introduces one nonempty code block is scored with the block
+        // after it, in a fence, unless another block follows, the paragraph depends on earlier text
+        // (including a continuation such as "With:" or "Or with colors:") or links to context not read
+        // here, or the result is too long. The code block stays skipped.
+        const block = node.next;
+        if (unit.reason === 'attached_blocks' && nextType === 'code_block' && /:$/.test(inlineText(node)) && block.literal.trim()
+            && !(block.next && ['code_block', 'block_quote', 'html_block'].includes(block.next.type))
+            && !refersBack(text) && !/^(?:or|and|but|with|plus)\b/i.test(text) && !unresolvedPronoun(text)
+            && !linksContext(descendants(node))) {
+          const fence = '`'.repeat(Math.max(3, ...(block.literal.match(/`+/g) || []).map(run => run.length + 1)));
+          const code = fence + (/`/.test(block.info || '') ? '' : block.info || '') + '\n' + block.literal.replace(/\n$/, '') + '\n' + fence;
+          const rule = (unit.context.some(contextualHeading) ? scopeLines(null) : []).concat(text, code).join('\n');
+          if (rule.length <= LIMITS.ruleChars) {
+            Object.assign(unit, { state: 'ready', rule, withCode: true }); delete unit.reason;
+          }
+        }
         // A paragraph introducing the next list may provide its condition even
         // without a colon. It is stated before each item unless it was excluded
         // itself, points back to earlier text, or links to context not read here.
-        const text = normalized(node);
         intro = nextType === 'list' ? { text, unit,
           readable: unit.state !== 'skipped' && !refersBack(text) && !linksContext(descendants(node)) } : null;
       } else {
@@ -341,6 +357,7 @@
     for (const unit of units.filter(unit => unit.state === 'ready').slice(LIMITS.rules)) {
       Object.assign(unit, { state: 'skipped', reason: 'over_limit', rule: '' });
       delete unit.withContext;
+      delete unit.withCode;
       delete unit.linkedUnread;
     }
     return { schemaVersion: 1, sourceName: sourceName || 'AGENTS.md', sourceText: source, parserVersion: PARSER_VERSION, units };

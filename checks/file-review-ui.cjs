@@ -24,6 +24,9 @@ const scopedRules = ["Before deployment:\nRun the full test suite.", "Before dep
 // a link given only for reference still needs its context.
 const linkedRule = "Read and follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.";
 const linkedDoc = linkedRule + "\n\nSee [the notes](NOTES.md) for background.";
+// A paragraph ending in a colon is scored with the one code block after it, and says so.
+const codeDoc = "After cloning, initialize the submodule:\n\n```bash\ngit submodule update --init\n```";
+const codeRule = "After cloning, initialize the submodule:\n```bash\ngit submodule update --init\n```";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
 // Rows with two findings, background only (not_a_rule) and none.
 const summaryDoc = "- Always try to keep quality high.\n- The build cache is stored in `.cache/`, which CI clears nightly.\n- Keep functions short.";
@@ -853,6 +856,15 @@ async function unitHints(page) {
         const linkedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
         check("the prompt marks the excerpt whose linked file was not read", linkedPacket.scored.map((unit) =>
           [unit.exactScoredText, unit.linkedContentNotRead, unit.scoredWithSectionContext]), [[linkedRule, true, undefined]]);
+        const beforeCode = requests.length; await analyze(sentPage, codeDoc);
+        check("a code block introduction is sent with its block", requests.slice(beforeCode).map((entry) => entry.rule), [codeRule]);
+        check("its sent text says the code block was sent with it", await sentPage.evaluate(() =>
+          [...document.querySelectorAll(".unit-content > details:has(> pre)")].map((detail) =>
+            [detail.querySelector("summary").textContent === STRINGS.en.file.ruleSentCode, detail.querySelector("pre").textContent])), [[true, codeRule]]);
+        const codePacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
+        check("the prompt marks the excerpt scored with its code block", codePacket.scored.map((unit) =>
+          [unit.rawExcerpt, unit.exactScoredText, unit.scoredWithCodeBlock, unit.scoredWithSectionContext]),
+          [["After cloning, initialize the submodule:", codeRule, true, undefined]]);
         await sentContext.close();
       }
       await context.close(); releaseAll();
