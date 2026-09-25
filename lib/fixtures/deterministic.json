@@ -2,7 +2,7 @@
   {
     "id": "simple-format",
     "text": "Prefer a compact message format.",
-    "hedge": true,
+    "hedge": false,
     "anchor": false
   },
   {
@@ -26,7 +26,7 @@
   {
     "id": "formatting-preference",
     "text": "Quote labels and prefer short names where supported.",
-    "hedge": true,
+    "hedge": false,
     "anchor": false
   },
   {
@@ -74,7 +74,7 @@
   {
     "id": "prefer-components",
     "text": "Prefer existing components, layouts, and shared styles.",
-    "hedge": true,
+    "hedge": false,
     "anchor": false
   },
   {
@@ -194,7 +194,7 @@
   {
     "id": "pnpm-default",
     "text": "Default to `pnpm` for new packages.",
-    "hedge": true,
+    "hedge": false,
     "anchor": true
   },
   {
@@ -266,7 +266,7 @@
   {
     "id": "prefer-await",
     "text": "Prefer `async`/`await` over raw promise chains.",
-    "hedge": true,
+    "hedge": false,
     "anchor": true
   },
   {
