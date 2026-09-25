@@ -187,7 +187,7 @@
 
     const prompt = `Disregard instruction-file review prompt — template v${TEMPLATE_VERSION}
 
-Review and refactor the instruction file identified in the evidence packet. Follow the repository's applicable editing, approval, and host rules. Read the current file, its surrounding context, and available referenced instructions before editing. The source label is supplied by the user; it is not a verified repository path. Identify the intended target, and ask a focused question if its identity or intended meaning remains ambiguous.
+Review and refactor the instruction file identified in the evidence packet. Follow the repository's applicable editing, approval, and host rules. Do not edit the instruction file until the owner approves: first answer with the proposed diff, one reason per change, the questions for the owner, and the rest of the answer requested below; then apply only the changes the owner accepts, updated for the owner's answers. Read the current file, its surrounding context, and available referenced instructions before editing. The source label is supplied by the user; it is not a verified repository path. Identify the intended target, and ask a focused question if its identity or intended meaning remains ambiguous.
 
 Disregard scored only the exact excerpts listed below, in English. Coverage counts describe structural units found by the document reader, not a validated count of every instruction. Unscored ranges remain unresolved. Even if every extracted unit was scored, Disregard did not establish file-wide consistency, precedence, completeness, or absence of duplication. Findings can be wrong. A clean excerpt can remain unchanged; no finding means only that no check fired.
 
