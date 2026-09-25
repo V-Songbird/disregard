@@ -113,6 +113,19 @@
     return text.split('\n').some(line => /^\s*\|?\s*:?-{3,}:?\s*\|(?:\s*:?-{3,}:?\s*\|?)+\s*$/.test(line));
   }
 
+  // A reference entry names a command, path or identifier on one line: an optional label of up to four
+  // words, one code span, and an optional one-sentence description. Instruction guides recommend such
+  // lists, and there is nothing to judge unless the entry or its scope states a requirement or condition.
+  const REFERENCE_ENTRY = /^(?:(\*\*[^*`]+\*\*:?|__[^_`]+__:?|[^`:\n]+:)\s*)?(`+)[^`\n](?:[^`\n]*[^`\n])?\2\.?(?:(?:\s+(?:--|[-\u2013\u2014#])|:)\s+([^`\n]+))?$/;
+  const REQUIREMENT = /\b(?:must|should|always|never|only|if|unless|when(?:ever)?|before|after|until|while|during|except|do not|don['\u2019]t|avoid|require[sd]?|needs?|ensure|make sure|prefer|instead|keep|use)\b/i;
+  function referenceEntry(text, scope) {
+    const match = REFERENCE_ENTRY.exec(text);
+    const label = match && match[1] ? match[1].replace(/[*_:]/g, ' ').trim().split(/\s+/) : [];
+    const description = match && match[3] || '';
+    return !!match && label.length <= 4 && description.length <= 120 && !/[.!?]\s+\S/.test(description)
+      && !REQUIREMENT.test(label.concat(description, scope).join('\n'));
+  }
+
   function parseDocument(source, sourceName = 'AGENTS.md') {
     if (typeof source !== 'string') fail('invalid_source');
     if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(source)) fail('invalid_source');
@@ -228,6 +241,8 @@
         state = 'requires_context'; reason = 'multiple_paragraphs';
       } else if (/^\[[ xX]\]\s/.test(text)) {
         state = 'requires_context'; reason = 'task_item';
+      } else if (referenceEntry(text, scopeLines(intro)) && !linksContext(children)) {
+        state = 'skipped'; reason = 'reference_entry';
       } else if (context.some(contextualHeading) || intro) {
         // A scoped rule that depends on nothing else is scored with its scope first,
         // unless its introduction was itself excluded or the result is too long.
@@ -275,14 +290,20 @@
         if (node.listType === 'ordered') {
           candidate(node, intro);
         } else {
-          // An introduction is scored with its list after it when every item is ready.
+          // An introduction is scored with its list after it when every item is ready or a reference
+          // entry. It labels a reference list, and is not scored, when every item is a reference entry.
           let listed = intro && intro.readable && [intro.text];
+          let references = listed;
           for (let item = node.firstChild; item; item = item.next) {
-            if (candidate(item, intro).state !== 'ready') listed = null;
+            const unit = candidate(item, intro);
+            if (unit.reason !== 'reference_entry') references = null;
+            if (unit.state !== 'ready' && unit.reason !== 'reference_entry') listed = null;
             if (listed) listed.push('- ' + normalized(item).replace(/\n/g, '\n  '));
           }
           const introduced = listed && scopeLines(null).concat(listed).join('\n');
-          if (introduced && introduced.length <= LIMITS.ruleChars) {
+          if (references) {
+            Object.assign(intro.unit, { state: 'skipped', reason: 'reference_entry', rule: '' });
+          } else if (introduced && introduced.length <= LIMITS.ruleChars) {
             Object.assign(intro.unit, { state: 'ready', rule: introduced, withContext: true }); delete intro.unit.reason;
           }
         }

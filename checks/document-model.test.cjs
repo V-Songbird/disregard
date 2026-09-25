@@ -114,6 +114,44 @@ test('an introduction is scored with its list only when every item is ready and 
   assertSourceCoverage(long);
 });
 
+test('a command, path or name reference entry is not scored unless it or its scope states a requirement', () => {
+  const skipped = ['**Run all tests**: `build/sbt test`', 'Pregel framework: `build/sbt "testOnly *PregelSuite"`', '`pnpm dev` - start the dev server',
+    '`tests/lisp/` - ERT-style Emacs Lisp tests.', '`ASSIGN` - Assignment', '`controller/` -- HTTP controllers', '`make build` # build everything',
+    '`anda_cli`: CLI entrypoint.', '**Build:** `make`', '`pnpm dev`'];
+  const ready = ['`pnpm lint` must pass before committing', 'Run `pnpm test` before committing.', '`src/legacy/` - do not edit',
+    '**Before committing**: `pnpm test`', 'Prefix unused parameters with underscore: `(_unused, used) => ...`', 'Use `pnpm`',
+    '`a` / `b` - both helpers', '`pnpm dev` - start the dev server. Keep it running.', '`pnpm dev` - start the dev server\nand watch files'];
+  for (const text of skipped) {
+    for (const source of [text, '## Commands\n\n- ' + text]) {
+      assert.deepEqual(parseDocument(source).units.map(({ state, reason, rule }) => [state, reason, rule]).at(-1), ['skipped', 'reference_entry', ''], source);
+    }
+  }
+  for (const text of ready) assert.equal(parseDocument(text).units[0].state, 'ready', text);
+  const linked = parseDocument('`profile.py` - profiling tool (see [Profiling](#profiling))').units[0];
+  assert.deepEqual([linked.state, linked.reason], ['requires_context', 'linked_context']);
+  const scoped = parseDocument('## When developing\n\n- `pnpm dev` - start the dev server');
+  assert.deepEqual(scoped.units.map(({ state, rule }) => [state, rule]).at(-1), ['ready', 'When developing:\n`pnpm dev` - start the dev server']);
+  const nested = parseDocument('- `pnpm dev` - start the dev server\n  - `pnpm dev --host` - expose it on the network');
+  assert.deepEqual(nested.units.map(({ state, reason }) => [state, reason]), [['ready', undefined]]);
+});
+
+test('an introduction labels a reference list, and is scored with a list that mixes rules and references', () => {
+  const units = source => parseDocument(source).units.map(({ state, reason, rule }) => [state, reason, rule]);
+  assert.deepEqual(units('Common commands:\n\n- `pnpm dev` - start the dev server\n- `pnpm build` - build for production'), [
+    ['skipped', 'reference_entry', ''], ['skipped', 'reference_entry', ''], ['skipped', 'reference_entry', ''],
+  ]);
+  assert.deepEqual(units('Before opening a PR, run:\n\n- `pnpm lint`\n- `pnpm test`'), [
+    ['ready', undefined, 'Before opening a PR, run:\n- `pnpm lint`\n- `pnpm test`'],
+    ['ready', undefined, 'Before opening a PR, run:\n`pnpm lint`'],
+    ['ready', undefined, 'Before opening a PR, run:\n`pnpm test`'],
+  ]);
+  assert.deepEqual(units('Scripts:\n\n- `pnpm dev` - start the dev server\n- Keep the server running.'), [
+    ['ready', undefined, 'Scripts:\n- `pnpm dev` - start the dev server\n- Keep the server running.'],
+    ['skipped', 'reference_entry', ''],
+    ['ready', undefined, 'Scripts:\nKeep the server running.'],
+  ]);
+});
+
 test('a file over the ready-excerpt limit keeps each unit its context and leaves the later ones over the limit', () => {
   const plain = Array(140).fill('- Preserve requirements.').join('\n');
   const nested = Array(5).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n');
