@@ -114,8 +114,10 @@ User-facing descriptions belong to the interface, not the API response.
 | `hedge_dominance` | Whether softened wording is intentional for the action it qualifies. |
 | `no_concrete_anchor` | Whether the instruction names something a reader could check, or only a quality or goal. |
 
-Routing is named at confidence 0.8 or greater. Otherwise, F8 values at or below 1.25
-can produce the generic `could_be_a_hook` finding. F3 below 1.5 produces `no_trigger`.
+Routing is named at confidence 0.8 or greater. Otherwise, an F8 value at or below 1.25
+produces the generic `could_be_a_hook` finding only when `is_rule` is 0.7 or greater;
+a low F8 alone says a tool could check the text, not that the text asks for something.
+F3 below 1.5 produces `no_trigger`.
 `no_concrete_anchor` requires both a lexical miss, where the F7 matcher recognizes no
 concrete marker, and a `specificity` value below 0.5; its `value` is F7.
 An `is_rule` value below 0.5 produces `not_a_rule`, unless the supplemental classifier
