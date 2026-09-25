@@ -84,6 +84,8 @@ test("the policy applies repository-settled edits and keeps questions for uncert
   const output = buildPrompt(report(), english);
   assert.match(output, /retaining requirements, scope, exceptions, deliberate preferences/);
   assert.match(output, /Background the repository itself shows, .* list its removal as a proposal for the owner instead of editing it, and never propose removing a requirement/);
+  assert.ok(output.includes("never propose removing a requirement this way. Check the file's statements of fact " +
+    "(commands, paths, versions, how the code works) against the repository and correct any that are out of date. When a finding"));
   assert.match(output, /settles, apply that small edit instead of only raising it/);
   assert.match(output, /Do not invent project commands, thresholds, facts, permissions, alternatives, exceptions, or host capabilities/);
   assert.match(output, /Keep a question instead of an edit only when the change is genuinely uncertain/);
