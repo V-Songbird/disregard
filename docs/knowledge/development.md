@@ -135,8 +135,11 @@ look at the result before committing:
 node checks/og-card.cjs
 ```
 
-The script holds the card's HTML, so the card is not a served page. Keep the text in
-`og:image:alt` in `public/index.html` in line with what the card shows.
+The script holds the card's HTML, so the card is not a served page.
+`public/apple-touch-icon.png` is `public/favicon.svg` rendered once at 180x180 with square
+corners, since iOS applies its own mask; render it again after changing the icon. Every page shares the card, so keep `og:image:alt` in all four pages in `public/` in line
+with what the card shows. Each page declares its own extensionless canonical URL, the form
+Cloudflare serves after redirecting `.html` paths.
 
 ## Implementation map
 

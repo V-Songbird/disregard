@@ -25,8 +25,8 @@ const allowedUnknownRequests = [];
 // Records any other request the local server receives, including ones the browser
 // makes on its own, and every page request in a watched context to another origin.
 assets.localSite = (pages = {}) => {
-  const types = { html: "text/html", css: "text/css", js: "text/javascript" };
-  const routes = { "/": "index.html", "/style.css": "style.css", "/i18n.js": "i18n.js", ...pages };
+  const types = { html: "text/html", css: "text/css", js: "text/javascript", svg: "image/svg+xml" };
+  const routes = { "/": "index.html", "/style.css": "style.css", "/i18n.js": "i18n.js", "/favicon.svg": "favicon.svg", ...pages };
   for (const file of assets) routes["/" + file] = file;
   const served = Object.fromEntries(Object.entries(routes).map(([route, file]) => [route, { file: "public/" + file,
     type: types[path.extname(file).slice(1)], body: fs.readFileSync(path.join(__dirname, "..", "public", file)) }]));
