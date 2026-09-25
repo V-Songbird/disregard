@@ -108,6 +108,17 @@ test("the policy keeps general requirements and asks for an answer the owner can
   assert.ok(!output.includes("Return the justified changes"));
 });
 
+test("the agent proposes the diff and edits the file only after the owner approves", () => {
+  const output = buildPrompt(report(), english);
+  const rules = "Follow the repository's applicable editing, approval, and host rules.";
+  const approval = "Do not edit the instruction file until the owner approves: first answer with the proposed diff, one reason " +
+    "per change, the questions for the owner, and the rest of the answer requested below; then apply only the changes the owner " +
+    "accepts, updated for the owner's answers.";
+  assert.equal(output.split(approval).length, 2);
+  assert.ok(output.includes(`${rules} ${approval} Read the current file`));
+  assert.ok(output.indexOf(approval) < output.indexOf("Write your answer for the file's owner"));
+});
+
 test("all nine findings reuse canonical English explanations and retain measured metadata", () => {
   const cases = [
     ["not_a_rule", "is_rule"],
