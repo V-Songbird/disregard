@@ -146,6 +146,15 @@ const summaryLines = {
   ar: { all: "الأجزاء التي فُحصت: 3 من 3.", rest: "الأجزاء التي فُحصت: 3 من 5. سيقرأ وكيلك الباقي." },
   fr: { all: "Parties vérifiées\u00a0: 3 sur 3.", rest: "Parties vérifiées\u00a0: 3 sur 5. Votre agent lira le reste." },
 };
+// The same 3-part file checked again unchanged: its summary line adds that the 3 were not sent again.
+const reusedLines = {
+  en: "3 of 3 parts were checked. 3 of them were unchanged since your last check and were not sent again.",
+  es: "Partes revisadas: 3 de 3. 3 de ellas no habían cambiado desde tu última revisión y no se volvieron a enviar.",
+  zh: "已检查 3 个部分中的 3 个。其中 3 个部分自上次检查以来没有变化，因此没有再次发送。",
+  hi: "जाँचे गए हिस्से: 3 में से 3। पिछली जाँच के बाद से न बदले और दोबारा न भेजे गए हिस्से: 3।",
+  ar: "الأجزاء التي فُحصت: 3 من 3. الأجزاء التي لم تتغير منذ فحصك الأخير ولم تُرسل مرة أخرى: 3.",
+  fr: "Parties vérifiées\u00a0: 3 sur 3. 3 d’entre elles n’avaient pas changé depuis votre dernière vérification et n’ont pas été renvoyées.",
+};
 // The length note's heading written out per locale for a file of 201 lines.
 const longTitles = {
   en: "This file has 201 lines.", es: "Este archivo tiene 201 líneas.", zh: "此文件共有 201 行。",
@@ -355,8 +364,9 @@ async function unitHints(page) {
       reply(waiting.shift()); await page.waitForSelector('[data-state="ok"]', { state: "attached" });
       const running1 = await page.textContent("#file-progress");
       releaseAll(); await settled(page);
-      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is analyzed.
-      mode = "rate"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use module${i} for storage.`).join("\n")); mode = "status";
+      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is analyzed. None of
+      // its excerpts was scored earlier on this page, so none takes an earlier result.
+      mode = "rate"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use store${i} for storage.`).join("\n")); mode = "status";
       check(prefix + " counted labels use each count's plural form", { retry1, retry2, running0, running1, coverage315, coverage001,
         coverage11: await page.textContent("#file-report .coverage") }, countedLabels[locale]);
       await analyze(page, "- Keep requirements\n  across lines.\n- Keep one line.");
@@ -392,6 +402,10 @@ async function unitHints(page) {
           primary: document.getElementById("file-create").getClientRects().length };
       }), { focused: true, heading: true, ordered: true, closed: true, label: true, inside: true, rowsHidden: true, primary: 0 });
       check(prefix + " the summary line counts every part as checked", await page.textContent("#file-summary"), summaryLines[locale].all);
+      // Checked again unchanged, the file sends nothing, and the rows below read the same.
+      const beforeAgain = requests.length; await page.fill("#file-source", ""); await analyze(page, summaryDoc);
+      check(prefix + " an unchanged file is checked again without sending and says so", [requests.length - beforeAgain,
+        await page.textContent("#file-summary")], [0, reusedLines[locale]]);
       await openDetails(page);
       const rows = await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value], units = [...document.querySelectorAll(".instruction-unit")];
@@ -411,7 +425,8 @@ async function unitHints(page) {
       // The findings filter appears once a row has findings, above the rows and off. With Space it keeps the rows
       // with findings and the one a retry would send, and says how many show; again, every row returns as it was.
       // Coverage, the retry control and the prompt, with its coverage gaps, read the same throughout.
-      mode = "hold"; await create(page, filterDoc);
+      // A reload forgets the results above, so every row is sent again.
+      await reset(page); mode = "hold"; await create(page, filterDoc);
       const filterBefore = await page.locator("#file-filter").isHidden();
       mode = "partial"; for (const entry of waiting.splice(0)) reply(entry, ...(entry.rule.includes("module1") ? [502, { code: "upstream" }] : []));
       await settled(page);
@@ -545,6 +560,31 @@ async function unitHints(page) {
           await page.locator(".copy-prompt").count(), await page.textContent("#file-progress")],
           [0, true, 0, "No part of this file could be scored, so there is no prompt. \u201CSee what was found\u201D below says why."]);
 
+        // Checking a file again sends only new or changed excerpts, still only after the primary action;
+        // an unchanged one takes the result this page received for the same text sent.
+        await reset(page); await analyze(page, sample);
+        const firstPrompt = await page.inputValue("#file-export .prompt-text");
+        await page.fill("#file-source", ""); await page.fill("#file-source", sample);
+        const unsent = [requests.length, await page.locator("#file-report").isHidden()];
+        await page.click("#file-create"); await settled(page);
+        check("an unchanged file sends nothing, and only after the press, and yields the same prompt", { unsent, sent: requests.length - 3,
+          same: await page.inputValue("#file-export .prompt-text") === firstPrompt,
+          focused: await page.evaluate(() => document.activeElement.matches("#file-export .copy-prompt")),
+          progress: await page.textContent("#file-progress"), summary: await page.textContent("#file-summary") },
+          { unsent: [3, true], sent: 0, same: true, focused: true, progress: "Analysis finished.",
+            summary: "3 of 8 parts were checked. 3 of them were unchanged since your last check and were not sent again. Your agent will read the rest." });
+        let beforeEdit = requests.length;
+        await analyze(page, sample.replace("Never log passwords.", "Never log secrets."));
+        check("editing one excerpt sends only that excerpt", [requests.slice(beforeEdit).map((entry) => entry.rule), await page.textContent("#file-summary")],
+          [["Never log secrets."], "3 of 8 parts were checked. 2 of them were unchanged since your last check and were not sent again. Your agent will read the rest."]);
+        // A failed excerpt keeps no result, so checking the file again sends it and nothing else.
+        mode = "partial"; await analyze(page, batch); mode = "ok";
+        beforeEdit = requests.length; await page.fill("#file-source", ""); await analyze(page, batch);
+        check("a failed excerpt is sent again and the scored ones are not", [requests.slice(beforeEdit).map((entry) => entry.rule),
+          await page.textContent("#file-summary")], [["Use module1 for storage."], "5 of 5 parts were checked. 4 of them were unchanged since your last check and were not sent again."]);
+        await reset(page); await analyze(page, batch);
+        check("a reload forgets earlier results and sends every excerpt again", [requests.length, await page.textContent("#file-summary")], [5, "5 of 5 parts were checked."]);
+
         await reset(page); mode = "partial"; await analyze(page, batch);
         check("partial result retains 4 successes", await page.locator('.instruction-unit[data-state="ok"]').count(), 4);
         // A run that ends on its own focuses Copy when there is a prompt; the retry for the failed unit is offered beside it.
@@ -666,7 +706,9 @@ async function unitHints(page) {
               retry: document.getElementById("file-start").textContent };
           });
           check(code + " file-mode failures show excerpt wording", shown.hints, shown.expected);
-          check(code + " retry counts only units a new request can change", [firstRun, shown.retry, shown.progress[0]], [5, countedLabels[code].retry2, shown.progress[1]]);
+          // After the first language, the one scored excerpt is unchanged and is not sent again.
+          check(code + " retry counts only units a new request can change", [firstRun, shown.retry, shown.progress[0]],
+            [code === locales[0] ? 5 : 4, countedLabels[code].retry2, shown.progress[1]]);
           if (code === "en") check("coverage counts unscored failures as not analyzed", shown.coverage, "1 analyzed · 0 with findings · 4 not analyzed");
           before = requests.length; await deadline.click("#file-start"); await settled(deadline);
           check(code + " bulk retry resends only the unverifiable and timed-out units",

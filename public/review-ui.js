@@ -95,9 +95,13 @@
     const model = window.DisregardDocument;
     let report = null, busy = false, revision = 0, uploadedSource = null;
     let errorCode = null, message = null, runTotal = 0, runDone = 0;
-    let stopped = false, pacing = 0;
+    let stopped = false, pacing = 0, reused = 0;
     // Start times of this page's recent score requests, oldest first, across runs.
     const started = [];
+    // Results this page received, by the exact text sent, held in memory until the page is left or
+    // reloaded. An unchanged excerpt of a later review takes its result instead of being sent again;
+    // failed, refused and stopped requests are not kept, so their excerpts are sent again.
+    const scored = new Map();
     const active = new Set(), rows = new Map();
     // Intake: one area takes pasted or typed text, a dropped file or a chosen one.
     const form = el("form"); form.id = "file-form"; form.noValidate = true;
@@ -205,7 +209,8 @@
       const prompted = !busy && Boolean(exported.querySelector(".copy-prompt"));
       nameField.hidden = summaryLine.hidden = !prompted;
       const checked = counted(strings.checked, summary.total, { checked: number(summary.scored), n: number(summary.total) });
-      summaryLine.textContent = summary.scored < summary.total ? fill(strings.withRest, { checked, rest: strings.rest }) : checked;
+      const told = reused ? fill(strings.withReused, { checked, reused: counted(strings.reused, reused) }) : checked;
+      summaryLine.textContent = summary.scored < summary.total ? fill(strings.withRest, { checked: told, rest: strings.rest }) : told;
       // Filtering keeps rows with findings, rows a retry would send and rows in flight.
       filter.hidden = !report.units.some((unit) => findings(unit).length);
       onlyText.textContent = strings.filter;
@@ -320,7 +325,7 @@
 
     function invalidate() {
       revision++;
-      stop(); report = null; errorCode = null; message = null; only.checked = false; more.open = false;
+      stop(); report = null; errorCode = null; message = null; reused = 0; only.checked = false; more.open = false;
       renderReport();
     }
 
@@ -376,9 +381,16 @@
       try { report = model.parseDocument(sourceText(), name.value.trim() || "AGENTS.md"); }
       // Without the document model script, the page failed to load, not the reader's file.
       catch (error) { errorCode = error.code || (model ? "invalid_source" : "parser_unavailable"); }
+      for (const unit of report?.units || []) {
+        const kept = retryable(unit) && scored.get(unit.rule);
+        if (kept) { unit.state = kept.status; unit.result = kept; reused++; }
+      }
+      // With nothing left to send, the review is finished here, and a prompt takes focus as after a run.
+      if (report && !report.units.some(retryable)) message = "done";
       renderReport();
       if (!report) source.focus();
-      else if (report.units.some(retryable)) run();
+      else if (!message) run();
+      else if (exported.querySelector(".copy-prompt")) exported.querySelector(".copy-prompt").focus();
       else { reportTitle.tabIndex = -1; reportTitle.focus(); }
     });
 
@@ -436,6 +448,7 @@
                 else if (!displayable(body)) throw Object.assign(new Error("invalid_result"), { code: "invalid_result" });
               }
               unit.state = body.status; unit.result = body;
+              if (body.status !== "refused") scored.set(unit.rule, body);
             } else throw new Error("invalid response");
           } catch (error) {
             unit.state = stopped ? "cancelled" : "error";
