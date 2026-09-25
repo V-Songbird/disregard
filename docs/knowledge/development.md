@@ -114,7 +114,7 @@ Reports and associated screenshots stay in the ignored `.private/` directory.
 Choose another filename when repeating a check.
 
 - `request-ui.cjs` checks the single-rule request lifecycle and translated states, including stopping by click and a fresh Enter, a held Enter that does not stop, and a new request after a stop.
-- `file-review-ui.cjs` checks parsing previews, coverage, cancellation, retries, and prompt export.
+- `file-review-ui.cjs` checks parsing previews, coverage, cancellation, retries, request pacing, and prompt export. It paces a large file on Playwright's fake clock rather than waiting a real minute.
 - `recommendation-ui.cjs` checks synthetic findings across locales and layouts using the bundled public fixtures.
 - `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior. Its keyboard journeys run in light and dark themes, at desktop, mobile and 200% zoom, in English and Arabic. While a mocked request is pending, they reach the single-rule and file stop controls by keyboard, stop with Enter in one journey and Space in another, and check that Escape leaves the analysis running. They also check where focus lands after each stop, and that a second press after a file stop sends nothing.
 - `locale-screens.cjs` screenshots each file and single-rule journey state in all six locales at desktop and mobile widths, in a new folder named after the report. It fails on a page error, horizontal page overflow, a state it cannot reach, a `lang` tag that does not match the selected locale, an unknown local request, or a blocked request to another host.

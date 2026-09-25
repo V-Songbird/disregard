@@ -114,14 +114,36 @@ test('an introduction is scored with its list only when every item is ready and 
   assertSourceCoverage(long);
 });
 
-test('scope that would exceed the ready-excerpt limit leaves those units for contextual review', () => {
-  const plain = Array(30).fill('- Preserve requirements.').join('\n');
-  const report = parseDocument(plain + '\n\n# When releasing\n\n' + Array(11).fill('- Tag the release.').join('\n'));
-  assert.equal(report.units.filter(unit => unit.state === 'ready').length, 30);
-  assert.ok(report.units.slice(31).every(unit => unit.state === 'requires_context' && unit.reason === 'inherited_scope' &&
-    unit.rule === 'Tag the release.' && unit.withContext === undefined));
-  assert.equal(parseDocument(plain + '\n\n# When releasing\n\n' + Array(10).fill('- Tag the release.').join('\n'))
-    .units.filter(unit => unit.state === 'ready').length, 40);
+test('a file over the ready-excerpt limit keeps each unit its context and leaves the later ones over the limit', () => {
+  const plain = Array(140).fill('- Preserve requirements.').join('\n');
+  const nested = Array(5).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n');
+  const scoped = '# When releasing\n\n' + Array(6).fill('- Tag the release.').join('\n');
+  const relaxed = '# Notes\n\nRead [the guide](guide.md) first.\n\nKeep the key secret and never print it.';
+  const report = parseDocument([plain + '\n' + nested, scoped, relaxed].join('\n\n'));
+  const ready = report.units.filter(unit => unit.state === 'ready');
+  const over = report.units.filter(unit => unit.reason === 'over_limit');
+  assert.equal(ready.length, LIMITS.rules);
+  assert.ok(ready.slice(140, 145).every(unit => unit.rule === 'Keep tests fast.\n- Avoid network calls.'));
+  assert.ok(ready.slice(145).every(unit => unit.rule === 'When releasing:\nTag the release.' && unit.withContext === true));
+  // The last scoped item, the linked-file instruction and the resolved pronoun are over the limit, in document order.
+  assert.deepEqual(over.map(({ state, rule, withContext, linkedUnread, rawText }) => ({ state, rule, withContext, linkedUnread, rawText })), [
+    { state: 'skipped', rule: '', withContext: undefined, linkedUnread: undefined, rawText: '- Tag the release.' },
+    { state: 'skipped', rule: '', withContext: undefined, linkedUnread: undefined, rawText: 'Read [the guide](guide.md) first.' },
+    { state: 'skipped', rule: '', withContext: undefined, linkedUnread: undefined, rawText: 'Keep the key secret and never print it.' },
+  ]);
+  assert.ok(ready.at(-1).startOffset < over[0].startOffset);
+  assert.deepEqual(report.units.filter(unit => unit.state === 'requires_context'), []);
+  assertSourceCoverage(report);
+
+  // The exported prompt lists the units over the limit as not scored.
+  const { buildPrompt } = require('../public/refactor-prompt.js');
+  const browser = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public/i18n.js'), 'utf8'), browser);
+  const result = { status: 'ok', findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9, primitive: { choice: 'rule', confidence: 0.9 } } };
+  for (const unit of ready) Object.assign(unit, { state: 'ok', result });
+  const packet = JSON.parse(buildPrompt(report, browser.window.STRINGS.en).split('quoted data):\n')[1]);
+  assert.deepEqual(packet.notScored.filter(unit => over.some(({ id }) => id === unit.id)).map(({ state }) => state), ['skipped', 'skipped', 'skipped']);
+  assert.equal(packet.scored.length, LIMITS.rules);
 });
 
 test('a unit scored with its scope is marked in the exported prompt', () => {
@@ -204,19 +226,6 @@ test('a nested item or procedure keeps its reason when it depends on other text 
     assert.deepEqual([unit.state, unit.reason, unit.rule, unit.withContext],
       ['requires_context', 'ordered_procedure', source.slice(source.indexOf('1. Build')), undefined], name);
   }
-});
-
-test('whole blocks leave the ready-excerpt limit before scoped units do', () => {
-  const plain = Array(30).fill('- Preserve requirements.').join('\n');
-  const nested = Array(5).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n');
-  const report = parseDocument(plain + '\n' + nested + '\n\n# When releasing\n\n' + Array(6).fill('- Tag the release.').join('\n'));
-  const units = report.units.filter(unit => unit.kind === 'item');
-  assert.equal(units.filter(unit => unit.state === 'ready').length, 36);
-  assert.ok(units.slice(30, 35).every(unit => unit.state === 'requires_context' && unit.reason === 'nested_list' &&
-    unit.rule === 'Keep tests fast.\n- Avoid network calls.' && unit.withContext === undefined));
-  assert.ok(units.slice(35).every(unit => unit.state === 'ready' && unit.withContext === true));
-  assert.equal(parseDocument(plain + '\n' + Array(4).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n') + '\n\n# When releasing\n\n' +
-    Array(6).fill('- Tag the release.').join('\n')).units.filter(unit => unit.state === 'ready').length, 40);
 });
 
 test('multiple paragraphs and attached examples stay with their parent item', () => {
@@ -360,20 +369,6 @@ test('an instruction to read or follow a linked Markdown file is scored as writt
   ]);
 });
 
-test('units made ready despite a pronoun or a linked file leave the ready-excerpt limit first', () => {
-  const nested = '- Keep tests fast.\n  - Avoid network calls.';
-  const relaxed = '\n\nRead [the guide](guide.md) first.\n\nKeep the key secret and never print it.';
-  const report = parseDocument(Array(38).fill('- Preserve requirements.').concat(nested).join('\n') + relaxed);
-  assert.equal(report.units.filter(unit => unit.state === 'ready').length, 39);
-  assert.deepEqual(report.units.slice(-2).map(({ state, reason, linkedUnread, rule }) => ({ state, reason, linkedUnread, rule })), [
-    { state: 'requires_context', reason: 'linked_context', linkedUnread: undefined, rule: 'Read [the guide](guide.md) first.' },
-    { state: 'requires_context', reason: 'dependent_text', linkedUnread: undefined, rule: 'Keep the key secret and never print it.' },
-  ]);
-  assert.equal(report.units.at(-3).state, 'ready');
-  assert.equal(parseDocument(Array(37).fill('- Preserve requirements.').concat(nested).join('\n') + relaxed)
-    .units.filter(unit => unit.state === 'ready').length, 40);
-});
-
 test('oversized individual units keep all source rather than truncating', () => {
   const source = 'Keep '.repeat(501);
   const report = parseDocument(source);
@@ -390,8 +385,9 @@ test('file limit measures UTF-8 bytes, accepts boundary, and rejects excess with
 
 test('rejects empty input and limits eligible rules without silently dropping any', () => {
   assert.throws(() => parseDocument(' \r\n\t'), hasCode('empty'));
-  assert.equal(parseDocument(Array(40).fill('- Preserve requirements.').join('\n')).units.length, 40);
-  assert.throws(() => parseDocument(Array(41).fill('- Preserve requirements.').join('\n')), hasCode('too_many_rules'));
+  const states = count => parseDocument(Array(count).fill('- Preserve requirements.').join('\n')).units.map(({ state, reason }) => [state, reason]);
+  assert.deepEqual(states(LIMITS.rules), Array(LIMITS.rules).fill(['ready', undefined]));
+  assert.deepEqual(states(LIMITS.rules + 1), Array(LIMITS.rules).fill(['ready', undefined]).concat([['skipped', 'over_limit']]));
 });
 
 // Every stated copy of the limits agrees with LIMITS: the single-rule MAX in public/index.html,
@@ -465,8 +461,8 @@ test('annotated file fixtures characterize retained instructions and known scope
 });
 
 test('caps structural units including excluded content', () => {
-  assert.equal(parseDocument(Array(256).fill('# Heading').join('\n')).units.length, 256);
-  assert.throws(() => parseDocument(Array(257).fill('# Heading').join('\n')), hasCode('too_many_units'));
+  assert.equal(parseDocument(Array(512).fill('# Heading').join('\n')).units.length, 512);
+  assert.throws(() => parseDocument(Array(513).fill('# Heading').join('\n')), hasCode('too_many_units'));
 });
 
 test('preserves BOM, CR-only lines, emoji, and tab indentation in source ranges', () => {

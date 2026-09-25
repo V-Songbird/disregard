@@ -44,7 +44,8 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
 ## Limits and configuration
 
 - Scoring supports English instructions; the interface supports six languages.
-- Files may contain up to 64 KiB, 256 structural blocks, and 40 eligible excerpts.
+- Files may contain up to 64 KiB and 512 structural blocks. The first 150 eligible excerpts are scored; later ones stay listed as not analyzed.
+  A file review starts at most 55 requests a minute and says when it waits.
 - Each scored excerpt is limited to 2000 UTF-16 code units.
 - An excerpt that depends only on a conditional heading or an introducing paragraph is scored with that section context stated first.
   A list item is scored together with the items nested under it, and a numbered list as one procedure.

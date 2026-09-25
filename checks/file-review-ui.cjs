@@ -25,7 +25,7 @@ const scopedRules = ["Before deployment:\nRun the full test suite.", "Before dep
 const linkedRule = "Read and follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.";
 const linkedDoc = linkedRule + "\n\nSee [the notes](NOTES.md) for background.";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
-let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [];
+let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0;
 function result(rule) {
   const hedge = rule.includes("try to");
   return { status: "ok", findings: hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : [],
@@ -139,6 +139,8 @@ const server = http.createServer(async (req, res) => {
     else if (mode === "html-rate") { res.writeHead(429, { "Content-Type": "text/html" }); res.end("<html>Limited</html>"); }
     else if (mode === "empty-unavailable") { res.writeHead(503); res.end(); }
     else if (mode === "rate") reply(entry, 429, { code: "rate_limited" });
+    // The Worker's client limit of 60 a minute; the check resets the count when it advances the page's clock a minute.
+    else if (mode === "window") { if (++windowCount > 60) reply(entry, 429, { code: "rate_limited" }); else reply(entry); }
     else if (mode === "partial" && rule.includes("module1")) reply(entry, 502, { code: "upstream" });
     else if (mode === "refused" && rule.includes("module1")) reply(entry, 200, { status: "refused", findings: [], echo: "DO NOT EXPORT THIS ECHO" });
     else if (mode === "invalid") reply(entry, 200, { status: "ok", findings: [], factors: {} });
@@ -318,8 +320,12 @@ async function unitHints(page) {
         requests = [];
         await prepare(page, "x".repeat(65537));
         check("oversize file rejects locally", await page.locator("#file-error").isVisible() && requests.length === 0);
-        await prepare(page, Array.from({ length: 41 }, (_, i) => `- Use module${i}.`).join("\n"));
-        check("41 independent rules reject locally", await page.locator("#file-error").isVisible() && requests.length === 0);
+        await prepare(page, Array.from({ length: 151 }, (_, i) => `- Use module${i}.`).join("\n"));
+        const overLimit = await unitHints(page);
+        check("151 independent rules offer the first 150 and list the last over the limit", { error: await page.locator("#file-error").isVisible(),
+          sent: requests.length, ready: overLimit.filter((unit) => unit.state === "ready").length, last: overLimit.at(-1), start: await page.textContent("#file-start") },
+          { error: false, sent: 0, ready: 150, start: "Analyze 150 instructions", last: { state: "skipped", label: "Not scored",
+            hints: ["Only the first 150 selected excerpts of a file are analyzed. Review this part in a separate file to analyze it."] } });
         await prepare(page, "@AGENTS.md");
         check("reference-only file offers no scoring", await page.locator("#file-start").isHidden() && await page.locator(".copy-prompt").count() === 0);
 
@@ -393,6 +399,27 @@ async function unitHints(page) {
           [unit.dataset.state, unit.querySelector(".unit-state").textContent, unit.querySelector(".unit-content > p.hint")?.textContent]));
         check("a response that fails validation is labelled not scored", await unitText(page),
           [["error", "Not scored", "A result is incomplete or could not be verified. Analyze that instruction again before exporting."]]);
+
+        // A large file paces its requests on the page's clock: 55 start, the run says it waits, and the rest start
+        // once a minute has passed. Unpaced, the 61st request would meet the server's stand-in for the Worker limit.
+        const pacedContext = await browser.newContext({ locale: "en-US" });
+        site.watch(pacedContext, url);
+        await pacedContext.clock.install();
+        const paced = await pacedContext.newPage(); paced.on("pageerror", (error) => report.pageErrors.push(error.message));
+        await paced.goto(url);
+        mode = "window"; windowCount = 0; const beforePaced = requests.length;
+        await prepare(paced, Array.from({ length: 70 }, (_, i) => `- Use module${i} for storage.`).join("\n"));
+        await paced.click("#file-start");
+        await paced.waitForFunction(() => document.getElementById("file-progress").textContent.includes("Waiting") &&
+          !document.querySelector('[data-state="pending"]'), null, { timeout: 10000 });
+        await paced.waitForTimeout(300);
+        check("a large file waits after 55 requests and says so", { sent: requests.length - beforePaced,
+          ok: await paced.locator('[data-state="ok"]').count(), progress: await paced.textContent("#file-progress") },
+          { sent: 55, ok: 55, progress: "Analyzing instructions… 55 of 70 finished. Waiting to stay within the request limit; the analysis continues within a minute." });
+        windowCount = 0; await paced.clock.fastForward(60000); await settled(paced);
+        check("a paced file finishes without a 429", { sent: requests.length - beforePaced, ok: await paced.locator('[data-state="ok"]').count(),
+          progress: await paced.textContent("#file-progress") }, { sent: 70, ok: 70, progress: "Analysis finished. Review the coverage before using the prompt." });
+        mode = "ok"; await pacedContext.close();
 
         // A request past the deadline shows the file-mode timeout message; its label still says the request failed.
         const deadlineContext = await browser.newContext({ locale: "en-US" });

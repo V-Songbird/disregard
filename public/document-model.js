@@ -8,7 +8,7 @@
 })(typeof window === 'object' ? window : null, function (commonmark) {
   'use strict';
 
-  const LIMITS = Object.freeze({ fileBytes: 64 * 1024, rules: 40, units: 256, ruleChars: 2000 });
+  const LIMITS = Object.freeze({ fileBytes: 64 * 1024, rules: 150, units: 512, ruleChars: 2000 });
   const PARSER_VERSION = 'commonmark.js 0.31.2';
 
   function fail(code) {
@@ -181,17 +181,6 @@
       return parts.concat(intro ? intro.text : []).map(part => /[.!?:]$/.test(part) ? part : part + ':');
     }
 
-    // Units scored with their scope, as a whole block, or despite a pronoun or linked file, and
-    // what they revert to if the file has too many ready units that way. The last kind reverts
-    // first, then whole blocks.
-    const scoped = [];
-    const wholeBlocks = [];
-    const relaxed = [];
-    function withContext(unit, reason, text, group = scoped) {
-      if (unit.rule !== text) unit.withContext = true;
-      group.push({ unit, reason, text });
-    }
-
     // intro is the paragraph introducing a list item's list: { text, unit, readable }.
     function candidate(node, intro, forcedReason) {
       const context = headings.filter(Boolean).concat(intro ? intro.text : []);
@@ -254,13 +243,9 @@
         state = 'requires_context'; reason = 'linked_context';
       }
       const unit = addNode(node, state, reason, context, state === 'skipped' ? '' : rule);
-      if (whole && state === 'ready') withContext(unit, whole, text, wholeBlocks);
-      else if (rule !== text) withContext(unit, 'inherited_scope', text);
-      else if (state === 'ready' && (linksContext(children) || /\b(?:it|them)\b/i.test(text))) {
-        // A pronoun resolved in the unit or an instruction to read a linked file is ready, but reverts first.
-        if (linksContext(children)) unit.linkedUnread = true;
-        relaxed.push({ unit, reason: /\b(?:it|them)\b/i.test(text) ? 'dependent_text' : 'linked_context', text });
-      }
+      // Only ready units carry a rule other than their own text: the ones scored with their scope.
+      if (rule !== text) unit.withContext = true;
+      else if (state === 'ready' && linksContext(children)) unit.linkedUnread = true;
       return unit;
     }
 
@@ -298,8 +283,7 @@
           }
           const introduced = listed && scopeLines(null).concat(listed).join('\n');
           if (introduced && introduced.length <= LIMITS.ruleChars) {
-            intro.unit.state = 'ready'; delete intro.unit.reason; intro.unit.rule = introduced;
-            withContext(intro.unit, 'list_introduction', intro.text);
+            Object.assign(intro.unit, { state: 'ready', rule: introduced, withContext: true }); delete intro.unit.reason;
           }
         }
         intro = null;
@@ -331,18 +315,13 @@
     }
     units.sort((left, right) => left.startOffset - right.startOffset);
     units.forEach((unit, index) => { unit.id = `unit-${index + 1}`; });
-    const ready = () => units.filter(unit => unit.state === 'ready').length;
-    // Scoring these units never makes a file too large to review; they fall back, group
-    // by group, to leaving those units for contextual review.
-    for (const group of [relaxed, wholeBlocks, scoped]) {
-      if (ready() <= LIMITS.rules) break;
-      for (const { unit, reason, text } of group) {
-        Object.assign(unit, { state: 'requires_context', reason, rule: text });
-        delete unit.withContext;
-        delete unit.linkedUnread;
-      }
+    // A file is never refused for its ready units: the first LIMITS.rules in document order keep
+    // their context and are analyzed, and the rest stay listed as over the limit.
+    for (const unit of units.filter(unit => unit.state === 'ready').slice(LIMITS.rules)) {
+      Object.assign(unit, { state: 'skipped', reason: 'over_limit', rule: '' });
+      delete unit.withContext;
+      delete unit.linkedUnread;
     }
-    if (ready() > LIMITS.rules) fail('too_many_rules');
     return { schemaVersion: 1, sourceName: sourceName || 'AGENTS.md', sourceText: source, parserVersion: PARSER_VERSION, units };
   }
 
