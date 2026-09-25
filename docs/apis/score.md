@@ -116,7 +116,9 @@ User-facing descriptions belong to the interface, not the API response.
 Routing is named at confidence 0.8 or greater. Otherwise, F8 values at or below 1.25
 can produce the generic `could_be_a_hook` finding. F3 below 1.5 produces `no_trigger`.
 An `is_rule` value below 0.5 produces `not_a_rule`, unless the supplemental classifier
-identifies an artifact requirement at confidence 0.8 or greater.
+identifies an artifact requirement at confidence 0.8 or greater. `not_a_rule` is then
+the only finding: routing, `no_trigger`, and the local findings judge the shape of a
+rule, so they are not returned for background. `factors` still carries every value.
 
 These comparisons also use unrounded provider values. Returned model factors,
 confidence values, and finding values are rounded to two decimal places. Consume
