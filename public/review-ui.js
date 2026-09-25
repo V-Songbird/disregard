@@ -37,6 +37,8 @@
   // from findings: a line the repository cannot show, such as where something lives, can guide an agent.
   const background = (unit) => unit.state === "ok" && unit.result.findings.length > 0 &&
     unit.result.findings.every((finding) => finding.id === "not_a_rule");
+  // The findings a row counts and names: a scored excerpt's own, none for background.
+  const findings = (unit) => unit.state === "ok" && !background(unit) ? unit.result.findings : [];
 
   function promptPanel(report, t) {
     const panel = el("section", "prompt-panel");
@@ -125,7 +127,12 @@
     const runActions = el("div", "row"); runActions.append(start, cancel);
     const list = el("div", "unit-list"); list.id = "file-units";
     const exported = el("div"); exported.id = "file-export";
-    output.append(reportTitle, reportHint, coverage, lengthNote, progress, runActions, exported, list);
+    // Once a row has findings, the reader may hide the rows without them, for this review only.
+    const only = el("input"); only.type = "checkbox"; only.id = "file-filter";
+    const onlyText = el("span"), onlyLabel = el("label", "unit-filter"); onlyLabel.append(only, onlyText);
+    const showing = el("span", "count"); showing.id = "file-showing"; showing.setAttribute("role", "status");
+    const filter = el("div", "row"); filter.append(onlyLabel, showing);
+    output.append(reportTitle, reportHint, coverage, lengthNote, progress, runActions, exported, filter, list);
     host.append(form, error, output);
 
     const t = () => getStrings().file;
@@ -169,6 +176,18 @@
       const running = busy && counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) });
       progress.textContent = busy ? (pacing ? fill(strings.pacing, { progress: running }) : running) :
         message ? strings[message] : remaining ? "" : strings.none;
+      // Filtering keeps rows with findings, rows a retry would send and rows in flight.
+      filter.hidden = !report.units.some((unit) => findings(unit).length);
+      onlyText.textContent = strings.filter;
+      const filtering = only.checked && !filter.hidden;
+      let visible = 0;
+      for (const unit of report.units) {
+        const row = rows.get(unit.id);
+        row.details.hidden = filtering && !findings(unit).length && !retryable(unit) && unit.state !== "pending";
+        if (!row.details.hidden) visible++;
+      }
+      const total = report.units.length;
+      showing.textContent = filtering ? counted(strings.showing, total, { shown: number(visible), total: number(total) }) : "";
     }
 
     function renderUnit(unit, row) {
@@ -180,7 +199,7 @@
       const invalid = unit.state === "error" && ["invalid_result", "unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
       // A scored row says what was found while collapsed: its count and each finding's headline, as text
       // inside the one summary control. The cards that explain them stay in the details.
-      const flagged = unit.state === "ok" && !background(unit) ? unit.result.findings : [];
+      const flagged = findings(unit);
       const state = el("span", flagged.length ? "unit-state flagged" : "unit-state", invalid ? strings.states.skipped :
         background(unit) ? strings.states.background : flagged.length ? counted(strings.findingCount, flagged.length) :
         strings.states[unit.state] || strings.states.skipped);
@@ -270,7 +289,7 @@
 
     function invalidate() {
       revision++;
-      stop(); report = null; errorCode = null; message = null; everRan = false;
+      stop(); report = null; errorCode = null; message = null; everRan = false; only.checked = false;
       renderReport();
     }
 
@@ -399,6 +418,7 @@
     }
     start.addEventListener("click", run);
     cancel.addEventListener("click", () => stop());
+    only.addEventListener("change", controls);
     for (const button of [start, prepare, cancel]) button.addEventListener("keydown", (event) => {
       if (event.key === "Enter" && event.repeat && !event.isComposing) event.preventDefault();
     });
