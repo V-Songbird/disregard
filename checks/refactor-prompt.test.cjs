@@ -5,7 +5,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const { buildPrompt, TEMPLATE_VERSION, MAX_PROMPT_CHARS } = require("../public/refactor-prompt.js");
+const { buildPrompt, lineCount, TEMPLATE_VERSION, MAX_PROMPT_CHARS } = require("../public/refactor-prompt.js");
+const { parseDocument } = require("../public/document-model.js");
 
 const browser = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../public/i18n.js"), "utf8"), browser);
@@ -36,6 +37,13 @@ function report(text = "Run `node --test` before committing.", response = result
   };
 }
 
+// A scored first line followed by unscored lines, `count` lines in all before `ending`.
+function lines(count, ending = "") {
+  const input = report();
+  input.sourceText += "\nBackground line.".repeat(count - 1) + ending;
+  return input;
+}
+
 function packet(prompt) {
   return JSON.parse(prompt.slice(prompt.indexOf(PACKET) + PACKET.length));
 }
@@ -63,6 +71,7 @@ test("a clean single-rule snapshot produces an exact review packet and allows no
   assert.equal(data.templateVersion, 1);
   assert.equal(data.source.label, "AGENTS.md");
   assert.equal(data.source.lengthUtf16, input.sourceText.length);
+  assert.equal(data.source.lineCount, 1);
   assert.match(data.source.fingerprint, /^fnv1a-utf16-[0-9a-f]{8}$/);
   assert.equal(data.scored[0].rawExcerpt, input.sourceText);
   assert.equal(data.scored[0].exactScoredText, input.sourceText.trim());
@@ -167,6 +176,39 @@ test("partial reports export range coverage without any unscored text, echo, anc
     assert.ok(unit.reason.length);
   }
   assert.equal(data.coverage.unscoredUnits, states.length);
+});
+
+test("lines split at CRLF, CR or LF as the document reader numbers them; a final terminator adds no line", () => {
+  assert.deepEqual(["a", "a\n", "a\r\nb", "a\rb\r", "a\n\n", "a\r\n\r\nb\n"].map(lineCount), [1, 1, 2, 2, 2, 3]);
+  for (const text of ["- a", "- a\n", "- a\r\n- b", "- a\r- b\r", "- a\n\n- b\n"]) {
+    assert.equal(parseDocument(text).units.at(-1).endLine, lineCount(text), JSON.stringify(text));
+  }
+});
+
+test("the packet counts source lines, and only a file over the guide's target asks about path-scoped rules or skills", () => {
+  for (const [input, count] of [[lines(200), 200], [lines(200, "\n"), 200], [lines(200, "\r\n"), 200], [lines(201), 201], [lines(201, "\n"), 201]]) {
+    const output = buildPrompt(input, english);
+    assert.equal(packet(output).source.lineCount, count);
+    assert.equal(output.includes("path-scoped rules or skills"), count > 200);
+  }
+  assert.ok(buildPrompt(lines(201), english).includes("\n\nThe source has 201 lines, above the Claude Code memory guide's target of under 200 lines " +
+    "per instruction file: you may propose moving sections that apply only to some files or tasks into path-scoped rules or skills, " +
+    "as a question for the owner, never by deleting requirements.\n\nReturn the justified changes"));
+});
+
+test("an excerpt over the per-file limit is exported as unanalyzed, apart from reader exclusions", () => {
+  const input = report();
+  for (const [index, reason] of ["over_limit", "code"].entries()) {
+    const text = `Use module${index} for storage.`;
+    input.sourceText += "\n";
+    const startOffset = input.sourceText.length;
+    input.sourceText += text;
+    input.units.push({ id: `unit-${index + 2}`, startLine: index + 2, endLine: index + 2, startOffset,
+      endOffset: input.sourceText.length, rawText: text, rule: "", context: [], state: "skipped", reason });
+  }
+  assert.deepEqual(packet(buildPrompt(input, english)).notScored.map((unit) => [unit.state, unit.reason]), [
+    ["skipped", "Eligible for scoring but not analyzed because of the per-file excerpt limit; inspect it as an ordinary unreviewed instruction."],
+    ["skipped", "Excluded by the document reader; inspect this source range directly."]]);
 });
 
 test("a report with no scored units has no findings-based prompt", () => {
