@@ -54,6 +54,7 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
 - Each scored excerpt is limited to 2000 UTF-16 code units.
 - An excerpt that depends only on a conditional heading or an introducing paragraph is scored with that section context stated first.
   A list item is scored together with the items nested under it, and a numbered list as one procedure.
+  A paragraph ending in a colon is scored together with the one code block after it.
   An instruction to read or follow a linked Markdown file is scored as written, without reading that file.
   Other context-dependent, refused, skipped, or failed excerpts remain explicitly unreviewed.
 - Findings are separate signals. There is no overall grade or guarantee of correctness.
