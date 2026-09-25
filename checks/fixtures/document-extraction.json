@@ -175,11 +175,10 @@
         {
           "startLine": 9,
           "endLine": 9,
-          "state": "requires_context",
-          "reason": "dependent_text"
+          "state": "ready"
         }
       ],
-      "annotation": "A pronoun that follows what it names in the same excerpt, and an instruction to read or follow a linked Markdown file, are scored as written; the linked file is not read and the excerpt says so. A link given only for reference, and a sentence that begins with a pronoun, stay for contextual review."
+      "annotation": "A pronoun that follows what it names in the same excerpt, including one that starts a later sentence, and an instruction to read or follow a linked Markdown file, are scored as written; the linked file is not read and the excerpt says so. A link given only for reference stays for contextual review."
     },
     {
       "name": "Command, path and name reference entries",

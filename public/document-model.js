@@ -69,9 +69,18 @@
     return /^(?:otherwise|then|instead|also|else|in that case|as above|as below)\b|\b(?:above|previous|aforementioned|former|latter)\b/i.test(text);
   }
 
+  // Words that point outside the unit count anywhere in it. Demonstratives and pronouns count only in
+  // its first sentence: a later "this" or "it" usually refers to something the unit already names, and
+  // the unit is scored as a whole. A first sentence that opens with a demonstrative, other than one
+  // naming the document or project itself, or says "this means", depends on earlier text. A bare
+  // demonstrative later in the first sentence ("Set these ...") is no longer caught by a later
+  // pronoun; that trade is accepted.
   function dependentText(text) {
-    return refersBack(text) || /\b(?:this|that|these|those|the following)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\bbelow\b/i.test(text)
-      || unresolvedPronoun(text);
+    const first = text.split(/(?<=[.!?])\s+(?=[A-Z*`_\[])/)[0];
+    return refersBack(text) || /\bthe following\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\bbelow\b/i.test(text)
+      || /\b(?:this|that|these|those)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b/i.test(first)
+      || /^\W*(?:this|these|those|that)\s+(?!(?:is|file|document(?:ation)?|guide|section|repo(?:sitory)?|project|library|codebase)\b)\w/i.test(first) || /\bthis means\b/i.test(first)
+      || unresolvedPronoun(first);
   }
 
   // A bare "it" or "them" can refer to something named earlier in the same unit: code, a link or

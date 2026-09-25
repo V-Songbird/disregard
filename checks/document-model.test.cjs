@@ -429,12 +429,20 @@ test('a pronoun naming something stated earlier in its unit does not make the un
     'Treat factor values as signals. Do not convert them into a grade.',
     'Run `npm test` before pushing; it checks the fixtures.',
     'Keep the key out of logs and never print it.',
+    'The export uses one timezone. It is UTC for all dates.',
+    'Tests should use `pretty_assertions::assert_eq` for clearer diffs. Import this at the top of the test module if it isn\'t already.',
+    'This document lists the project\'s conventions. Use `pnpm` for installs.',
+    'This library generates RSS feeds. It has no runtime dependencies.',
   ]) assert.deepEqual(states(source), [{ state: 'ready', reason: undefined }], source);
   for (const source of [
     'Run it before committing.',
-    'The export uses one timezone. It is UTC for all dates.',
     'In practice this means: do not post comments. If a user asks, tell them the policy.',
     'These checks use raw values. Do not reconstruct them from rounded values.',
+    'It builds the docs. Run `make docs` before every release.',
+    'This runs the linter on staged files.',
+    'These modules use their own package managers.',
+    'Run `npm test` before pushing. Use the flags described below.',
+    'Keep the build green. Run the checks in the same order as above.',
   ]) assert.deepEqual(states(source), [{ state: 'requires_context', reason: 'dependent_text' }], source);
 });
 
