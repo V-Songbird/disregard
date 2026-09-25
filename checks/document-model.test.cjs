@@ -341,16 +341,17 @@ test('an @file import outside code stays unresolved next to a code span', () => 
   }
 });
 
-test('prose introducing examples stays with them; prose introducing a list is scored with it', () => {
+test('a sentence is scored with its one example; prose introducing a list is scored with it', () => {
   const report = parseDocument('Run the command.\n\n```sh\nnpm test\n```\n\nRules for release builds.\n\n- Verify all checks.');
-  assert.equal(report.units[0].reason, 'attached_blocks');
+  assert.deepEqual([report.units[0].state, report.units[0].rule, report.units[0].withCode],
+    ['ready', 'Run the command.\n```sh\nnpm test\n```', true]);
   assert.deepEqual([report.units[2].state, report.units[2].rule, report.units[2].rawText],
     ['ready', 'Rules for release builds.\n- Verify all checks.', 'Rules for release builds.']);
   assert.deepEqual([report.units[3].state, report.units[3].rule], ['ready', 'Rules for release builds.\nVerify all checks.']);
   assertSourceCoverage(report);
 });
 
-test('a paragraph ending in a colon is scored with the one code block it introduces', () => {
+test('a paragraph ending in a colon or a sentence is scored with the one code block after it', () => {
   const report = parseDocument('After cloning, initialize the submodule:\n\n```bash\ngit submodule update --init\n```\n\nNext paragraph.');
   assert.deepEqual(report.units.map(({ startLine, endLine, state, reason, rule, withCode, withContext }) => ({ startLine, endLine, state, reason, rule, withCode, withContext })), [
     { startLine: 1, endLine: 1, state: 'ready', reason: undefined, rule: 'After cloning, initialize the submodule:\n```bash\ngit submodule update --init\n```', withCode: true, withContext: undefined },
@@ -364,6 +365,8 @@ test('a paragraph ending in a colon is scored with the one code block it introdu
     'Show the fence syntax:\n\n~~~ md\nUse ```sh fences.\n~~~': 'Show the fence syntax:\n````md\nUse ```sh fences.\n````',
     '# When releasing\n\nTag the build:\n\n```sh\ngit tag v1\n```': 'When releasing:\nTag the build:\n```sh\ngit tag v1\n```',
     '# Setup\n\nInstall the tools:\n\n```sh\nnpm ci\n```': 'Install the tools:\n```sh\nnpm ci\n```',
+    'Generating tests with `pnpm new-test` is mandatory.\n\n```sh\npnpm new-test\n```': 'Generating tests with `pnpm new-test` is mandatory.\n```sh\npnpm new-test\n```',
+    'Never skip the hooks!\n\n```sh\ngit commit\n```': 'Never skip the hooks!\n```sh\ngit commit\n```',
   };
   for (const [source, rule] of Object.entries(cases)) {
     const unit = parseDocument(source).units.find(unit => unit.kind === 'paragraph');
@@ -373,7 +376,8 @@ test('a paragraph ending in a colon is scored with the one code block it introdu
 
 test('a code block introduction still needs context when it depends on more than that block', () => {
   for (const source of [
-    'Run the command.\n\n```sh\nnpm test\n```',
+    'Run the command.\n\n```sh\nnpm test\n```\n\n```sh\nnpm run lint\n```',
+    'Is this required?\n\n```sh\nnpm test\n```',
     'Run both:\n\n```sh\nnpm test\n```\n\n```sh\nnpm run lint\n```',
     'Compare:\n\n```sh\nnpm test\n```\n\n> Quoted output.',
     'With:\n\n```sh\nnpm ci\n```',

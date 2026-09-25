@@ -323,12 +323,12 @@
           : ['code_block', 'block_quote', 'html_block'].includes(nextType) ? 'attached_blocks' : undefined;
         const unit = candidate(node, null, dependency);
         const text = normalized(node);
-        // A paragraph ending in ':' that introduces one nonempty code block is scored with the block
-        // after it, in a fence, unless another block follows, the paragraph depends on earlier text
-        // (including a continuation such as "With:" or "Or with colors:") or links to context not read
-        // here, or the result is too long. The code block stays skipped.
+        // A paragraph ending in ':', '.' or '!' that is followed by one nonempty code block is scored
+        // with the block after it, in a fence, unless another block follows, the paragraph depends on
+        // earlier text (including a continuation such as "With:" or "Or with colors:") or links to
+        // context not read here, or the result is too long. The code block stays skipped.
         const block = node.next;
-        if (unit.reason === 'attached_blocks' && nextType === 'code_block' && /:$/.test(inlineText(node)) && block.literal.trim()
+        if (unit.reason === 'attached_blocks' && nextType === 'code_block' && /[:.!]$/.test(inlineText(node)) && block.literal.trim()
             && !(block.next && ['code_block', 'block_quote', 'html_block'].includes(block.next.type))
             && !refersBack(text) && !/^(?:or|and|but|with|plus)\b/i.test(text) && !unresolvedPronoun(text)
             && !linksContext(descendants(node))) {
