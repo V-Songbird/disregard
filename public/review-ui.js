@@ -174,6 +174,7 @@
       row.content.append(original);
       if (unit.context.length) row.content.append(el("p", "hint", fill(strings.context,
         { path: unit.context.reduce((outer, inner) => fill(strings.contextPath, { outer, inner })) })));
+      if (unit.linkedUnread) row.content.append(el("p", "hint", strings.linkNotRead));
       if (unit.state !== "ok") {
         // The single-rule banner's language lookup and fallback.
         const language = unit.result?.language;

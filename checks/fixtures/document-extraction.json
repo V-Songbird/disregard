@@ -146,6 +146,42 @@
       "annotation": "A list item is scored together with the items nested under it, and a numbered list as one procedure after the conditional heading it applies under; each range covers the whole block. A nested item whose first line points to other text stays for contextual review."
     },
     {
+      "name": "A pronoun resolved in its own excerpt and an instruction to read a linked file",
+      "sourceName": "AGENTS.md",
+      "source": "## Setup\n\nIf you lack dependencies, install them with `npm ci`.\n\nRead and follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.\n\nSee [the architecture notes](ARCHITECTURE.md) for background.\n\nThe build uses one cache. It is cleared nightly.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "ready"
+        },
+        {
+          "startLine": 5,
+          "endLine": 5,
+          "state": "ready"
+        },
+        {
+          "startLine": 7,
+          "endLine": 7,
+          "state": "requires_context",
+          "reason": "linked_context"
+        },
+        {
+          "startLine": 9,
+          "endLine": 9,
+          "state": "requires_context",
+          "reason": "dependent_text"
+        }
+      ],
+      "annotation": "A pronoun that follows what it names in the same excerpt, and an instruction to read or follow a linked Markdown file, are scored as written; the linked file is not read and the excerpt says so. A link given only for reference, and a sentence that begins with a pronoun, stay for contextual review."
+    },
+    {
       "name": "Known arbitrary domain-heading limitation",
       "sourceName": "AGENTS.md",
       "source": "# Backend\n\n- Use snake_case for field names.\n\n# Frontend\n\n- Use camelCase for field names.",

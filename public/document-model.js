@@ -70,11 +70,41 @@
   }
 
   function dependentText(text) {
-    return refersBack(text) || /\b(?:this|that|these|those|the following)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\b(?:it|them|below)\b/i.test(text);
+    return refersBack(text) || /\b(?:this|that|these|those|the following)\s+(?:rule|step|command|file|tool|setting|case|condition|process|requirement|approach|example|format)s?\b|\bbelow\b/i.test(text)
+      || unresolvedPronoun(text);
+  }
+
+  // A bare "it" or "them" can refer to something named earlier in the same unit: code, a link or
+  // file name, a noun after an article or possessive, or a plural noun. It still depends on other
+  // text when it starts a sentence, when nothing before it could be its referent, or when the unit
+  // also points elsewhere with "this", "these", "those" or a sentence-initial "they".
+  function unresolvedPronoun(text) {
+    const pronouns = [...text.matchAll(/\b(?:it|them)\b/gi)];
+    return pronouns.length > 0 && (/\b(?:this|these|those)\b|(?:^|[.!?]\W*\s)\W*they\b/i.test(text) || pronouns.some(({ index }) => {
+      const before = text.slice(0, index);
+      return /(?:^|[.!?]\W*\s)\W*$/.test(before) || !referent(before);
+    }));
+  }
+
+  function referent(text) {
+    return /`[^`]+`|\[[^\]]+\]|\b[\w-]{2,}\.[a-z][a-z0-9]{0,4}\b|\b(?:the|a|an|your|our|each|every)\s+\w/i.test(text) ||
+      text.split(/[^\w'-]+/).some(word => /^[a-z]{2,}[^\Wisu]s$/i.test(word) && !/^(?:always|does|sometimes|perhaps|towards|afterwards|besides|whereas)$/i.test(word));
+  }
+
+  const CONTEXT_LINK = /(?:\.md(?:[?#]|$)|^#)/i;
+  function contextLinks(children) {
+    return children.filter(child => (child.type === 'link' || child.type === 'image') && CONTEXT_LINK.test(child.destination || ''));
   }
 
   function linksContext(children) {
-    return children.some(child => (child.type === 'link' || child.type === 'image') && /(?:\.md(?:[?#]|$)|^#)/i.test(child.destination || ''));
+    return contextLinks(children).length > 0;
+  }
+
+  // An instruction to read or follow each linked Markdown file or section can be judged as written,
+  // although the linked content is still not read.
+  function readsLinks(text, children) {
+    const targets = [...text.matchAll(/\b(?:read|follow)(?:\s+and\s+(?:read|follow))?\s+(?:the\s+)?\[[^\]]*\]\(<?([^)\s>]+)/gi)];
+    return targets.filter(match => CONTEXT_LINK.test(match[1])).length === contextLinks(children).length;
   }
 
   function looksLikeTable(text) {
@@ -151,10 +181,12 @@
       return parts.concat(intro ? intro.text : []).map(part => /[.!?:]$/.test(part) ? part : part + ':');
     }
 
-    // Units scored with their scope or as a whole block, and what they revert to if
-    // the file has too many ready units that way. Whole blocks revert first.
+    // Units scored with their scope, as a whole block, or despite a pronoun or linked file, and
+    // what they revert to if the file has too many ready units that way. The last kind reverts
+    // first, then whole blocks.
     const scoped = [];
     const wholeBlocks = [];
+    const relaxed = [];
     function withContext(unit, reason, text, group = scoped) {
       if (unit.rule !== text) unit.withContext = true;
       group.push({ unit, reason, text });
@@ -218,12 +250,17 @@
         }
       } else if (dependentText(text) || /:\s*$/.test(text)) {
         state = 'requires_context'; reason = 'dependent_text';
-      } else if (linksContext(children)) {
+      } else if (linksContext(children) && !readsLinks(text, children)) {
         state = 'requires_context'; reason = 'linked_context';
       }
       const unit = addNode(node, state, reason, context, state === 'skipped' ? '' : rule);
       if (whole && state === 'ready') withContext(unit, whole, text, wholeBlocks);
       else if (rule !== text) withContext(unit, 'inherited_scope', text);
+      else if (state === 'ready' && (linksContext(children) || /\b(?:it|them)\b/i.test(text))) {
+        // A pronoun resolved in the unit or an instruction to read a linked file is ready, but reverts first.
+        if (linksContext(children)) unit.linkedUnread = true;
+        relaxed.push({ unit, reason: /\b(?:it|them)\b/i.test(text) ? 'dependent_text' : 'linked_context', text });
+      }
       return unit;
     }
 
@@ -295,13 +332,14 @@
     units.sort((left, right) => left.startOffset - right.startOffset);
     units.forEach((unit, index) => { unit.id = `unit-${index + 1}`; });
     const ready = () => units.filter(unit => unit.state === 'ready').length;
-    // Scoring whole blocks or with scope never makes a file too large to review; they
-    // fall back, whole blocks first, to leaving those units for contextual review.
-    for (const group of [wholeBlocks, scoped]) {
+    // Scoring these units never makes a file too large to review; they fall back, group
+    // by group, to leaving those units for contextual review.
+    for (const group of [relaxed, wholeBlocks, scoped]) {
       if (ready() <= LIMITS.rules) break;
       for (const { unit, reason, text } of group) {
         Object.assign(unit, { state: 'requires_context', reason, rule: text });
         delete unit.withContext;
+        delete unit.linkedUnread;
       }
     }
     if (ready() > LIMITS.rules) fail('too_many_rules');

@@ -308,6 +308,72 @@ test('ambiguous pronouns and references stay available for contextual review', (
   assert.ok(report.units.every(unit => unit.state === 'requires_context' && unit.reason === 'dependent_text'));
 });
 
+test('a pronoun naming something stated earlier in its unit does not make the unit dependent', () => {
+  const states = source => parseDocument(source).units.map(({ state, reason }) => ({ state, reason }));
+  for (const source of [
+    'If you lack dependencies, you can download them with `pnpm install`.',
+    'Treat factor values as signals. Do not convert them into a grade.',
+    'Run `npm test` before pushing; it checks the fixtures.',
+    'Keep the key out of logs and never print it.',
+  ]) assert.deepEqual(states(source), [{ state: 'ready', reason: undefined }], source);
+  for (const source of [
+    'Run it before committing.',
+    'The export uses one timezone. It is UTC for all dates.',
+    'In practice this means: do not post comments. If a user asks, tell them the policy.',
+    'These checks use raw values. Do not reconstruct them from rounded values.',
+  ]) assert.deepEqual(states(source), [{ state: 'requires_context', reason: 'dependent_text' }], source);
+});
+
+test('an instruction to read or follow a linked Markdown file is scored as written and marked as not read', () => {
+  for (const source of [
+    'Read [the contribution guide](docs/contributing.md) before opening a pull request.',
+    'Before changing the parser, read and follow\n[`PARSER.md`](./PARSER.md).',
+    '- Follow [the release checklist](#release-checklist).',
+    'Read and follow [`CONTRIBUTING.md`](CONTRIBUTING.md) as well - it lists the required checks.',
+  ]) {
+    const report = parseDocument(source);
+    assert.deepEqual(report.units.map(({ state, reason, linkedUnread, withContext, rule }) => ({ state, reason, linkedUnread, withContext, rule })),
+      [{ state: 'ready', reason: undefined, linkedUnread: true, withContext: undefined, rule: source.replace(/^- /, '') }], source);
+    assertSourceCoverage(report);
+  }
+  for (const source of [
+    'See [development setup](development.md) for browser checks.',
+    'Read [the guide](guide.md) and the [style notes](style.md).',
+    'Follow ![the diagram](diagram.md).',
+    'Use the scripts in [tools](tools/README.md).',
+  ]) {
+    assert.deepEqual(parseDocument(source).units.map(({ state, reason, linkedUnread }) => ({ state, reason, linkedUnread })),
+      [{ state: 'requires_context', reason: 'linked_context', linkedUnread: undefined }], source);
+  }
+  assert.deepEqual(parseDocument('Read [the notes](https://example.com/notes).').units.map(({ state, linkedUnread }) => [state, linkedUnread]), [['ready', undefined]]);
+
+  const { buildPrompt } = require('../public/refactor-prompt.js');
+  const browser = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public/i18n.js'), 'utf8'), browser);
+  const report = parseDocument('Read [the guide](guide.md) first.\n\nUse English comments.');
+  const result = { status: 'ok', findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9, primitive: { choice: 'rule', confidence: 0.9 } } };
+  for (const unit of report.units) Object.assign(unit, { state: 'ok', result });
+  const packet = JSON.parse(buildPrompt(report, browser.window.STRINGS.en).split('quoted data):\n')[1]);
+  assert.deepEqual(packet.scored.map(({ exactScoredText, linkedContentNotRead }) => ({ exactScoredText, linkedContentNotRead })), [
+    { exactScoredText: 'Read [the guide](guide.md) first.', linkedContentNotRead: true },
+    { exactScoredText: 'Use English comments.', linkedContentNotRead: undefined },
+  ]);
+});
+
+test('units made ready despite a pronoun or a linked file leave the ready-excerpt limit first', () => {
+  const nested = '- Keep tests fast.\n  - Avoid network calls.';
+  const relaxed = '\n\nRead [the guide](guide.md) first.\n\nKeep the key secret and never print it.';
+  const report = parseDocument(Array(38).fill('- Preserve requirements.').concat(nested).join('\n') + relaxed);
+  assert.equal(report.units.filter(unit => unit.state === 'ready').length, 39);
+  assert.deepEqual(report.units.slice(-2).map(({ state, reason, linkedUnread, rule }) => ({ state, reason, linkedUnread, rule })), [
+    { state: 'requires_context', reason: 'linked_context', linkedUnread: undefined, rule: 'Read [the guide](guide.md) first.' },
+    { state: 'requires_context', reason: 'dependent_text', linkedUnread: undefined, rule: 'Keep the key secret and never print it.' },
+  ]);
+  assert.equal(report.units.at(-3).state, 'ready');
+  assert.equal(parseDocument(Array(37).fill('- Preserve requirements.').concat(nested).join('\n') + relaxed)
+    .units.filter(unit => unit.state === 'ready').length, 40);
+});
+
 test('oversized individual units keep all source rather than truncating', () => {
   const source = 'Keep '.repeat(501);
   const report = parseDocument(source);
