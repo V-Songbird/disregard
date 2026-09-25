@@ -4,8 +4,8 @@
   "captureScreenshots": false,
   "checkPromptExport": true,
   "sourceHashes": {
-    "public/i18n.js": "7c8735fe6ed60cad7ebae27f071224b60702503165513811033a0ec8cc03a3ed",
-    "public/refactor-prompt.js": "cadbba38a2e9b6974833225868de3f30dc49d514f864488ee75ce1a03efb6ab8"
+    "public/i18n.js": "98a5fb31e5a04a0986512a3f7639c406893ff2459b1eacc7e8402f703e90480a",
+    "public/refactor-prompt.js": "6c38227c71e1cbc0b8efc7019fe875a515c5edaa691eb96f635058b41ae965fd"
   },
   "cases": [
     {

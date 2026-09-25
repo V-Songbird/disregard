@@ -25,12 +25,17 @@ const scopedRules = ["Before deployment:\nRun the full test suite.", "Before dep
 const linkedRule = "Read and follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.";
 const linkedDoc = linkedRule + "\n\nSee [the notes](NOTES.md) for background.";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
+// Rows with two findings, background only (not_a_rule) and none.
+const summaryDoc = "- Always try to keep quality high.\n- The build cache is stored in `.cache/`, which CI clears nightly.\n- Keep functions short.";
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0;
 function result(rule) {
-  const hedge = rule.includes("try to");
-  return { status: "ok", findings: hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : [],
-    factors: { F1: hedge ? 0.2 : 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.95,
-      primitive: { choice: "rule", confidence: 0.9 }, rule_role: { choice: "direct_action", confidence: 0.9 } } };
+  const hedge = rule.includes("try to"), vague = rule.includes("quality"), background = rule.includes("is stored in");
+  const findings = background ? [{ id: "not_a_rule", factor: "is_rule", value: 0.3 }] : [
+    ...(hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : []),
+    ...(vague ? [{ id: "no_concrete_anchor", factor: "F7", value: 0.1 }] : [])];
+  return { status: "ok", findings,
+    factors: { F1: hedge ? 0.2 : 0.85, F2: 0.85, F3: 2, F7: vague ? 0.1 : 0.8, F8: 2, is_rule: background ? 0.3 : 0.95,
+      primitive: { choice: "rule", confidence: 0.9 }, rule_role: { choice: background ? "background" : "direct_action", confidence: 0.9 } } };
 }
 // Not-English, inherited error code and unknown finding responses, keyed by the rule sent.
 const statusCases = {
@@ -88,7 +93,8 @@ const unitLocations = {
   hi: ["पंक्तियाँ 1–2", "पंक्ति 3"], ar: ["الأسطر 1–2", "السطر 3"], fr: ["Lignes 1–2", "Ligne 3"],
 };
 // Counted labels written out per locale: start and retry buttons for 1, 2, 5 and 11 units, progress at
-// 0 and 1 of 2 finished, and coverage with 3 scored, 1 flagged, 5 left; 1 left; and 11 left.
+// 0 and 1 of 2 finished, and coverage with 3 scored, 1 flagged, 5 left; 1 left; and 11 left. Row labels
+// for 1 and 2 findings, none and background, and coverage with 3 scored, 1 flagged, 1 background, 0 left.
 const countedLabels = {
   en: { start1: "Analyze 1 instruction", start2: "Analyze 2 instructions", start5: "Analyze 5 instructions", start11: "Analyze 11 instructions",
     retry1: "Analyze 1 remaining instruction", retry2: "Analyze 2 remaining instructions",
@@ -121,6 +127,20 @@ const countedLabels = {
     running0: "Analyse des instructions… 0 sur 2 terminée.", running1: "Analyse des instructions… 1 sur 2 terminée.",
     coverage315: "3 analysés · 1 avec des points à examiner · 5 non analysés", coverage001: "0 analysé · 0 avec des points à examiner · 1 non analysé",
     coverage11: "0 analysé · 0 avec des points à examiner · 11 non analysés" },
+};
+const rowLabels = {
+  en: { finding1: "1 finding", findings2: "2 findings", clean: "No findings", background: "Background",
+    coverage: "3 analyzed · 1 with findings · 1 read as background · 0 not analyzed" },
+  es: { finding1: "1 hallazgo", findings2: "2 hallazgos", clean: "Sin hallazgos", background: "Información de contexto",
+    coverage: "3 analizados · 1 con hallazgos · 1 de contexto · 0 sin analizar" },
+  zh: { finding1: "1 项发现", findings2: "2 项发现", clean: "无发现", background: "背景信息",
+    coverage: "已分析 3 项 · 1 项有发现 · 1 项为背景信息 · 0 项未分析" },
+  hi: { finding1: "1 निष्कर्ष", findings2: "2 निष्कर्ष", clean: "कोई निष्कर्ष नहीं", background: "संदर्भ जानकारी",
+    coverage: "3 का विश्लेषण हुआ · 1 में निष्कर्ष मिले · 1 संदर्भ जानकारी के रूप में पढ़ा गया · 0 का विश्लेषण नहीं हुआ" },
+  ar: { finding1: "ملاحظة واحدة", findings2: "ملاحظتان", clean: "لا ملاحظات", background: "معلومات سياقية",
+    coverage: "تم تحليل 3 · ظهرت ملاحظات في 1 · قُرئ 1 كمعلومات سياقية · لم يُحلل 0" },
+  fr: { finding1: "1 point à examiner", findings2: "2 points à examiner", clean: "Aucun point à examiner", background: "Informations de contexte",
+    coverage: "3 analysés · 1 avec des points à examiner · 1 lu comme du contexte · 0 non analysé" },
 };
 function reply(entry, code = 200, body = result(entry.rule)) {
   if (entry.res.destroyed) return;
@@ -219,6 +239,9 @@ async function unitHints(page) {
       check(prefix + " inherited scope excluded", await page.locator('.instruction-unit[data-state="requires_context"]').count(), 1);
       await page.click("#file-start"); await settled(page);
       const coverage315 = await page.textContent("#file-report .coverage");
+      check(prefix + " scored rows label their finding count", await page.evaluate(() =>
+        [...document.querySelectorAll('.instruction-unit[data-state="ok"] .unit-state')].map((label) => label.textContent)),
+        [rowLabels[locale].finding1, rowLabels[locale].clean, rowLabels[locale].clean]);
       if (joinExamples[locale]) check(prefix + " joins and numbers follow the locale", await page.evaluate(() => ({
         context: document.querySelector('.instruction-unit[data-state="requires_context"] .unit-content > p.hint')?.textContent,
         values: [...document.querySelector('.instruction-unit[data-state="ok"]').querySelectorAll("dd")].map((dd) => dd.textContent) })), joinExamples[locale]);
@@ -287,6 +310,25 @@ async function unitHints(page) {
       await prepare(page, "- Keep requirements\n  across lines.\n- Keep one line.");
       check(prefix + " unit locations name a range or one line", await page.evaluate(() =>
         [...document.querySelectorAll(".instruction-unit .unit-location")].map((location) => location.textContent)), unitLocations[locale]);
+      // Collapsed rows name what was found: the count and each headline, as text inside the one summary control.
+      // A row whose only finding is not_a_rule reads as background and is counted apart from findings.
+      mode = "ok"; await prepare(page, summaryDoc); await page.click("#file-start"); await settled(page);
+      const rows = await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value], units = [...document.querySelectorAll(".instruction-unit")];
+        return { coverage: document.querySelector("#file-report .coverage").textContent,
+          shown: units.map((unit) => [unit.open, unit.querySelector(".unit-state").textContent,
+            ...[...unit.querySelectorAll("summary .unit-headline")].map((line) => line.getClientRects().length ? line.textContent : "hidden")]),
+          headlines: [t.findings.hedge_dominance.h, t.findings.no_concrete_anchor.h],
+          controls: units.map((unit) => unit.querySelector("summary").querySelectorAll("a, button, input, select, textarea, [tabindex]").length) };
+      });
+      check(prefix + " collapsed rows show their count and headlines", rows.shown,
+        [[false, rowLabels[locale].findings2, ...rows.headlines], [false, rowLabels[locale].background], [false, rowLabels[locale].clean]]);
+      check(prefix + " coverage counts background apart from findings", rows.coverage, rowLabels[locale].coverage);
+      check(prefix + " each row summary stays one control", rows.controls, [0, 0, 0]);
+      await page.locator(".instruction-unit > summary").first().focus(); await page.keyboard.press("Tab");
+      check(prefix + " Tab moves from one row summary to the next", await page.evaluate(() =>
+        document.activeElement === document.querySelectorAll(".instruction-unit > summary")[1]));
+      mode = "status";
       await prepare(page, scopedDoc);
       check(prefix + " a scoped excerpt is ready and says its text carries its section context", await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file;

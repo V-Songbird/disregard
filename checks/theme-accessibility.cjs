@@ -13,16 +13,20 @@ fs.mkdirSync(path.dirname(target), { recursive: true });
 const site = localSite({ "/research": "research.html", "/privacy": "privacy.html", "/terms": "terms.html" });
 const result = { status: "ok", findings: [], factors: { F1: 0.85, F2: 0.85, F3: 2, F7: 0.8, F8: 2, is_rule: 0.9,
   rule_role: { choice: "direct_action", confidence: 0.9 }, primitive: { choice: "rule", confidence: 0.9 } } };
+// Scored file rows: one with a finding, one that reads as background (not_a_rule) and one with none.
+const hedged = { ...result, findings: [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }], factors: { ...result.factors, F1: 0.2 } };
+const background = { ...result, findings: [{ id: "not_a_rule", factor: "is_rule", value: 0.3 }], factors: { ...result.factors, is_rule: 0.3 } };
+const fileDoc = "- Try to keep functions short.\n- The build cache is stored in `.cache/`, which CI clears nightly.\n- Never log passwords.";
 const report = { browser: "installed Edge", sourceHashes: { ...site.hashes },
   pages: [], filePages: [], keyboard: [], pageErrors: [], screenshots: [] };
 report.sourceHashes["checks/theme-accessibility.cjs"] = crypto.createHash("sha256").update(fs.readFileSync(__filename)).digest("hex");
 report.keyboardScope = "Synthesized Edge keydown/keyup events, including repeat=true after the first response settles; loopback responses only. Not physical-keyboard, IME or screen-reader acceptance.";
 let mode = "ok", requests = 0;
 const waiting = [];
-function reply(res) {
+function reply(res, rule = "") {
   if (res.destroyed) return;
   res.writeHead(mode === "error" ? 502 : 200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(mode === "error" ? { code: "upstream" } : result));
+  res.end(JSON.stringify(mode === "error" ? { code: "upstream" } : rule.startsWith("Try to") ? hedged : rule.startsWith("The build cache") ? background : result));
 }
 function release() { while (waiting.length) reply(waiting.shift()); }
 // Resolves once the server holds `count` requests with their bodies read, so a stop cannot
@@ -36,8 +40,9 @@ async function holding(count) {
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
-    if (await site.readBody(req) === null) return;
-    if (mode === "hold") waiting.push(res); else reply(res);
+    const raw = await site.readBody(req);
+    if (raw === null) return;
+    if (mode === "hold") waiting.push(res); else reply(res, JSON.parse(raw).rule);
     return;
   }
   site.serve(req, res);
@@ -61,7 +66,7 @@ async function colors(page) {
       .reduce((n, v, i) => n + v * [0.2126, 0.7152, 0.0722][i], 0);
     const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
     const text = [];
-    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count")) {
+    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline")) {
       if (node.hidden || !node.getClientRects().length || node.disabled) continue;
       const style = getComputedStyle(node), background = bg(node), foreground = over(rgba(style.color), background);
       const minimum = parseFloat(style.fontSize) >= 24 || (parseFloat(style.fontSize) >= 18.6667 && parseInt(style.fontWeight) >= 700) ? 3 : 4.5;
@@ -302,6 +307,16 @@ async function keyboard(page, theme, layout, locale) {
             const screenshot = target.replace(/\.json$/, "-dark-file.png");
             await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
+          // Scored rows: three state labels and the one finding headline shown while collapsed.
+          await page.fill("#file-source", fileDoc); await page.click("#file-prepare"); await page.click("#file-start");
+          await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+          const rowsMeasured = await colors(page);
+          report.filePages.push({ theme, layout, locale, view: "scored rows", ...rowsMeasured,
+            passed: rowsMeasured.text.every((c) => c.passed) && rowsMeasured.text.filter((c) => c.tag === "SPAN" && !c.id).length === 4 && !rowsMeasured.overflow });
+          if (layout === "desktop" && locale === "en") {
+            const screenshot = target.replace(/\.json$/, "-" + theme + "-file-rows.png");
+            await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
+          }
           await page.click("#mode-rule");
         }
         const measured = await colors(page);
@@ -320,7 +335,7 @@ async function keyboard(page, theme, layout, locale) {
     release(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));
     report.mockRequests = requests; Object.assign(report, site.audit());
-    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 12 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
+    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 24 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, pages: report.pages.length, keyboardJourneys: report.keyboard.length, mockRequests: requests,
       providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,

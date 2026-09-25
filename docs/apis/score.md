@@ -103,7 +103,7 @@ User-facing descriptions belong to the interface, not the API response.
 
 | ID | What to inspect |
 | --- | --- |
-| `not_a_rule` | Whether apparent background expresses a requirement or supplies useful context. |
+| `not_a_rule` | Whether apparent background expresses a requirement or tells the agent something the repository does not show. |
 | `should_be_a_hook` | Whether a deterministic check could cover the instruction at a named event. |
 | `could_be_a_hook` | Which parts could be checked mechanically while retaining necessary judgment. |
 | `belongs_as_a_skill` | Whether task-specific steps belong in a skill with clear loading guidance. |

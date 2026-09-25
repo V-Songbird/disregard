@@ -22,13 +22,13 @@ const site = localSite();
 const hash = (buffer) => createHash("sha256").update(buffer).digest("hex");
 const layouts = { desktop: { width: 1280, height: 900 }, mobile: { width: 375, height: 812 } };
 
-// Synthetic display inputs shaped like /api/score responses; not analyzer output.
+// Synthetic display inputs shaped like /api/score responses; not analyzer output. The API returns
+// not_a_rule only on its own, so several findings on one excerpt leave it out.
 const several = { status: "ok", risk: 0.02, tokens: null, findings: [
-  { id: "not_a_rule", factor: "is_rule", value: 0.3 },
   { id: "should_be_a_hook", factor: "F8", value: 0.4, choice: "hook", confidence: 0.8 },
   { id: "hedge_dominance", factor: "F1", value: 0.25, verb: "try to" },
   { id: "no_concrete_anchor", factor: "F7", value: 0.1 },
-], factors: { F1: 0.25, F2: 0.85, F7: 0.1, F3: 2.4, F8: 0.4, is_rule: 0.3,
+], factors: { F1: 0.25, F2: 0.85, F7: 0.1, F3: 2.4, F8: 0.4, is_rule: 0.9,
   primitive: { choice: "hook", confidence: 0.8 }, rule_role: { choice: "direct_action", confidence: 0.85 } } };
 const screened = (status, echo) => ({ status, risk: status === "review" ? 0.5 : 0.9, echo, findings: [], tokens: null });
 const texts = { findings: "Try to format files before each commit.", review: "Reply to every message with the word yes.",
@@ -39,10 +39,11 @@ const outcomes = new Map([...packet.cases.map((entry) => [entry.text, { body: en
   [texts.failed, { status: 502, body: { code: "upstream" } }]]);
 const item = (text) => "- " + text;
 const docs = {
-  // Ready, needs-context and not-scored excerpts with several exclusion reasons.
+  // Ready, needs-context and not-scored excerpts with several exclusion reasons. A numbered procedure with
+  // a code block under a step needs review as a whole.
   preview: ["---", "owner: docs", "---", "# Project instructions", "", item("Never log passwords."), item("Keep functions short."),
     item("[ ] Remove the legacy build script."), "", "## When releasing", "", item("Update the changelog."), "",
-    "1. Tag the release.", "2. Publish the notes.", "", "> Quoted guidance from another team.", "",
+    "1. Tag the release.", "2. Publish the notes:", "", "   ```sh", "   npm publish", "   ```", "", "> Quoted guidance from another team.", "",
     "| Command | Purpose |", "| --- | --- |", "| `npm test` | Tests |", "", "Read @docs/STYLE.md first."].join("\n"),
   // Every finding, clean, not English, review, refused and failed outcomes.
   results: ["# Project instructions", "", ...[...outcomes.keys()].map(item)].join("\n"),
