@@ -315,6 +315,29 @@ async function unitHints(page) {
       check(prefix + " copied evidence", text.includes("hedge_dominance") && text.includes("Always try to use functional components."));
       check(prefix + " context-dependent command not exported", !text.includes("npm run deploy"));
       check(prefix + " copying adds no requests", requests.length, 3);
+      // The path-rules option: a labeled checkbox by the primary action, off, that rebuilds only the prompt.
+      const pathRulesView = () => page.evaluate(() => {
+        const box = document.getElementById("file-path-rules"), style = getComputedStyle(box);
+        return { checked: box.checked, focused: document.activeElement === box && box.matches(":focus-visible") && style.outlineStyle !== "none",
+          label: box.labels.length === 1 && box.labels[0].textContent === STRINGS[document.getElementById("ui-lang").value].file.pathRules &&
+            box.labels[0].getClientRects().length > 0, prompt: document.querySelector("#file-export .prompt-text").value };
+      });
+      const plainPrompt = await pathRulesView();
+      await page.focus("#file-choose"); await page.keyboard.press("Tab");
+      const pathRulesFocused = await pathRulesView();
+      await page.keyboard.press("Space");
+      const pathRulesOn = await pathRulesView();
+      const added = pathRulesOn.prompt.indexOf("\nThe owner also asks for a proposal to move file-specific rules");
+      await page.keyboard.press("Space");
+      check(prefix + " the path-rules option is a labeled checkbox, off, and leaves the prompt without it",
+        [await page.getByRole("checkbox", { name: /\.claude\/rules/ }).count(), plainPrompt.checked, plainPrompt.label, plainPrompt.prompt.includes(".claude/rules")],
+        [1, false, true, false]);
+      check(prefix + " the path-rules option takes keyboard focus visibly and toggles with Space", [pathRulesFocused.focused, pathRulesOn.checked], [true, true]);
+      check(prefix + " the path-rules option adds one paragraph and sends nothing", [added > 0,
+        added > 0 && pathRulesOn.prompt.slice(0, added) + pathRulesOn.prompt.slice(pathRulesOn.prompt.indexOf("\n", pathRulesOn.prompt.indexOf("approves before any edit.")) + 1)
+          === plainPrompt.prompt, requests.length], [true, true, 3]);
+      const pathRulesOff = await pathRulesView();
+      check(prefix + " turning the path-rules option off restores the prompt", [pathRulesOff.checked, pathRulesOff.prompt], [false, plainPrompt.prompt]);
       check(prefix + " full locale keys", await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file;
         return document.getElementById("file-create").textContent === t.create && document.querySelector(".copy-prompt").textContent === t.copy;
@@ -476,7 +499,9 @@ async function unitHints(page) {
           ...[...unit.querySelectorAll(".unit-content > p.hint")].map((p) => p.textContent === t.linkNotRead ? "linkNotRead" :
             p.textContent === t.reasons.linked_context ? "linked_context" : p.textContent === t.unchanged ? "unchanged" : p.textContent)]);
       }), [["ok", "linkNotRead", "unchanged"], ["requires_context", "linked_context"]]);
-      await page.click("#mode-rule"); await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
+      await page.click("#mode-rule");
+      check(prefix + " one-rule mode does not show the path-rules option", await page.locator("#file-path-rules").isVisible(), false);
+      await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
       await page.waitForFunction(() => document.querySelector("#out .banner strong")?.textContent === STRINGS[document.getElementById("ui-lang").value].notEnglishTitle);
       check(prefix + " single-rule banner renders the not-English sentence", await page.textContent("#out .banner p"), sentences.spanish);
       mode = "ok";

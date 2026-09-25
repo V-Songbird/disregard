@@ -41,10 +41,10 @@
   const findings = (unit) => unit.state === "ok" && !background(unit) ? unit.result.findings : [];
 
   // File mode puts the panel under its own result heading and says where the prompt goes.
-  function promptPanel(report, t, file = false) {
+  function promptPanel(report, t, file = false, options) {
     const panel = el("section", "prompt-panel");
     let prompt;
-    try { prompt = window.DisregardPrompt.buildPrompt(report, window.STRINGS.en); }
+    try { prompt = window.DisregardPrompt.buildPrompt(report, window.STRINGS.en, options); }
     catch (error) { panel.append(el("p", "hint", t[error.code] || t.unavailable)); return panel; }
     if (!prompt) return panel;
     const details = el("details", "prompt-preview");
@@ -125,7 +125,10 @@
     const consentBefore = document.createTextNode(""), consentLink = el("a"), consentAfter = document.createTextNode("");
     consentLink.href = "/privacy"; consent.append(consentBefore, consentLink, consentAfter);
     const action = el("div", "file-action"); action.append(create, consent);
-    form.append(zone, action);
+    // Off by default, it adds one paragraph to the prompt and sends nothing; it stays shown so a prompt in hand can change.
+    const pathRules = el("input"); pathRules.type = "checkbox"; pathRules.id = "file-path-rules";
+    const pathRulesText = el("span"), pathRulesLabel = el("label", "unit-filter file-option"); pathRulesLabel.append(pathRules, pathRulesText);
+    form.append(zone, pathRulesLabel, action);
     const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
     // Result: the prompt first, then how much of the file it covers; what was found stays in a closed disclosure.
     const output = el("section", "file-report"); output.id = "file-report";
@@ -176,7 +179,7 @@
       source.readOnly = busy;
       upload.disabled = choose.disabled = busy;
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
-      choose.textContent = strings.upload; dropHint.textContent = strings.drop;
+      choose.textContent = strings.upload; dropHint.textContent = strings.drop; pathRulesText.textContent = strings.pathRules;
       nameLabel.textContent = strings.name; nameHint.textContent = strings.nameHint;
       // A report in hand hides the primary action, so pressing it again cannot repeat paid requests;
       // editing the text clears the report and brings it back.
@@ -312,7 +315,7 @@
           const row = { details, summary, content }; rows.set(unit.id, row);
           renderUnit(unit, row); list.append(details);
         }
-        if (!busy) exported.append(promptPanel(report, t(), true));
+        if (!busy) exported.append(exportedPanel());
       }
       controls();
       if (focusedId) document.getElementById(focusedId)?.focus({ preventScroll: true });
@@ -331,13 +334,17 @@
 
     // Pasted text keeps the default name; emptying the field forgets a loaded file's name.
     source.addEventListener("input", () => { uploadedSource = null; if (!source.value) name.value = "AGENTS.md"; invalidate(); });
-    name.addEventListener("input", () => {
+    // The file name and the path-rules option only shape the prompt, so changing either rebuilds it and nothing else.
+    const exportedPanel = () => promptPanel(report, t(), true, { pathRules: pathRules.checked });
+    function rebuild() {
       if (busy || !report) return;
       report.sourceName = name.value.trim() || "AGENTS.md";
       const open = exported.querySelector(".prompt-preview")?.open;
-      exported.replaceChildren(promptPanel(report, t(), true));
+      exported.replaceChildren(exportedPanel());
       if (open) exported.querySelector(".prompt-preview").open = true;
-    });
+    }
+    name.addEventListener("input", rebuild);
+    pathRules.addEventListener("change", rebuild);
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {
       if (busy || !files.length) return;
@@ -472,7 +479,7 @@
           if (!message) message = "done";
           // Completed rows stay mounted: inspecting a factor while another
           // request settles must not close its disclosure or steal focus.
-          exported.replaceChildren(promptPanel(report, t(), true));
+          exported.replaceChildren(exportedPanel());
           controls();
           if (document.activeElement === cancel || document.activeElement === document.body) {
             // After the reader's Stop, the heading takes focus so a second press starts nothing; the

@@ -119,6 +119,31 @@ test("the agent proposes the diff and edits the file only after the owner approv
   assert.ok(output.indexOf(approval) < output.indexOf("Write your answer for the file's owner"));
 });
 
+test("only the path-rules option adds one paragraph that proposes path-scoped .claude/rules files", () => {
+  for (const input of [report(), lines(201)]) {
+    const plain = buildPrompt(input, english);
+    assert.equal(buildPrompt(input, english, {}), plain);
+    assert.equal(buildPrompt(input, english, { pathRules: false }), plain);
+    assert.equal(buildPrompt(input, english, { pathRules: "yes" }), plain);
+    assert.ok(!plain.includes(".claude/rules"));
+    const withRules = buildPrompt(input, english, { pathRules: true });
+    const start = withRules.indexOf("The owner also asks for a proposal to move file-specific rules");
+    const end = withRules.indexOf("\n", withRules.indexOf("approves before any edit.", start)) + 1;
+    assert.ok(start > 0 && end > start);
+    assert.equal(withRules.slice(0, start - 1) + withRules.slice(end), plain);
+    const paragraph = withRules.slice(start, end);
+    assert.ok(paragraph.includes("that starts with YAML frontmatter whose paths field lists glob patterns relative to the repository root, " +
+      "for example:\n---\npaths:\n  - \"src/**/*.test.js\"\n---\n"));
+    assert.match(paragraph, /List the existing repository files each pattern matches as evidence, and propose no pattern that matches none/);
+    assert.match(paragraph, /Move each rule with all of its requirements, exceptions and reasons/);
+    assert.match(paragraph, /Leave in place the rules that apply everywhere/);
+    assert.match(paragraph, /propose a move only when the repository shows Claude Code is its only reader, and otherwise ask the owner/);
+    assert.match(paragraph, /part of the proposed diff the owner approves before any edit/);
+    assert.ok(end < withRules.indexOf("Write your answer for the file's owner"));
+    assert.deepEqual(packet(withRules), packet(plain));
+  }
+});
+
 test("all nine findings reuse canonical English explanations and retain measured metadata", () => {
   const cases = [
     ["not_a_rule", "is_rule"],

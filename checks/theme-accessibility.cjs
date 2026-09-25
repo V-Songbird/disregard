@@ -265,9 +265,9 @@ async function keyboard(page, theme, layout, locale) {
   await page.locator("#mode-file").focus(); await page.keyboard.press("Enter");
   check("Enter switches to file mode", await page.locator("#file-panel").isVisible());
   await page.fill("#file-source", ["module0", "module1", "module2"].map((name) => "- Use " + name + " for storage.").join("\n"));
-  // From the text box, Tab reaches the file chooser, then the primary action.
+  // From the text box, Tab reaches the file chooser, the path-rules option, then the primary action.
   await page.locator("#file-source").focus();
-  for (const id of ["file-choose", "file-create"]) {
+  for (const id of ["file-choose", "file-path-rules", "file-create"]) {
     await page.keyboard.press("Tab"); check("tab reaches " + id, await activeId(page) === id);
     const f = (await colors(page)).focus; focus.push(f); check(id + " visible unobscured focus", f?.passed && f.unobscured);
   }
