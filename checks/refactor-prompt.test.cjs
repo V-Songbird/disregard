@@ -119,6 +119,38 @@ test("the agent proposes the diff and edits the file only after the owner approv
   assert.ok(output.indexOf(approval) < output.indexOf("Write your answer for the file's owner"));
 });
 
+test("only the path-rules option adds one paragraph that proposes path-scoped .claude/rules files", () => {
+  for (const input of [report(), lines(201)]) {
+    const plain = buildPrompt(input, english);
+    assert.equal(buildPrompt(input, english, {}), plain);
+    assert.equal(buildPrompt(input, english, { pathRules: false }), plain);
+    assert.equal(buildPrompt(input, english, { pathRules: "yes" }), plain);
+    assert.ok(!plain.includes(".claude/rules"));
+    const withRules = buildPrompt(input, english, { pathRules: true });
+    const start = withRules.indexOf("The owner also asks whether some rules could move into path-scoped Claude Code rules.");
+    const end = withRules.indexOf("\n", withRules.indexOf("approves before any edit.", start)) + 1;
+    assert.ok(start > 0 && end > start);
+    assert.equal(withRules.slice(0, start - 1) + withRules.slice(end), plain);
+    const paragraph = withRules.slice(start, end);
+    assert.ok(paragraph.includes("Do the rest of this review first and in full; this is an optional addition to it and must not replace or shrink any other change."));
+    assert.ok(paragraph.includes("So propose moving a rule only when every task that needs it involves reading a file the pattern matches: " +
+      "search the repository for the files, identifiers and commands the rule names, make the pattern cover every file where they are used, " +
+      "and list the matching files as evidence."));
+    assert.ok(paragraph.includes("Never move a rule the agent needs before it opens a matching file, such as commands, setup, or where to create " +
+      "new files, tests or modules, and never propose a pattern that matches no existing file."));
+    assert.ok(paragraph.includes("show the new file in the proposed diff as a new file (--- /dev/null, +++ b/.claude/rules/<topic>.md) " +
+      "that starts with YAML frontmatter, for example:\n---\npaths:\n  - \"src/**/*.test.js\"\n---\nand carries the rule with all of its " +
+      "requirements, exceptions and reasons, together with the removal from this file."));
+    assert.ok(paragraph.includes("If no rule meets these conditions, say so and move nothing; a candidate you are unsure about stays in place " +
+      "and goes to the owner as a question."));
+    assert.ok(paragraph.includes("Other agents that read AGENTS.md do not load .claude/rules: for an AGENTS.md, or a file other agents also read, " +
+      "propose a move only when the repository shows Claude Code is its only reader, and otherwise ask the owner."));
+    assert.match(paragraph, /part of the proposed diff the owner approves before any edit/);
+    assert.ok(end < withRules.indexOf("Write your answer for the file's owner"));
+    assert.deepEqual(packet(withRules), packet(plain));
+  }
+});
+
 test("all nine findings reuse canonical English explanations and retain measured metadata", () => {
   const cases = [
     ["not_a_rule", "is_rule"],
