@@ -33,6 +33,10 @@
   const displayable = (result) => Array.isArray(result.findings) &&
     result.findings.every((finding) => finding !== null && typeof finding === "object") &&
     (result.factors === undefined || (result.factors !== null && typeof result.factors === "object"));
+  // An excerpt whose only finding is not_a_rule reads as background. It is counted and labeled apart
+  // from findings: a line the repository cannot show, such as where something lives, can guide an agent.
+  const background = (unit) => unit.state === "ok" && unit.result.findings.length > 0 &&
+    unit.result.findings.every((finding) => finding.id === "not_a_rule");
 
   function promptPanel(report, t) {
     const panel = el("section", "prompt-panel");
@@ -153,9 +157,10 @@
       cancel.hidden = !busy; cancel.textContent = strings.cancel;
       if (!report) return;
       reportTitle.textContent = strings.preview; reportHint.textContent = strings.previewHint;
-      const summary = model.summarize(report);
-      coverage.textContent = fill(strings.coverage.text, { scored: counted(strings.coverage.scored, summary.scored),
-        flagged: number(summary.flagged), remaining: counted(strings.coverage.remaining, summary.total - summary.scored) });
+      const summary = model.summarize(report), context = report.units.filter(background).length;
+      coverage.textContent = fill(context ? strings.coverage.textContext : strings.coverage.text, { scored: counted(strings.coverage.scored, summary.scored),
+        flagged: number(summary.flagged - context), context: counted(strings.coverage.context, context),
+        remaining: counted(strings.coverage.remaining, summary.total - summary.scored) });
       const remaining = report.units.filter(retryable).length;
       start.textContent = counted(everRan ? strings.retry : strings.start, remaining);
       start.hidden = busy || !remaining;
@@ -171,10 +176,24 @@
         fill(strings.lines, { start: number(unit.startLine), end: number(unit.endLine) }));
       // A response that arrived but failed validation was not scored; its request did not fail.
       const invalid = unit.state === "error" && ["invalid_result", "unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
-      const state = el("span", "unit-state", invalid ? strings.states.skipped : strings.states[unit.state] || strings.states.skipped);
+      // A scored row says what was found while collapsed: its count and each finding's headline, as text
+      // inside the one summary control. The cards that explain them stay in the details.
+      const flagged = unit.state === "ok" && !background(unit) ? unit.result.findings : [];
+      const state = el("span", flagged.length ? "unit-state flagged" : "unit-state", invalid ? strings.states.skipped :
+        background(unit) ? strings.states.background : flagged.length ? counted(strings.findingCount, flagged.length) :
+        strings.states[unit.state] || strings.states.skipped);
       const title = el("span", "unit-title", unit.rawText.trim().split(/\r\n|\r|\n/)[0]);
       title.dir = "auto";
-      row.summary.append(location, state, title);
+      // The space keeps the location and a counted label apart in the summary's accessible name.
+      row.summary.append(location, " ", state, title);
+      if (flagged.length) {
+        const headlines = el("span", "unit-headlines");
+        for (const finding of flagged) {
+          const copy = own(getStrings().findings, finding.id);
+          if (copy) headlines.append(el("span", "unit-headline", fill(copy.h, { verb: finding.verb })));
+        }
+        row.summary.append(headlines);
+      }
       row.details.dataset.state = unit.state;
       row.content.replaceChildren();
       const original = el("pre", "source-excerpt", unit.rawText); original.dir = "auto";

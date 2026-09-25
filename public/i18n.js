@@ -61,8 +61,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "This may read as background.",
-        d: "A statement can still express a requirement or provide useful context. Check the line's purpose before changing it.",
-        fix: "For a requirement, name the expected action or choice. Keep useful context; this finding alone is not a reason to delete it.",
+        d: "Your agent reads this file in every session. Anything it can learn by reading the repository, such as the layout, file lists or what a module does, uses up context without guiding its work.",
+        fix: "Keep what the code does not show: reasons for decisions, gotchas, environment quirks, or where something lives, as in “API handlers live in src/api/handlers/”. Consider removing only what the repository already shows. For a requirement, name the expected action.",
       },
       should_be_a_hook: {
         h: "A hook may fit this check.",
@@ -169,8 +169,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "Esta línea puede leerse como contexto.",
-        d: "Una afirmación también puede expresar un requisito o aportar contexto útil. Revisa qué propósito tiene la línea antes de cambiarla.",
-        fix: "Si es un requisito, indica la acción o decisión esperada. Conserva el contexto útil; este aviso por sí solo no justifica borrarlo.",
+        d: "Tu agente lee este archivo en cada sesión. Lo que puede aprender leyendo el repositorio, como la estructura, las listas de archivos o lo que hace un módulo, ocupa contexto sin orientar su trabajo.",
+        fix: "Conserva lo que el código no muestra: los motivos de una decisión, los detalles que suelen causar errores, las particularidades del entorno o dónde está algo, como “los handlers de la API están en src/api/handlers/”. Considera quitar solo lo que el repositorio ya muestra. Si es un requisito, indica la acción esperada.",
       },
       should_be_a_hook: {
         h: "Un hook podría servir para esta comprobación.",
@@ -277,8 +277,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "这一行可能读起来像背景信息。",
-        d: "陈述句也可能表达要求或提供有用的背景。修改前，先确认这行文字的用途。",
-        fix: "如果它是要求，请明确预期的行动或选择。保留有用的背景；不要仅凭这条提示就删除它。",
+        d: "智能体每次会话都会读取此文件。它通过阅读仓库就能了解的内容，例如目录结构、文件列表或某个模块的作用，只会占用上下文，而不会指导它的工作。",
+        fix: "保留代码本身体现不出的内容：决策的原因、容易出错的地方、环境的特殊之处，或某样东西的位置，例如“API 处理程序位于 src/api/handlers/”。只考虑删除仓库本身已经体现的内容。如果它是要求，请明确预期的行动。",
       },
       should_be_a_hook: {
         h: "这个检查可能适合用 hook。",
@@ -385,8 +385,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "यह पंक्ति संदर्भ की तरह पढ़ी जा सकती है।",
-        d: "एक कथन भी कोई आवश्यकता बता सकता है या उपयोगी संदर्भ दे सकता है। इसे बदलने से पहले इसका उद्देश्य जाँचें।",
-        fix: "यदि यह आवश्यकता है, तो अपेक्षित कार्रवाई या चुनाव स्पष्ट लिखें। उपयोगी संदर्भ बनाए रखें; केवल इस संकेत के कारण उसे न हटाएँ।",
+        d: "आपका एजेंट हर सत्र में यह फ़ाइल पढ़ता है। जो बातें वह रिपॉज़िटरी पढ़कर जान सकता है, जैसे ढाँचा, फ़ाइलों की सूची या कोई मॉड्यूल क्या करता है, वे उसके काम को दिशा दिए बिना संदर्भ की जगह घेरती हैं।",
+        fix: "वह रखें जो कोड से पता नहीं चलता: फ़ैसलों के कारण, आम तौर पर होने वाली गलतियाँ, परिवेश की खास बातें, या कोई चीज़ कहाँ है, जैसे “API हैंडलर src/api/handlers/ में हैं”। केवल वही हटाने पर विचार करें जो रिपॉज़िटरी पहले से दिखाती है। यदि यह आवश्यकता है, तो अपेक्षित कार्रवाई स्पष्ट लिखें।",
       },
       should_be_a_hook: {
         h: "इस जाँच के लिए hook उपयुक्त हो सकता है।",
@@ -493,8 +493,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "قد يُقرأ هذا السطر كمعلومات سياقية.",
-        d: "قد تعبّر العبارة الخبرية عن متطلب أو تقدم سياقًا مفيدًا. راجع الغرض من السطر قبل تغييره.",
-        fix: "إن كان متطلبًا، فوضّح الإجراء أو الخيار المتوقع. احتفظ بالسياق المفيد؛ فهذا التنبيه وحده لا يبرر حذفه.",
+        d: "يقرأ وكيلك هذا الملف في كل جلسة. وما يمكنه معرفته بقراءة المستودع، مثل بنية المجلدات أو قوائم الملفات أو وظيفة وحدة برمجية، يستهلك من السياق دون أن يوجّه عمله.",
+        fix: "احتفظ بما لا تُظهره الشيفرة: أسباب القرارات، والمزالق المعروفة، وخصوصيات البيئة، أو مكان وجود شيء ما، مثل «توجد معالجات API في src/api/handlers/». ولا تفكر في حذف إلا ما يُظهره المستودع أصلًا. وإن كان متطلبًا، فوضّح الإجراء المتوقع.",
       },
       should_be_a_hook: {
         h: "قد يناسب hook هذا الفحص.",
@@ -601,8 +601,8 @@ window.STRINGS = {
     findings: {
       not_a_rule: {
         h: "Cette ligne peut se lire comme du contexte.",
-        d: "Une phrase déclarative peut exprimer une exigence ou fournir un contexte utile. Vérifiez son rôle avant de la modifier.",
-        fix: "S’il s’agit d’une exigence, précisez l’action ou le choix attendu. Gardez le contexte utile\u00a0; ce signalement seul ne justifie pas sa suppression.",
+        d: "Votre agent lit ce fichier à chaque session. Ce qu’il peut apprendre en lisant le dépôt, comme l’arborescence, les listes de fichiers ou le rôle d’un module, consomme du contexte sans guider son travail.",
+        fix: "Gardez ce que le code ne montre pas\u00a0: les raisons d’une décision, les pièges connus, les particularités de l’environnement ou l’emplacement d’un élément, comme «\u00a0les gestionnaires de l’API se trouvent dans src/api/handlers/\u00a0». N’envisagez de retirer que ce que le dépôt montre déjà. S’il s’agit d’une exigence, précisez l’action attendue.",
       },
       should_be_a_hook: {
         h: "Un hook pourrait convenir à cette vérification.",

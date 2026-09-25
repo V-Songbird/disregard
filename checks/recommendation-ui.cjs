@@ -51,12 +51,15 @@ const report = { mode: "synthetic", browser: "installed Edge",
   sourceHashes: { ...site.hashes, [packetPath]: hash(packetPath), "checks/recommendation-ui.cjs": hash("checks/recommendation-ui.cjs") },
   scenarios: [], rendered: [], errors: [], screenshots: [] };
 let fixture, requests = 0;
+// File mode sends every case in one run, so a response is chosen by the text sent.
+const byText = new Map(packet.cases.map((entry) => [entry.text, entry]));
 const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
-    if (await site.readBody(req) === null) return;
+    const raw = await site.readBody(req);
+    if (raw === null) return;
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(fixture.body));
+    res.end(JSON.stringify((byText.get(JSON.parse(raw).rule) || fixture).body));
     return;
   }
   site.serve(req, res);
@@ -170,6 +173,50 @@ const server = http.createServer(async (req, res) => {
             report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
         }
+        // The same responses as rows of one file: while collapsed, each scored row gives its finding count and
+        // headlines, a row whose only finding is not_a_rule reads as background, and coverage counts it apart.
+        await page.click("#mode-file");
+        await page.fill("#file-source", packet.cases.map((entry) => "- " + entry.text).join("\n"));
+        await page.click("#file-prepare");
+        const starting = requests;
+        await page.click("#file-start");
+        await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+        const rows = await page.evaluate((bodies) => {
+          const t = window.STRINGS[document.getElementById("ui-lang").value];
+          const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match);
+          const counted = (forms, n) => fill(forms[new Intl.PluralRules(document.documentElement.lang).select(n)] ?? forms.other, { n: String(n) });
+          const units = [...document.querySelectorAll(".instruction-unit")];
+          const shown = units.map((unit) => [unit.dataset.state, unit.querySelector(".unit-state").textContent,
+            ...[...unit.querySelectorAll("summary .unit-headline")].map((line) => line.getClientRects().length ? line.textContent : "hidden")]);
+          const scored = bodies.filter((body) => body.status === "ok");
+          const background = scored.filter((body) => body.findings.length && body.findings.every((f) => f.id === "not_a_rule")).length;
+          const flagged = scored.filter((body) => body.findings.length).length - background;
+          const expected = bodies.map((body) => {
+            if (body.status !== "ok") return [body.status, t.file.states[body.status]];
+            if (body.findings.length && body.findings.every((f) => f.id === "not_a_rule")) return ["ok", t.file.states.background];
+            return ["ok", body.findings.length ? counted(t.file.findingCount, body.findings.length) : t.file.states.ok,
+              ...body.findings.map((f) => fill(t.findings[f.id].h, { verb: f.verb }))];
+          });
+          const coverage = fill(background ? t.file.coverage.textContext : t.file.coverage.text, { scored: counted(t.file.coverage.scored, scored.length),
+            flagged: String(flagged), context: counted(t.file.coverage.context, background), remaining: counted(t.file.coverage.remaining, bodies.length - scored.length) });
+          return { shown, checks: {
+            rowsNameTheirFindings: JSON.stringify(shown) === JSON.stringify(expected),
+            rowsCollapsed: units.every((unit) => !unit.open),
+            coverageCountsBackgroundApart: document.querySelector("#file-report .coverage").textContent === coverage,
+            summaryIsOneControl: units.every((unit) => !unit.querySelector("summary").querySelector("a, button, input, select, textarea, [tabindex]")),
+            noOverflow: document.documentElement.scrollWidth <= innerWidth,
+            direction: document.documentElement.dir === t.dir,
+          } };
+        }, packet.cases.map((entry) => entry.body));
+        const checks = { ...rows.checks, oneRequestPerCase: requests - starting === packet.cases.length,
+          langTag: await page.getAttribute("html", "lang") === langTags[locale] };
+        report.scenarios.push({ layout, locale, id: "file-rows", checks, passed: Object.values(checks).every(Boolean) });
+        if (layout === "desktop") report.rendered.push({ locale, id: "file-rows", rows: rows.shown });
+        if (packet.captureScreenshots !== false && ((layout === "desktop" && locale === "en") || (layout === "mobile" && ["es", "ar"].includes(locale)))) {
+          const screenshot = path.join(path.dirname(target), path.basename(target, ".json") + "-" + layout + "-" + locale + "-file-rows.png");
+          await page.screenshot({ path: screenshot, fullPage: true });
+          report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
+        }
         await context.close();
       }
     }
@@ -179,7 +226,7 @@ const server = http.createServer(async (req, res) => {
     server.closeAllConnections();
     await new Promise((resolve) => server.close(resolve));
     report.mockRequests = requests; Object.assign(report, site.audit());
-    report.passed = !report.errors.length && report.scenarios.length === packet.cases.length * 18 && report.scenarios.every((s) => s.passed) &&
+    report.passed = !report.errors.length && report.scenarios.length === (packet.cases.length + 1) * 18 && report.scenarios.every((s) => s.passed) &&
       report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, scenarios: report.scenarios.length, mockRequests: requests, errors: report.errors,

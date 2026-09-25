@@ -115,9 +115,12 @@ button.secondary { color: var(--ink); background: var(--paper); border: 1px soli
 .unit-list { margin-top: 1.5rem; }
 .instruction-unit { border-top: 1px solid var(--line); margin-top: 0; padding: .3rem 0; }
 .instruction-unit > summary { padding: .75rem 0; color: var(--ink); }
-.unit-location { font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--muted); margin-inline-end: .75rem; }
+.unit-location { font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--muted); margin-inline-end: .5rem; }
 .unit-state { font-size: .8rem; font-weight: 600; }
+.unit-state.flagged { color: var(--accent); }
 .unit-title { display: block; margin-top: .25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.unit-headlines { display: block; margin-top: .4rem; padding-inline-start: .75rem; border-inline-start: 2px solid var(--accent); }
+.unit-headline { display: block; font-size: .9rem; }
 .unit-content { padding: 0 0 1rem; }
 .source-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; font: .85rem/1.6 ui-monospace, Consolas, monospace; color: var(--ink); background: var(--card); padding: .8rem; border: 1px solid var(--line); border-radius: .3rem; }
 .unit-content .findings { gap: .75rem; }
