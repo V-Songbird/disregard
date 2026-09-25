@@ -14,7 +14,9 @@ related_files:
 # Scoring API
 
 `POST /api/score` scores one English instruction. The file workflow calls this
-endpoint separately for each eligible excerpt; there is no whole-file API.
+endpoint separately for each eligible excerpt; there is no whole-file API. It starts
+at most 55 requests in any 60 seconds, below the supplied Worker's client allowance
+of 60 a minute, and waits when a large file reaches that pace.
 
 ## Request
 

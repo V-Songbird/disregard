@@ -78,12 +78,18 @@
     return panel;
   }
 
+  // The supplied Worker allows a client 60 score requests a minute (wrangler.jsonc). A file run
+  // starts at most PACE requests in any PACE_WINDOW, so a large file waits instead of being stopped.
+  const PACE = 55, PACE_WINDOW = 60000;
+
   // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
   function create({ host, getStrings, findingCard, factorList, onBusy }) {
     const model = window.DisregardDocument;
     let report = null, busy = false, revision = 0, uploadedSource = null;
     let errorCode = null, message = null, runTotal = 0, runDone = 0;
-    let stopped = false, everRan = false;
+    let stopped = false, everRan = false, pacing = 0;
+    // Start times of this page's recent score requests, oldest first, across runs.
+    const started = [];
     const active = new Set(), rows = new Map();
     const form = el("form"); form.id = "file-form"; form.noValidate = true;
     const label = el("label"); label.htmlFor = "file-source";
@@ -153,7 +159,8 @@
       const remaining = report.units.filter(retryable).length;
       start.textContent = counted(everRan ? strings.retry : strings.start, remaining);
       start.hidden = busy || !remaining;
-      progress.textContent = busy ? counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) }) :
+      const running = busy && counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) });
+      progress.textContent = busy ? (pacing ? fill(strings.pacing, { progress: running }) : running) :
         message ? strings[message] : remaining ? "" : strings.none;
     }
 
@@ -284,6 +291,19 @@
       cancel.focus({ preventScroll: true });
       async function worker() {
         while (!stopped && isCurrent(snapshot, token) && next < queue.length) {
+          const now = Date.now();
+          while (started.length && now - started[0] >= PACE_WINDOW) started.shift();
+          if (started.length >= PACE) {
+            // Wait until the oldest request leaves the window, then check again; stopping ends the wait.
+            const pause = new AbortController(); active.add(pause); pacing++; controls();
+            await new Promise((resolve) => {
+              const timer = setTimeout(resolve, started[0] + PACE_WINDOW - now);
+              pause.signal.addEventListener("abort", () => { clearTimeout(timer); resolve(); });
+            });
+            active.delete(pause); pacing--; controls();
+            continue;
+          }
+          started.push(now);
           const unit = queue[next++]; unit.state = "pending"; delete unit.errorCode;
           renderUnit(unit, rows.get(unit.id));
           const controller = new AbortController(); active.add(controller);
