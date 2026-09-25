@@ -110,6 +110,42 @@
       "annotation": "Each item is scored after its section heading and introduction, and the introduction with its whole list; every range stays on its own lines. An introduction that points back to earlier text is not a complete scope, so it and its item stay for contextual review."
     },
     {
+      "name": "A nested item, a numbered procedure, and a nested item that points elsewhere",
+      "sourceName": "AGENTS.md",
+      "source": "## Testing\n\n- Keep tests deterministic.\n  - Avoid network calls.\n\n## When releasing\n\n1. Update the changelog.\n2. Tag the release.\n\n- Run it again:\n  - Check the tag.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 4,
+          "state": "ready"
+        },
+        {
+          "startLine": 6,
+          "endLine": 6,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 8,
+          "endLine": 9,
+          "state": "ready"
+        },
+        {
+          "startLine": 11,
+          "endLine": 12,
+          "state": "requires_context",
+          "reason": "nested_list"
+        }
+      ],
+      "annotation": "A list item is scored together with the items nested under it, and a numbered list as one procedure after the conditional heading it applies under; each range covers the whole block. A nested item whose first line points to other text stays for contextual review."
+    },
+    {
       "name": "Known arbitrary domain-heading limitation",
       "sourceName": "AGENTS.md",
       "source": "# Backend\n\n- Use snake_case for field names.\n\n# Frontend\n\n- Use camelCase for field names.",

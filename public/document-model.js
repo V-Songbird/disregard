@@ -151,12 +151,13 @@
       return parts.concat(intro ? intro.text : []).map(part => /[.!?:]$/.test(part) ? part : part + ':');
     }
 
-    // Units scored with their scope, and what they revert to if the file has too
-    // many ready units that way.
+    // Units scored with their scope or as a whole block, and what they revert to if
+    // the file has too many ready units that way. Whole blocks revert first.
     const scoped = [];
-    function withContext(unit, reason, text) {
-      unit.withContext = true;
-      scoped.push({ unit, reason, text });
+    const wholeBlocks = [];
+    function withContext(unit, reason, text, group = scoped) {
+      if (unit.rule !== text) unit.withContext = true;
+      group.push({ unit, reason, text });
     }
 
     // intro is the paragraph introducing a list item's list: { text, unit, readable }.
@@ -164,6 +165,7 @@
       const context = headings.filter(Boolean).concat(intro ? intro.text : []);
       const text = normalized(node);
       const children = descendants(node);
+      const whole = node.type === 'list' ? 'ordered_procedure' : children.some(child => child.type === 'list') ? 'nested_list' : '';
       let state = 'ready';
       let reason;
       let rule = text;
@@ -181,8 +183,24 @@
         state = 'skipped'; reason = 'html';
       } else if (forcedReason) {
         state = 'requires_context'; reason = forcedReason;
-      } else if (children.some(child => child.type === 'list')) {
-        state = 'requires_context'; reason = 'nested_list';
+      } else if (whole) {
+        // A list item with its nested items, or an ordered list, is scored as one block,
+        // after its scope when a single rule there would be. Its lines may refer to each
+        // other, so only its first paragraph is checked for depending on other text. Each
+        // item needs exactly one paragraph.
+        const paragraphs = children.filter(child => child.type === 'paragraph');
+        const items = [node].concat(children).filter(child => child.type === 'item');
+        const scopedText = (!intro || intro.readable) &&
+          (context.some(contextualHeading) || intro ? scopeLines(intro) : []).concat(text).join('\n');
+        if (scopedText && scopedText.length <= LIMITS.ruleChars && paragraphs.length && !dependentText(inlineText(paragraphs[0]))
+          && items.every(item => paragraphs.filter(child => child.parent === item).length === 1)
+          && !paragraphs.some(child => /^\[[ xX]\]\s/.test(inlineText(child)))
+          && !children.some(child => child.type === 'code_block' || child.type === 'block_quote' || child.type === 'heading')
+          && !/:\s*$/.test(text) && !linksContext(children)) {
+          rule = scopedText;
+        } else {
+          state = 'requires_context'; reason = whole;
+        }
       } else if (children.some(child => child.type === 'code_block' || child.type === 'block_quote' || child.type === 'heading')) {
         state = 'requires_context'; reason = 'attached_blocks';
       } else if (children.filter(child => child.type === 'paragraph').length > 1) {
@@ -204,7 +222,8 @@
         state = 'requires_context'; reason = 'linked_context';
       }
       const unit = addNode(node, state, reason, context, state === 'skipped' ? '' : rule);
-      if (rule !== text) withContext(unit, 'inherited_scope', text);
+      if (whole && state === 'ready') withContext(unit, whole, text, wholeBlocks);
+      else if (rule !== text) withContext(unit, 'inherited_scope', text);
       return unit;
     }
 
@@ -232,7 +251,7 @@
         intro = null;
       } else if (node.type === 'list') {
         if (node.listType === 'ordered') {
-          candidate(node, intro, 'ordered_procedure');
+          candidate(node, intro);
         } else {
           // An introduction is scored with its list after it when every item is ready.
           let listed = intro && intro.readable && [intro.text];
@@ -242,8 +261,8 @@
           }
           const introduced = listed && scopeLines(null).concat(listed).join('\n');
           if (introduced && introduced.length <= LIMITS.ruleChars) {
-            withContext(intro.unit, 'list_introduction', intro.text);
             intro.unit.state = 'ready'; delete intro.unit.reason; intro.unit.rule = introduced;
+            withContext(intro.unit, 'list_introduction', intro.text);
           }
         }
         intro = null;
@@ -276,10 +295,11 @@
     units.sort((left, right) => left.startOffset - right.startOffset);
     units.forEach((unit, index) => { unit.id = `unit-${index + 1}`; });
     const ready = () => units.filter(unit => unit.state === 'ready').length;
-    // Scoring with scope never makes a file too large to review; it falls back to
-    // leaving those units for contextual review.
-    if (ready() > LIMITS.rules) {
-      for (const { unit, reason, text } of scoped) {
+    // Scoring whole blocks or with scope never makes a file too large to review; they
+    // fall back, whole blocks first, to leaving those units for contextual review.
+    for (const group of [wholeBlocks, scoped]) {
+      if (ready() <= LIMITS.rules) break;
+      for (const { unit, reason, text } of group) {
         Object.assign(unit, { state: 'requires_context', reason, rule: text });
         delete unit.withContext;
       }

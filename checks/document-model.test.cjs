@@ -78,7 +78,7 @@ test('parent paragraph context is retained even without a colon', () => {
 });
 
 test('scope never overrides another reason a unit needs context', () => {
-  const source = '# When deploying\n\n- Run it twice.\n- Read [the notes](notes.md).\n- Check:\n- Before release:\n  - Tag it.\n- Keep this:\n\n  ```sh\n  npm test\n  ```\n\n1. Build.\n2. Ship.\n\nOtherwise:\n\n- Stop.';
+  const source = '# When deploying\n\n- Run it twice.\n- Read [the notes](notes.md).\n- Check:\n- Before release, tag it:\n  - Use the version.\n- Keep this:\n\n  ```sh\n  npm test\n  ```\n\n1. Build it.\n2. Ship.\n\nOtherwise:\n\n- Stop.';
   const report = parseDocument(source);
   assert.deepEqual(report.units.map(({ startLine, state, reason }) => [startLine, state, reason]), [
     [1, 'skipped', 'heading_context'],
@@ -142,24 +142,81 @@ test('a unit scored with its scope is marked in the exported prompt', () => {
   assert.ok(!('scoredWithSectionContext' in JSON.parse(buildPrompt(plain, english).split('quoted data):\n')[1]).scored[0]));
 });
 
-test('nested lists stay together rather than claiming independent child instructions', () => {
-  const source = '- Before deployment:\n  - Run the tests.\n  - Inspect the artifact.\n- Use English comments.';
+test('a nested list item is scored together with its child items rather than as independent instructions', () => {
+  const source = '- Before deployment:\n  - Run the tests.\n  - Inspect it.\n- Use English comments.';
   const report = parseDocument(source);
   assert.equal(report.units.length, 2);
-  assert.equal(report.units[0].state, 'requires_context');
-  assert.equal(report.units[0].reason, 'nested_list');
+  assert.deepEqual(report.units.map(({ state, reason, withContext, rule }) => ({ state, reason, withContext, rule })), [
+    { state: 'ready', reason: undefined, withContext: undefined, rule: 'Before deployment:\n- Run the tests.\n- Inspect it.' },
+    { state: 'ready', reason: undefined, withContext: undefined, rule: 'Use English comments.' },
+  ]);
   assert.equal(report.units[0].rawText, source.split('\n').slice(0, 3).join('\n'));
-  assert.equal(report.units[1].state, 'ready');
   assertSourceCoverage(report);
 });
 
-test('ordered procedures remain a single context-dependent unit', () => {
-  const source = '1. Build the application.\n2. Inspect the result.\n3. Deploy the artifact.';
+test('an ordered list is scored as one procedure, whose later steps may refer to earlier ones', () => {
+  const source = '1. Build the application.\n2. Inspect the result.\n3. Then deploy it.';
   const report = parseDocument(source);
   assert.equal(report.units.length, 1);
-  assert.equal(report.units[0].reason, 'ordered_procedure');
+  assert.deepEqual([report.units[0].state, report.units[0].reason, report.units[0].rule, report.units[0].withContext],
+    ['ready', undefined, source, undefined]);
   assert.equal(report.units[0].rawText, source);
   assertSourceCoverage(report);
+});
+
+test('a nested item or procedure is scored after its section heading and introduction, on its own lines', () => {
+  const source = '# Project\n\n## When releasing\n\nBefore you tag the release:\n\n1. Update the changelog.\n2. Run the tests:\n   - unit tests\n   - browser checks\n\n- Before merging:\n  - Rebase the branch.';
+  const report = parseDocument(source);
+  assert.deepEqual(report.units.map(({ startLine, endLine, state, reason, withContext, rule }) => ({ startLine, endLine, state, reason, withContext, rule })), [
+    { startLine: 1, endLine: 1, state: 'skipped', reason: 'heading_context', withContext: undefined, rule: '' },
+    { startLine: 3, endLine: 3, state: 'skipped', reason: 'heading_context', withContext: undefined, rule: '' },
+    { startLine: 5, endLine: 5, state: 'requires_context', reason: 'list_introduction', withContext: undefined, rule: 'Before you tag the release:' },
+    { startLine: 7, endLine: 10, state: 'ready', reason: undefined, withContext: true,
+      rule: 'When releasing:\nBefore you tag the release:\n1. Update the changelog.\n2. Run the tests:\n   - unit tests\n   - browser checks' },
+    { startLine: 12, endLine: 13, state: 'ready', reason: undefined, withContext: true, rule: 'When releasing:\nBefore merging:\n- Rebase the branch.' },
+  ]);
+  assertSourceCoverage(report);
+});
+
+test('a nested item or procedure keeps its reason when it depends on other text or holds more than rules', () => {
+  const nested = {
+    'its first line points elsewhere': '- Run it before release:\n  - Tag the build.',
+    'it ends by introducing more': '- Before release:\n  - Check:',
+    'it holds a code example': '- Before release:\n  - Run the tests:\n\n    ```sh\n    npm test\n    ```',
+    'a child has two paragraphs': '- Before release:\n  - Tag the build.\n\n    Push the tag.',
+    'a child is a task': '- Before release:\n  - [ ] Tag the build.',
+    'a child links to other context': '- Before release:\n  - Follow [the checklist](release.md).',
+  };
+  for (const [name, source] of Object.entries(nested)) {
+    const report = parseDocument(source);
+    assert.deepEqual(report.units.map(({ state, reason, withContext }) => ({ state, reason, withContext })),
+      [{ state: 'requires_context', reason: 'nested_list', withContext: undefined }], name);
+    assertSourceCoverage(report);
+  }
+  const procedures = {
+    'its first step points elsewhere': '1. Build it.\n2. Ship the build.',
+    'its introduction points back': 'Otherwise:\n\n1. Build the app.\n2. Ship the build.',
+    'its introduction is excluded': 'Read @AGENTS.md first.\n\n1. Build the app.\n2. Ship the build.',
+    'it is too long with its scope': '# When releasing\n\nOnly on release branches ' + 'x'.repeat(1960) + '.\n\n1. Build the app.\n2. Ship the build.',
+  };
+  for (const [name, source] of Object.entries(procedures)) {
+    const unit = parseDocument(source).units.at(-1);
+    assert.deepEqual([unit.state, unit.reason, unit.rule, unit.withContext],
+      ['requires_context', 'ordered_procedure', source.slice(source.indexOf('1. Build')), undefined], name);
+  }
+});
+
+test('whole blocks leave the ready-excerpt limit before scoped units do', () => {
+  const plain = Array(30).fill('- Preserve requirements.').join('\n');
+  const nested = Array(5).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n');
+  const report = parseDocument(plain + '\n' + nested + '\n\n# When releasing\n\n' + Array(6).fill('- Tag the release.').join('\n'));
+  const units = report.units.filter(unit => unit.kind === 'item');
+  assert.equal(units.filter(unit => unit.state === 'ready').length, 36);
+  assert.ok(units.slice(30, 35).every(unit => unit.state === 'requires_context' && unit.reason === 'nested_list' &&
+    unit.rule === 'Keep tests fast.\n- Avoid network calls.' && unit.withContext === undefined));
+  assert.ok(units.slice(35).every(unit => unit.state === 'ready' && unit.withContext === true));
+  assert.equal(parseDocument(plain + '\n' + Array(4).fill('- Keep tests fast.\n  - Avoid network calls.').join('\n') + '\n\n# When releasing\n\n' +
+    Array(6).fill('- Tag the release.').join('\n')).units.filter(unit => unit.state === 'ready').length, 40);
 });
 
 test('multiple paragraphs and attached examples stay with their parent item', () => {

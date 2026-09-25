@@ -15,8 +15,11 @@ const report = { browser: "installed Edge", clipboard: "simulated writeText succ
   checks: [], pageErrors: [], screenshots: [] };
 // The deploy step names "it", so it needs its surrounding text as well as its heading and stays unscored.
 const sample = "# Project instructions\n\n- Always try to use functional components.\n- Run `node --test` before submitting changes.\n- Never log passwords.\n\n## Before deployment\n\n- Run it with `npm run deploy`.\n\n> Run an example command.\n\n@OTHER.md";
-// A step that needs only its conditional heading is scored with that heading stated first.
-const scopedDoc = "## Before deployment\n\n- Run the full test suite.", scopedRule = "Before deployment:\nRun the full test suite.";
+// A step that needs only its conditional heading is scored with that heading stated first, and so are
+// a numbered procedure and a list item with its nested items, each as one block.
+const scopedDoc = "## Before deployment\n\n- Run the full test suite.\n\n1. Build the app.\n2. Ship it.\n\n- Keep tests fast:\n  - Avoid network calls.";
+const scopedRules = ["Before deployment:\nRun the full test suite.", "Before deployment:\n1. Build the app.\n2. Ship it.",
+  "Before deployment:\nKeep tests fast:\n- Avoid network calls."];
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [];
 function result(rule) {
@@ -284,7 +287,7 @@ async function unitHints(page) {
         return [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state,
           ...[...unit.querySelectorAll(".unit-content > details")].map((detail) =>
             [detail.querySelector("summary").textContent === t.ruleSentContext, detail.querySelector("pre").textContent])]);
-      }), [["skipped"], ["ready", [true, scopedRule]]]);
+      }), [["skipped"], ...scopedRules.map((rule) => ["ready", [true, rule]])]);
       await page.click("#mode-rule"); await page.fill("#rule", "Keep requirements in Spanish."); await page.click("#go");
       await page.waitForFunction(() => document.querySelector("#out .banner strong")?.textContent === STRINGS[document.getElementById("ui-lang").value].notEnglishTitle);
       check(prefix + " single-rule banner renders the not-English sentence", await page.textContent("#out .banner p"), sentences.spanish);
@@ -576,24 +579,27 @@ async function unitHints(page) {
         });
         const sentPage = await sentContext.newPage(); sentPage.on("pageerror", (error) => report.pageErrors.push(error.message));
         await sentPage.goto(url); mode = "ok";
-        await prepare(sentPage, "- Keep functions short.\n  Split long ones.\n- Normalize  this.");
+        await prepare(sentPage, "- Keep functions short.\n  Split long ones.\n- Normalize  this.\n- Keep tests fast.\n  - Avoid network calls.");
         const disclosed = () => sentPage.evaluate(() => [...document.querySelectorAll(".instruction-unit")].map((unit) =>
           [...unit.querySelectorAll(".unit-content > details")].filter((detail) => detail.querySelector("summary").textContent === STRINGS.en.file.ruleSent)
             .map((detail) => detail.querySelector("pre").textContent)));
         const previewed = await disclosed();
         check("a plain list item shows no text-sent disclosure", previewed[0], []);
         check("an item whose sent text differs beyond the marker shows it", previewed[1], ["Normalize this."]);
+        check("a nested item sent as its own lines shows no text-sent disclosure", previewed[2], []);
         const beforeSent = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
         check("the disclosed text is the text sent", requests.slice(beforeSent).map((entry) => entry.rule).sort(),
-          ["Keep functions short.\nSplit long ones.", "Normalize this."]);
-        check("scored units keep the same disclosures", await disclosed(), [[], ["Normalize this."]]);
+          ["Keep functions short.\nSplit long ones.", "Keep tests fast.\n- Avoid network calls.", "Normalize this."]);
+        check("scored units keep the same disclosures", await disclosed(), [[], ["Normalize this."], []]);
         await prepare(sentPage, scopedDoc);
         const beforeScoped = requests.length; await sentPage.click("#file-start"); await settled(sentPage);
-        check("a scoped excerpt is sent with its section context", requests.slice(beforeScoped).map((entry) => entry.rule), [scopedRule]);
+        check("scoped excerpts are sent with their section context", requests.slice(beforeScoped).map((entry) => entry.rule).sort(), [...scopedRules].sort());
         const scopedPacket = JSON.parse((await sentPage.inputValue("#file-export .prompt-text")).split("quoted data):\n")[1]);
-        check("the prompt marks the excerpt scored with its section context", scopedPacket.scored.map((unit) =>
+        check("the prompt marks the excerpts scored with their section context", scopedPacket.scored.map((unit) =>
           [unit.sourceLines, unit.rawExcerpt, unit.exactScoredText, unit.scoredWithSectionContext]),
-          [[{ startLine: 3, endLine: 3 }, "- Run the full test suite.", scopedRule, true]]);
+          [[{ startLine: 3, endLine: 3 }, "- Run the full test suite.", scopedRules[0], true],
+            [{ startLine: 5, endLine: 6 }, "1. Build the app.\n2. Ship it.", scopedRules[1], true],
+            [{ startLine: 8, endLine: 9 }, "- Keep tests fast:\n  - Avoid network calls.", scopedRules[2], true]]);
         await sentContext.close();
       }
       await context.close(); releaseAll();
