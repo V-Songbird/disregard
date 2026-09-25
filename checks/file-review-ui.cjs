@@ -206,13 +206,16 @@ async function openDetails(page) {
   if (!await page.locator("#file-details").evaluate((node) => node.open)) await page.click("#file-details > summary");
 }
 // A synthetic drag carrying the given files, as a desktop drag from the file manager delivers them.
-async function drag(page, type, files) {
-  const transfer = await page.evaluateHandle((files) => {
+// Dispatches a drag event carrying files, or text when given a string, and says whether the page took it over.
+async function drag(page, type, files, target = "#file-drop") {
+  return page.evaluate(({ type, files, target }) => {
     const data = new DataTransfer();
-    for (const file of files) data.items.add(new File([file.text], file.name, { type: "text/markdown" }));
-    return data;
-  }, files);
-  await page.dispatchEvent("#file-drop", type, { dataTransfer: transfer });
+    if (typeof files === "string") data.setData("text/plain", files);
+    else for (const file of files) data.items.add(new File([file.text], file.name, { type: "text/markdown" }));
+    const event = new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: data });
+    document.querySelector(target).dispatchEvent(event);
+    return event.defaultPrevented;
+  }, { type, files, target });
 }
 // Follows the privacy-notice link and answers any leave-page dialog, staying or leaving.
 async function followPrivacy(page, stay) {
@@ -485,6 +488,23 @@ async function unitHints(page) {
           check("a wrong drop (" + files.map((file) => file.name).join(", ") + ") says why and keeps the text", [await page.textContent("#file-error"),
             await page.inputValue("#file-source"), await page.inputValue("#file-name"), requests.length], [message, sample, "RULES.md", 0]);
         }
+        // Outside the drop area a dragged file shows the same state and a dropped one loads the same way; dragged text is left alone.
+        const pageFile = [{ name: "PAGE.md", text: "- Page drop." }];
+        await drag(page, "dragenter", pageFile, "h1");
+        const pageDragged = await dropState();
+        const pageDropped = await drag(page, "drop", pageFile, "h1");
+        await page.waitForFunction(() => document.getElementById("file-name").value === "PAGE.md");
+        check("a file dropped outside the drop area shows the drop state and loads like a drop on it", [pageDragged, pageDropped,
+          await page.inputValue("#file-source"), await page.locator("#file-error").isHidden(), requests.length],
+          [{ zone: true, hint: ["Drop the file to read it."] }, true, "- Page drop.", true, 0]);
+        check("dragged text is not taken over", [await drag(page, "dragover", "Use tabs.", "h1"), await drag(page, "drop", "Use tabs.", "#file-source")], [false, false]);
+        // In one-rule mode a dropped file is refused: the page keeps it from the browser and loads and sends nothing.
+        await page.click("#mode-rule");
+        const ruleText = await page.inputValue("#rule"), pageUrl = page.url();
+        const refused = [await drag(page, "dragover", pageFile, "#rule"), await dropState(), await drag(page, "drop", pageFile, "#rule")];
+        check("a file dropped in one-rule mode is refused without leaving the page or sending", [...refused, await page.inputValue("#rule"),
+          await page.inputValue("#file-source"), page.url(), requests.length], [true, { zone: false, hint: [] }, true, ruleText, "- Page drop.", pageUrl, 0]);
+        await page.click("#mode-file");
         const windowsSource = "\uFEFF# Rules\r\n\r\n- Preserve requirements.\r\n";
         await page.locator("#file-upload").setInputFiles({ name: "AGENTS.md", mimeType: "text/markdown", buffer: Buffer.from(windowsSource) });
         await page.click("#file-create"); await settled(page);
