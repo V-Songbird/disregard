@@ -13,6 +13,7 @@ related_files:
   - checks/theme-accessibility.cjs
   - checks/locale-screens.cjs
   - checks/browser-assets.cjs
+  - checks/og-card.cjs
 ---
 
 # Development
@@ -125,6 +126,17 @@ clipboard permission or the receiving agent's behavior. Locale screenshots are f
 visual review: the check does not detect text clipped inside an element or judge
 translations. Native dialogs, such as the file chooser the **Choose a file** button opens,
 show the browser's or system's language rather than the interface language.
+
+The link-preview image `public/og.png` is generated, not drawn by hand. After changing
+the landing promise or the dark palette, regenerate it with the same Playwright setup and
+look at the result before committing:
+
+```shell
+node checks/og-card.cjs
+```
+
+The script holds the card's HTML, so the card is not a served page. Keep the text in
+`og:image:alt` in `public/index.html` in line with what the card shows.
 
 ## Implementation map
 

@@ -3,9 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Disregard</title>
-<meta name="description" content="Review an agent instruction file or one rule, then copy an evidence-based refactoring prompt for your AI agent.">
-<link rel="icon" href="data:,">
+<title>Disregard — review your CLAUDE.md and AGENTS.md instructions</title>
+<meta name="description" content="Review a CLAUDE.md, an AGENTS.md or one rule, then copy an evidence-based refactoring prompt for your AI agent.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://disregard.dev/">
+<meta property="og:title" content="Disregard — review your CLAUDE.md and AGENTS.md instructions">
+<meta property="og:description" content="Paste or drop your CLAUDE.md or AGENTS.md and get a prompt your agent can use to improve it.">
+<meta property="og:image" content="https://disregard.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Disregard: paste or drop your CLAUDE.md or AGENTS.md and get a prompt your agent can use to improve it. Below, a sample instruction line with one finding.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%238a4b00'/%3E%3Cpath d='M4 4.5h8M4 11.5h8' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M4 8h5' stroke='%23fff' stroke-opacity='.45' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/style.css">
 <script src="/i18n.js"></script>
 <script src="/file-i18n.js"></script>
@@ -39,10 +48,11 @@
     <textarea id="rule" name="rule" dir="auto" aria-describedby="rule-hint rule-count" autocomplete="off"
       placeholder="Always try to use functional components."></textarea>
     <div class="row">
-      <button type="submit" id="go" data-i18n="submit"></button>
+      <button type="submit" id="go" data-i18n="submit" aria-describedby="rule-consent"></button>
       <button type="button" id="rule-cancel" class="secondary" hidden></button>
       <span class="count" id="rule-count"></span>
     </div>
+    <p class="hint" id="rule-consent"></p>
   </form>
 
   <section id="out" aria-live="polite" aria-busy="false"></section>
@@ -168,16 +178,18 @@
     // translation lookup and the stored choice keep the short key.
     document.documentElement.lang = { es: "es-MX", zh: "zh-Hans" }[code] || code;
     document.documentElement.dir = t.dir;
-    document.title = t.title;
+    document.title = t.pageTitle;
     for (const node of document.querySelectorAll("[data-i18n]")) {
       node.textContent = t[node.dataset.i18n];
     }
     // English is the source; every other locale was machine-translated.
     document.getElementById("ai-note").hidden = !t.aiTranslated;
-    const promise = document.getElementById("promise");
+    document.getElementById("promise").textContent = t.promiseA;
+    // What pressing the button sends is said once, next to it.
     const link = el("a", null, t.promiseLink);
     link.href = "/privacy";
-    promise.replaceChildren(document.createTextNode(t.promiseA), link, document.createTextNode(t.promiseB));
+    const [before, after = ""] = t.ruleConsent.split("{link}");
+    document.getElementById("rule-consent").replaceChildren(document.createTextNode(before), link, document.createTextNode(after));
     updateCount();
     renderView();
     reviewUI?.refresh();

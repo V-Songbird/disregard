@@ -247,7 +247,7 @@ async function localized(page, locale, kind) {
     const leaveAsked = [];
     const noteLeave = (dialog) => { leaveAsked.push(dialog.type()); return dialog.accept(); };
     stopPage.on("dialog", noteLeave);
-    await Promise.all([stopPage.waitForURL("**/privacy"), stopPage.click("#promise a")]);
+    await Promise.all([stopPage.waitForURL("**/privacy"), stopPage.click("#rule-consent a")]);
     stopPage.off("dialog", noteLeave);
     check("single-rule results leave without a prompt", leaveAsked, []);
     await stopContext.close();
@@ -366,7 +366,7 @@ async function localized(page, locale, kind) {
       const shown = await poisoned.evaluate(() => {
         const en = window.STRINGS.en, picker = document.getElementById("ui-lang");
         return { lang: document.documentElement.lang, stored: localStorage.getItem("disregard.lang"), picker: [picker.value, picker.options.length],
-          english: document.title === en.title && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === en[node.dataset.i18n]) };
+          english: document.title === en.pageTitle && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === en[node.dataset.i18n]) };
       });
       check("stored " + inherited + " is ignored and English renders", [shown.lang, shown.english, shown.stored], ["en", true, inherited]);
       check("stored " + inherited + " keeps the picker populated", shown.picker, ["en", 6]);
@@ -387,7 +387,7 @@ async function localized(page, locale, kind) {
       const shown = () => detect.evaluate(() => {
         const locale = document.getElementById("ui-lang").value, t = window.STRINGS[locale];
         return { locale, lang: document.documentElement.lang, stored: localStorage.getItem("disregard.lang"),
-          translated: document.title === t.title && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === t[node.dataset.i18n]) };
+          translated: document.title === t.pageTitle && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === t[node.dataset.i18n]) };
       });
       const label = "browser languages " + languages.join(" ");
       check(label + " choose " + detected + " without storing it", await shown(), { locale: detected, lang: langTags[detected], stored: null, translated: true });
@@ -477,7 +477,7 @@ async function localized(page, locale, kind) {
       await reviewPage.selectOption("#ui-lang", locale);
       const strings = await reviewPage.evaluate(() => {
         const t = window.STRINGS[document.getElementById("ui-lang").value];
-        return document.title === t.title && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === t[node.dataset.i18n]) &&
+        return document.title === t.pageTitle && [...document.querySelectorAll("[data-i18n]")].every((node) => node.textContent === t[node.dataset.i18n]) &&
           document.getElementById("mode-rule").textContent === t.file.ruleMode;
       });
       await reviewPage.click("#mode-rule");
