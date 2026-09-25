@@ -88,7 +88,22 @@ test("the policy applies repository-settled edits and keeps questions for uncert
   assert.match(output, /Do not invent project commands, thresholds, facts, permissions, alternatives, exceptions, or host capabilities/);
   assert.match(output, /Keep a question instead of an edit only when the change is genuinely uncertain/);
   assert.match(output, /Do not treat an unavailable reference as resolved/);
-  assert.match(output, /the repository text that supports each change/);
+  assert.match(output, /the repository text that supports it/);
+});
+
+test("the policy keeps general requirements and asks for an answer the owner can read", () => {
+  const output = buildPrompt(report(), english);
+  const anchor = "Such an edit restates or points to what the repository already says.";
+  const scope = "When you name the places, commands or files behind a general requirement, add them to that requirement " +
+    "instead of replacing it, unless the repository shows they are the complete set.";
+  const answer = "Write your answer for the file's owner, who has not seen this evidence packet: cite source lines and quote " +
+    "the text, never unit ids, finding ids or factor names. Give, in this order: the proposed diff; for each change, one sentence " +
+    "on why and the repository text that supports it; the questions that need the owner's decision; then, briefly, the findings " +
+    "you rejected and why, and any coverage gaps or checks actually run.";
+  assert.equal(output.split(scope).length, 2);
+  assert.ok(output.includes(`${anchor} ${scope}`));
+  assert.equal(output.split(answer).length, 2);
+  assert.ok(!output.includes("Return the justified changes"));
 });
 
 test("all nine findings reuse canonical English explanations and retain measured metadata", () => {
@@ -193,7 +208,7 @@ test("the packet counts source lines, and only a file over the guide's target as
   }
   assert.ok(buildPrompt(lines(201), english).includes("\n\nThe source has 201 lines, above the Claude Code memory guide's target of under 200 lines " +
     "per instruction file: you may propose moving sections that apply only to some files or tasks into path-scoped rules or skills, " +
-    "as a question for the owner, never by deleting requirements.\n\nReturn the justified changes"));
+    "as a question for the owner, never by deleting requirements.\n\nWrite your answer for the file's owner"));
 });
 
 test("an excerpt over the per-file limit is exported as unanalyzed, apart from reader exclusions", () => {
