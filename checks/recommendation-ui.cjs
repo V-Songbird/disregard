@@ -134,7 +134,7 @@ const server = http.createServer(async (req, res) => {
             checks.factorValuesPreserved = await page.evaluate(({ factors, decimal }) => {
               const t = window.STRINGS[document.getElementById("ui-lang").value];
               const values = [...document.querySelectorAll("#out dd")].map((e) => e.textContent);
-              return ["is_rule", "F3", "F8", "F1", "F2", "F7"].filter((key) => factors[key] !== undefined)
+              return ["is_rule", "F3", "F8", "F1", "F2", "F7", "specificity"].filter((key) => factors[key] !== undefined)
                 .every((key, i) => values[i] === (factors[key] === null ? t.undetermined : String(factors[key]).replace(".", decimal)));
             }, { factors: fixture.body.factors, decimal });
             if (fixture.body.factors.rule_role) {
