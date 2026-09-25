@@ -182,6 +182,66 @@
       "annotation": "A pronoun that follows what it names in the same excerpt, and an instruction to read or follow a linked Markdown file, are scored as written; the linked file is not read and the excerpt says so. A link given only for reference, and a sentence that begins with a pronoun, stay for contextual review."
     },
     {
+      "name": "Command, path and name reference entries",
+      "sourceName": "AGENTS.md",
+      "source": "# Commands\n\nCommon commands:\n\n- **Run all tests**: `build/sbt test`\n- Pregel framework: `build/sbt \"testOnly *PregelSuite\"`\n- `pnpm dev` - start the dev server\n- `tests/lisp/` - ERT-style Emacs Lisp tests.\n\n`ASSIGN` - Assignment\n\n`pnpm lint` must pass before committing\n\nRun `pnpm test` before committing.",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 5,
+          "endLine": 5,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 6,
+          "endLine": 6,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 7,
+          "endLine": 7,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 8,
+          "endLine": 8,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 10,
+          "endLine": 10,
+          "state": "skipped",
+          "reason": "reference_entry"
+        },
+        {
+          "startLine": 12,
+          "endLine": 12,
+          "state": "ready"
+        },
+        {
+          "startLine": 14,
+          "endLine": 14,
+          "state": "ready"
+        }
+      ],
+      "annotation": "A single-line entry that is only a short label and one code span, or one code span and a short description, names a command, path or identifier for reference and is not scored; an introduction whose items are all such entries labels the list. A requirement or condition in the entry or its scope keeps it ready, as do sentences that use a code span."
+    },
+    {
       "name": "Known arbitrary domain-heading limitation",
       "sourceName": "AGENTS.md",
       "source": "# Backend\n\n- Use snake_case for field names.\n\n# Frontend\n\n- Use camelCase for field names.",

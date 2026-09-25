@@ -60,6 +60,7 @@
       dependent_text: "This text may depend on surrounding instructions. Review it with the nearby text.",
       linked_context: "This links to a section or Markdown file that may supply context. The linked content has not been read here.",
       empty_item: "This list item contains no words or numbers; it has nothing to score.",
+      reference_entry: "This is reference material, such as a command, path or name with a short description. It states no requirement, so it is not scored.",
       over_limit: "Only the first {excerpts} selected excerpts of a file are analyzed. Review this part in a separate file to analyze it.",
     },
   };
@@ -117,6 +118,7 @@
       dependent_text: "Este texto puede depender de instrucciones cercanas. Revísalo junto con el texto que lo rodea.",
       linked_context: "Este enlace apunta a una sección o archivo Markdown que puede aportar contexto. Aquí no se leyó el contenido enlazado.",
       empty_item: "Este elemento de lista no contiene palabras ni números; no hay nada que analizar.",
+      reference_entry: "Esto es material de referencia, como un comando, una ruta o un nombre con una descripción breve. No establece ningún requisito, así que no se analiza.",
       over_limit: "Solo se analizan los primeros {excerpts} fragmentos seleccionados de un archivo. Revisa esta parte en un archivo aparte para analizarla.",
     },
   };
@@ -174,6 +176,7 @@
       dependent_text: "Ce texte peut dépendre d’instructions voisines. Examinez-le avec le texte qui l’entoure.",
       linked_context: "Ce lien renvoie à une section ou à un fichier Markdown pouvant fournir du contexte. Le contenu lié n’a pas été lu ici.",
       empty_item: "Cet élément de liste ne contient ni mots ni chiffres\u00a0; il n’y a rien à évaluer.",
+      reference_entry: "Ceci est une référence, comme une commande, un chemin ou un nom accompagné d’une brève description. Elle n’énonce aucune exigence et n’est donc pas évaluée.",
       over_limit: "Seuls les {excerpts} premiers extraits sélectionnés d’un fichier sont analysés. Examinez cette partie dans un fichier distinct pour l’analyser.",
     },
   };
@@ -231,6 +234,7 @@
       dependent_text: "这段文本可能依赖周围的指令。请结合前后文检查。",
       linked_context: "此链接指向可能提供上下文的章节或 Markdown 文件。此处未读取链接内容。",
       empty_item: "此列表项不含文字或数字，没有可评分的内容。",
+      reference_entry: "这是参考信息，例如附有简短说明的命令、路径或名称。其中没有提出任何要求，因此不评分。",
       over_limit: "每个文件只分析选取的前 {excerpts} 个片段。如需分析这一部分，请将其放入单独的文件中检查。",
     },
   };
@@ -288,6 +292,7 @@
       dependent_text: "यह पाठ आसपास के निर्देशों पर निर्भर हो सकता है। आसपास के पाठ के साथ इसकी समीक्षा करें।",
       linked_context: "यह किसी अनुभाग या Markdown फ़ाइल से जुड़ा है जो संदर्भ दे सकती है। लिंक की सामग्री यहाँ पढ़ी नहीं गई है।",
       empty_item: "सूची की इस मद में कोई शब्द या संख्या नहीं है; इसमें अंक देने के लिए कुछ नहीं है।",
+      reference_entry: "यह संदर्भ सामग्री है, जैसे छोटे विवरण के साथ कोई कमांड, पथ या नाम। इसमें कोई आवश्यकता नहीं बताई गई है, इसलिए इसे अंक नहीं दिए जाते।",
       over_limit: "किसी फ़ाइल के केवल पहले {excerpts} चुने गए अंशों का विश्लेषण होता है। इस हिस्से का विश्लेषण करने के लिए इसे अलग फ़ाइल में जाँचें।",
     },
   };
@@ -350,6 +355,7 @@
       dependent_text: "قد يعتمد هذا النص على التعليمات المحيطة به. راجعه مع النص القريب منه.",
       linked_context: "يشير هذا الرابط إلى قسم أو ملف Markdown قد يوفر سياقًا. لم تتم قراءة المحتوى المرتبط هنا.",
       empty_item: "لا يحتوي عنصر القائمة هذا على كلمات أو أرقام؛ ولا يوجد فيه ما يُقيَّم.",
+      reference_entry: "هذه مادة مرجعية، مثل أمر أو مسار أو اسم مع وصف قصير. ولا تنص على أي متطلب، لذا لا تُقيَّم.",
       over_limit: "لا يُحلَّل إلا أول {excerpts} مقطعًا محددًا في الملف. راجع هذا الجزء في ملف منفصل لتحليله.",
     },
   };
