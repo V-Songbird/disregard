@@ -351,17 +351,21 @@
     }
     choose.addEventListener("click", () => upload.click());
     upload.addEventListener("change", async () => { await load([...upload.files]); upload.value = ""; });
-    // Only a dragged file is taken over; dragged text keeps the text box's own behavior.
+    // Only a dragged file is taken over; dragged text keeps its default behavior. A file dropped anywhere
+    // on the page counts as dropped on the intake while file mode shows, and is refused in the other mode,
+    // so the browser never opens it in place of the page.
     const dragging = (on) => { zone.classList.toggle("dragging", on); dropHint.hidden = !on; };
     const carriesFiles = (event) => Boolean(event.dataTransfer?.types.includes("Files"));
-    for (const type of ["dragenter", "dragover"]) zone.addEventListener(type, (event) => {
+    const takes = () => !busy && !host.hidden;
+    for (const type of ["dragenter", "dragover"]) document.addEventListener(type, (event) => {
       if (!carriesFiles(event)) return;
-      event.preventDefault(); event.dataTransfer.dropEffect = busy ? "none" : "copy"; dragging(!busy);
+      event.preventDefault(); event.dataTransfer.dropEffect = takes() ? "copy" : "none"; dragging(takes());
     });
-    zone.addEventListener("dragleave", (event) => { if (!zone.contains(event.relatedTarget)) dragging(false); });
-    zone.addEventListener("drop", (event) => {
+    // Leaving the window has no element to enter.
+    document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) dragging(false); });
+    document.addEventListener("drop", (event) => {
       if (!carriesFiles(event)) return;
-      event.preventDefault(); dragging(false); load([...event.dataTransfer.files]);
+      event.preventDefault(); dragging(false); if (!host.hidden) load([...event.dataTransfer.files]);
     });
 
     // Pressing the primary action reads the file here and starts scoring what can be scored.
