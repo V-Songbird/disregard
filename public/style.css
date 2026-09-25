@@ -113,6 +113,8 @@ input[type="file"]::file-selector-button { font: inherit; color: var(--ink); bac
 .coverage { font-weight: 600; font-variant-numeric: tabular-nums; }
 button.secondary { color: var(--ink); background: var(--paper); border: 1px solid var(--muted); }
 .unit-list { margin-top: 1.5rem; }
+.unit-filter { display: flex; align-items: center; gap: .5rem; min-height: 2.75rem; margin: 0; cursor: pointer; }
+.unit-filter input { flex: none; width: 1.25rem; height: 1.25rem; margin: 0; accent-color: var(--accent); cursor: pointer; }
 .instruction-unit { border-top: 1px solid var(--line); margin-top: 0; padding: .3rem 0; }
 .instruction-unit > summary { padding: .75rem 0; color: var(--ink); }
 .unit-location { font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--muted); margin-inline-end: .5rem; }

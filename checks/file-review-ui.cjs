@@ -27,6 +27,17 @@ const linkedDoc = linkedRule + "\n\nSee [the notes](NOTES.md) for background.";
 const batch = Array.from({ length: 5 }, (_, i) => `- Use module${i} for storage.`).join("\n");
 // Rows with two findings, background only (not_a_rule) and none.
 const summaryDoc = "- Always try to keep quality high.\n- The build cache is stored in `.cache/`, which CI clears nightly.\n- Keep functions short.";
+// The same rows under a heading that is not scored, then one whose request fails in "partial" mode.
+const filterDoc = "# Project instructions\n\n" + summaryDoc + "\n- Use module1 for storage.";
+// The findings filter's label and its count with 2 of those 5 rows shown, written out per locale.
+const filterLabels = {
+  en: { label: "Show only excerpts with findings", showing: "Showing 2 of 5 excerpts" },
+  es: { label: "Mostrar solo fragmentos con hallazgos", showing: "Mostrando 2 de 5 fragmentos" },
+  zh: { label: "仅显示有发现的片段", showing: "正在显示 5 个片段中的 2 个" },
+  hi: { label: "केवल निष्कर्ष वाले अंश दिखाएँ", showing: "दिखाए गए अंश: 5 में से 2" },
+  ar: { label: "إظهار المقاطع التي فيها ملاحظات فقط", showing: "المقاطع المعروضة: 2 من 5" },
+  fr: { label: "Afficher uniquement les extraits avec des points à examiner", showing: "Extraits affichés\u00a0: 2 sur 5" },
+};
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0;
 function result(rule) {
   const hedge = rule.includes("try to"), vague = rule.includes("quality"), background = rule.includes("is stored in");
@@ -348,6 +359,36 @@ async function unitHints(page) {
       await page.locator(".instruction-unit > summary").first().focus(); await page.keyboard.press("Tab");
       check(prefix + " Tab moves from one row summary to the next", await page.evaluate(() =>
         document.activeElement === document.querySelectorAll(".instruction-unit > summary")[1]));
+      // The findings filter appears once a row has findings, above the rows and off. With Space it keeps the rows
+      // with findings and the one a retry would send, and says how many show; again, every row returns as it was.
+      // Coverage, the retry control and the prompt, with its coverage gaps, read the same throughout.
+      mode = "partial"; await prepare(page, filterDoc);
+      const filterBefore = await page.locator("#file-filter").isHidden();
+      await page.click("#file-start"); await settled(page);
+      for (const index of [1, 3]) await page.locator(".instruction-unit > summary").nth(index).click();
+      const filterView = () => page.evaluate(() => ({
+        rows: [...document.querySelectorAll(".instruction-unit")].map((unit) => [unit.dataset.state, unit.open, unit.getClientRects().length > 0]),
+        checked: document.getElementById("file-filter").checked, showing: document.getElementById("file-showing").textContent,
+        above: Boolean(document.getElementById("file-filter").compareDocumentPosition(document.getElementById("file-units")) & Node.DOCUMENT_POSITION_FOLLOWING),
+        unchanged: [document.querySelector("#file-report .coverage").textContent, document.getElementById("file-start").textContent,
+          document.querySelector("#file-export .prompt-text")?.value] }));
+      const unfiltered = await filterView();
+      const named = await page.getByRole("checkbox", { name: filterLabels[locale].label, exact: true }).count();
+      await page.focus("#file-filter"); await page.keyboard.press("Space");
+      const filtered = await filterView();
+      await page.keyboard.press("Space");
+      const restored = await filterView();
+      check(prefix + " the findings filter is absent before findings exist", filterBefore);
+      check(prefix + " the findings filter is a named checkbox above the rows, off", [named, unfiltered.checked, unfiltered.showing, unfiltered.above,
+        unfiltered.rows], [1, false, "", true, [["skipped", false, true], ["ok", true, true], ["ok", false, true], ["ok", true, true], ["error", false, true]]]);
+      check(prefix + " filtering keeps rows with findings or a retry and says how many show", [filtered.checked, filtered.showing, filtered.rows],
+        [true, filterLabels[locale].showing, [["skipped", false, false], ["ok", true, true], ["ok", false, false], ["ok", true, false], ["error", false, true]]]);
+      check(prefix + " filtering leaves coverage, retry and the prompt with its gaps unchanged", [filtered.unchanged, restored.unchanged,
+        unfiltered.unchanged[2].includes("Scoring failed; no scored advice is available.")], [unfiltered.unchanged, unfiltered.unchanged, true]);
+      check(prefix + " turning the filter off restores every row and its open state", restored, unfiltered);
+      await page.keyboard.press("Space"); await prepare(page, filterDoc);
+      check(prefix + " a new review starts with the filter off", await page.evaluate(() =>
+        [document.getElementById("file-filter").checked, document.querySelectorAll(".instruction-unit[hidden]").length]), [false, 0]);
       mode = "status";
       await prepare(page, scopedDoc);
       check(prefix + " a scoped excerpt is ready and says its text carries its section context", await page.evaluate(() => {
