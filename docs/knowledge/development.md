@@ -60,7 +60,7 @@ Copy [.dev.vars.example](../../.dev.vars.example) to `.dev.vars` and set
 npx --yes wrangler dev
 ```
 
-Open the local address printed by Wrangler. File preview and prompt generation
+Open the local address printed by Wrangler. Reading the file and prompt generation
 run in the browser. Analysis calls the provider using the server key and can incur
 charges. A local server is not an offline provider simulation.
 
@@ -114,17 +114,17 @@ Reports and associated screenshots stay in the ignored `.private/` directory.
 Choose another filename when repeating a check.
 
 - `request-ui.cjs` checks the single-rule request lifecycle and translated states, including stopping by click and a fresh Enter, a held Enter that does not stop, and a new request after a stop.
-- `file-review-ui.cjs` checks parsing previews, coverage, the note on a file over 200 lines, cancellation, retries, request pacing, and prompt export. It paces a large file on Playwright's fake clock rather than waiting a real minute.
+- `file-review-ui.cjs` checks the intake (paste, choose and drop, with wrong files refused), that nothing is sent before the primary action, the prompt-first result with its summary line and file name, the closed details with coverage and the findings filter, the note on a file over 200 lines, cancellation, retries, request pacing, and prompt export. It paces a large file on Playwright's fake clock rather than waiting a real minute.
 - `recommendation-ui.cjs` checks synthetic findings across locales and layouts using the bundled public fixtures, as single-rule results and as collapsed file rows.
-- `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior. Its keyboard journeys run in light and dark themes, at desktop, mobile and 200% zoom, in English and Arabic. While a mocked request is pending, they reach the single-rule and file stop controls by keyboard, stop with Enter in one journey and Space in another, and check that Escape leaves the analysis running. They also check where focus lands after each stop, and that a second press after a file stop sends nothing.
+- `theme-accessibility.cjs` checks rendered themes, contrast, focus, and layout behavior, including the file drop state and the opened details. Its keyboard journeys run in light and dark themes, at desktop, mobile and 200% zoom, in English and Arabic. While a mocked request is pending, they reach the single-rule and file stop controls by keyboard, stop with Enter in one journey and Space in another, and check that Escape leaves the analysis running. They also check where focus lands after each stop, and that a second press after a file stop sends nothing.
 - `locale-screens.cjs` screenshots each file and single-rule journey state in all six locales at desktop and mobile widths, in a new folder named after the report. It fails on a page error, horizontal page overflow, a state it cannot reach, a `lang` tag that does not match the selected locale, an unknown local request, or a blocked request to another host.
 
 Browser checks use viewport emulation, not physical mobile devices. Prompt clipboard
 tests simulate successful and rejected writes; they do not prove operating-system
 clipboard permission or the receiving agent's behavior. Locale screenshots are for
 visual review: the check does not detect text clipped inside an element or judge
-translations. Native controls, such as the file picker, show the browser's language
-rather than the interface language.
+translations. Native dialogs, such as the file chooser the **Choose a file** button opens,
+show the browser's or system's language rather than the interface language.
 
 ## Implementation map
 

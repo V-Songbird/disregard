@@ -13,32 +13,35 @@ npx --yes wrangler dev
 ```
 
 The first run downloads Wrangler and needs network access. No package installation or build step is required for the application itself.
+Scoring needs a key: copy [.dev.vars.example](.dev.vars.example) to `.dev.vars`, set `TYPESAFE_API_KEY`, and restart the server.
+You need a TypeSafe account and network access. Scoring calls can incur charges on that account.
+
 Open the local address printed by Wrangler and choose **English** in the interface language picker.
-Paste this into **Your instruction file**, then select **Preview instructions**:
+Paste this into **Your instruction file**, or drop a Markdown file onto that area or select **Choose a file**:
 
 ```markdown
 - Run node --test before submitting changes.
 ```
 
-The preview shows one excerpt with its source line. Expected labels:
+Then select **Create the prompt for my agent**. Nothing is sent for scoring before that. Expected result:
 
 ```text
-Ready
-Analyze 1 instruction
+Prompt for your agent
+1 of 1 part was checked.
 ```
 
-Previewing runs locally and needs no API key. If the parser cannot load, the page reports that failure instead of showing excerpts.
+Without a key, the page reports `Analysis paused after a service error.` instead. If the file reader cannot load, the page reports that failure and sends nothing.
 
 ## Analyze and copy a prompt
 
-For scoring, copy [.dev.vars.example](.dev.vars.example) to `.dev.vars`, set `TYPESAFE_API_KEY`, and restart the server.
-You need a TypeSafe account and network access. Scoring calls can incur charges on that account.
-
-Select **Analyze**, inspect the findings and unreviewed ranges, then select **Copy prompt**.
-Paste the English prompt into an agent that can read the original file. Review its proposed edits against your intended requirements.
+Select **Copy prompt** and paste the English prompt into Claude Code or another agent working in the repository that holds the file.
+Review its proposed edits against your intended requirements.
+**File name in the prompt** starts as the chosen or dropped file's name, or `AGENTS.md` for pasted text; change it if the file has another name in the repository.
+The summary line says how many parts were checked; your agent reads the rest.
+**See what was found** holds the coverage, each excerpt's findings, and the ranges left unreviewed.
 The **One rule** mode also accepts a single instruction.
 
-The key stays on the server. Previewing and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
+The key stays on the server. Reading the file and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
 Do not submit secrets or personal data. Read the application's [privacy notice](public/privacy.html) and [terms](public/terms.html).
 
 ## Limits and configuration

@@ -175,12 +175,13 @@ const server = http.createServer(async (req, res) => {
         }
         // The same responses as rows of one file: while collapsed, each scored row gives its finding count and
         // headlines, a row whose only finding is not_a_rule reads as background, and coverage counts it apart.
+        // The rows sit in the "See what was found" disclosure, which opens on request.
         await page.click("#mode-file");
         await page.fill("#file-source", packet.cases.map((entry) => "- " + entry.text).join("\n"));
-        await page.click("#file-prepare");
         const starting = requests;
-        await page.click("#file-start");
+        await page.click("#file-create");
         await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+        await page.click("#file-details > summary");
         const rows = await page.evaluate((bodies) => {
           const t = window.STRINGS[document.getElementById("ui-lang").value];
           const fill = (text, values) => text.replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match);
