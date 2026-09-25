@@ -128,6 +128,12 @@ const countedLabels = {
     coverage315: "3 analysés · 1 avec des points à examiner · 5 non analysés", coverage001: "0 analysé · 0 avec des points à examiner · 1 non analysé",
     coverage11: "0 analysé · 0 avec des points à examiner · 11 non analysés" },
 };
+// The length note's heading written out per locale for a file of 201 lines.
+const longTitles = {
+  en: "This file has 201 lines.", es: "Este archivo tiene 201 líneas.", zh: "此文件共有 201 行。",
+  hi: "इस फ़ाइल में 201 पंक्तियाँ हैं।", ar: "يحتوي هذا الملف على 201 سطر.", fr: "Ce fichier compte 201 lignes.",
+};
+const longDoc = (count) => Array.from({ length: count }, (_, i) => `- Use module${i} for storage.`).join("\n") + "\n";
 const rowLabels = {
   en: { finding1: "1 finding", findings2: "2 findings", clean: "No findings", background: "Background",
     coverage: "3 analyzed · 1 with findings · 1 read as background · 0 not analyzed" },
@@ -310,6 +316,20 @@ async function unitHints(page) {
       await prepare(page, "- Keep requirements\n  across lines.\n- Keep one line.");
       check(prefix + " unit locations name a range or one line", await page.evaluate(() =>
         [...document.querySelectorAll(".instruction-unit .unit-location")].map((location) => location.textContent)), unitLocations[locale]);
+      // Over the Claude Code guide's 200-line target, one note above the excerpts; at 200 lines, whose last
+      // line ends in a newline, none.
+      await prepare(page, longDoc(200));
+      const at200 = await page.locator("#file-length").isHidden();
+      await prepare(page, longDoc(201));
+      check(prefix + " only a file over 200 lines shows one length note above the excerpts", { at200, ...await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file.longFile, note = document.getElementById("file-length");
+        return { notes: document.querySelectorAll("#file-report .banner").length, shown: !note.hidden && note.getClientRects().length > 0,
+          title: note.querySelector("strong").textContent, body: note.querySelector("p").textContent === t.body.replace("{max}", "200") + " " + t.link,
+          link: note.querySelector("p > a").href,
+          above: Boolean(note.compareDocumentPosition(document.getElementById("file-units")) & Node.DOCUMENT_POSITION_FOLLOWING),
+          fits: document.documentElement.scrollWidth <= innerWidth };
+      }) }, { at200: true, notes: 1, shown: true, title: longTitles[locale], body: true,
+        link: "https://code.claude.com/docs/en/memory#write-effective-instructions", above: true, fits: true });
       // Collapsed rows name what was found: the count and each headline, as text inside the one summary control.
       // A row whose only finding is not_a_rule reads as background and is counted apart from findings.
       mode = "ok"; await prepare(page, summaryDoc); await page.click("#file-start"); await settled(page);

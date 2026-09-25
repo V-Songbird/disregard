@@ -84,9 +84,9 @@ for (const code of interfaceLocales.filter((code) => code !== "en")) {
 
 // A no-break space keeps each English-page marker on one line when a link label wraps.
 const englishMarkers = { es: "(en\u00a0inglés)", fr: "(en\u00a0anglais)", hi: "(अंग्रेज़ी\u00a0में)" };
-test("public/i18n.js es, fr and hi link markers keep their no-break space", () => {
+test("public/i18n.js and public/file-i18n.js es, fr and hi link markers keep their no-break space", () => {
   const broken = Object.entries(englishMarkers).flatMap(([code, marker]) => ["research", "privacy", "terms", "promiseLink"]
-    .map((key) => [`${code}.${key}`, interfaceStrings[code][key]])
+    .map((key) => [`${code}.${key}`, interfaceStrings[code][key]]).concat([[`${code}.file.longFile.link`, probe[code].file.longFile.link]])
     .filter(([, text]) => !text.endsWith(marker) || text.split("\u00a0").length !== 2)
     .map(([name, text]) => `${name}: "${text.replaceAll("\u00a0", "\\u00a0")}"`));
   assert.deepEqual(broken, []);

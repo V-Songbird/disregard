@@ -85,6 +85,7 @@
   // The supplied Worker allows a client 60 score requests a minute (wrangler.jsonc). A file run
   // starts at most PACE requests in any PACE_WINDOW, so a large file waits instead of being stopped.
   const PACE = 55, PACE_WINDOW = 60000;
+  const GUIDE = "https://code.claude.com/docs/en/memory#write-effective-instructions";
 
   // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
   function create({ host, getStrings, findingCard, factorList, onBusy }) {
@@ -117,13 +118,14 @@
     const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
     const output = el("section", "file-report"); output.id = "file-report";
     const reportTitle = el("h2"), reportHint = el("p", "hint"), coverage = el("p", "coverage");
+    const lengthNote = el("div", "banner"); lengthNote.id = "file-length";
     const progress = el("p", "hint"); progress.id = "file-progress"; progress.setAttribute("role", "status");
     const start = el("button"); start.id = "file-start"; start.type = "button";
     const cancel = el("button", "secondary"); cancel.id = "file-cancel"; cancel.type = "button";
     const runActions = el("div", "row"); runActions.append(start, cancel);
     const list = el("div", "unit-list"); list.id = "file-units";
     const exported = el("div"); exported.id = "file-export";
-    output.append(reportTitle, reportHint, coverage, progress, runActions, exported, list);
+    output.append(reportTitle, reportHint, coverage, lengthNote, progress, runActions, exported, list);
     host.append(form, error, output);
 
     const t = () => getStrings().file;
@@ -237,7 +239,16 @@
     function renderReport() {
       const open = new Set([...rows.entries()].filter(([, row]) => row.details.open).map(([id]) => id));
       const focusedId = output.contains(document.activeElement) ? document.activeElement.id : null;
-      rows.clear(); list.replaceChildren(); exported.replaceChildren();
+      rows.clear(); list.replaceChildren(); exported.replaceChildren(); lengthNote.replaceChildren();
+      // The count and target come from the prompt script, which puts the same count in the prompt.
+      const prompt = window.DisregardPrompt, lines = report && prompt ? prompt.lineCount(report.sourceText) : 0;
+      lengthNote.hidden = !prompt || lines <= prompt.LINE_TARGET;
+      if (!lengthNote.hidden) {
+        const strings = t().longFile, body = el("p", null, fill(strings.body, { max: number(prompt.LINE_TARGET) }) + " ");
+        const guide = el("a", null, strings.link); guide.id = "file-length-guide"; guide.href = GUIDE;
+        body.append(guide);
+        lengthNote.append(el("strong", null, counted(strings.title, lines)), body);
+      }
       if (report) {
         for (const unit of report.units) {
           const details = el("details", "instruction-unit"); details.open = open.has(unit.id);
