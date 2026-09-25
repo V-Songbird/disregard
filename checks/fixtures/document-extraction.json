@@ -307,6 +307,49 @@
         }
       ],
       "annotation": "A paragraph ending in a colon is scored with the one code block after it; the block itself stays skipped. \"With:\" continues the previous step, so it keeps its blocks for contextual review."
+    },
+    {
+      "name": "Sentences followed by their code blocks",
+      "sourceName": "AGENTS.md",
+      "source": "## Python\n\nAll Python code must include type hints and return types.\n\n```python\ndef add(a: int, b: int) -> int:\n    return a + b\n```\n\nRun the checks before committing.\n\n```sh\nmake lint\n```\n\n```sh\nmake test\n```",
+      "units": [
+        {
+          "startLine": 1,
+          "endLine": 1,
+          "state": "skipped",
+          "reason": "heading_context"
+        },
+        {
+          "startLine": 3,
+          "endLine": 3,
+          "state": "ready"
+        },
+        {
+          "startLine": 5,
+          "endLine": 8,
+          "state": "skipped",
+          "reason": "code"
+        },
+        {
+          "startLine": 10,
+          "endLine": 10,
+          "state": "requires_context",
+          "reason": "attached_blocks"
+        },
+        {
+          "startLine": 12,
+          "endLine": 14,
+          "state": "skipped",
+          "reason": "code"
+        },
+        {
+          "startLine": 16,
+          "endLine": 18,
+          "state": "skipped",
+          "reason": "code"
+        }
+      ],
+      "annotation": "A complete sentence is scored with the one code block after it, as a colon-ended paragraph is. A paragraph followed by a second block keeps its blocks for contextual review."
     }
   ]
 }
