@@ -286,6 +286,20 @@ test('accounts for frontmatter, fenced examples, tables, quotes, HTML, and separ
   assertSourceCoverage(report);
 });
 
+test('a table does not introduce the list after it; a colon paragraph before a table still needs it', () => {
+  const report = parseDocument('## Before remote work\n\n| Check | Command |\n| --- | --- |\n| Tests | npm test |\n\n- Do not commit `.only` tests.\n- Keep the lockfile.');
+  assert.deepEqual(report.units.map(({ startLine, state, reason, rule }) => ({ startLine, state, reason, rule })), [
+    { startLine: 1, state: 'skipped', reason: 'heading_context', rule: '' },
+    { startLine: 3, state: 'skipped', reason: 'table', rule: '' },
+    { startLine: 7, state: 'ready', reason: undefined, rule: 'Before remote work:\nDo not commit `.only` tests.' },
+    { startLine: 8, state: 'ready', reason: undefined, rule: 'Before remote work:\nKeep the lockfile.' },
+  ]);
+  assertSourceCoverage(report);
+  const colon = parseDocument('Run these before a release:\n\n| Check | Command |\n| --- | --- |\n| Tests | npm test |');
+  assert.deepEqual(colon.units.map(({ state, reason }) => ({ state, reason })),
+    [{ state: 'requires_context', reason: 'dependent_text' }, { state: 'skipped', reason: 'table' }]);
+});
+
 test('does not mistake pipes in ordinary text for a table', () => {
   assert.equal(parseDocument('Use A | B for the type union.').units[0].state, 'ready');
 });

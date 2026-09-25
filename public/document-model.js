@@ -333,7 +333,8 @@
         // A paragraph introducing the next list may provide its condition even
         // without a colon. It is stated before each item unless it was excluded
         // itself, points back to earlier text, or links to context not read here.
-        intro = nextType === 'list' ? { text, unit,
+        // A table introduces nothing, so its list is scored as if it followed the heading.
+        intro = nextType === 'list' && unit.reason !== 'table' ? { text, unit,
           readable: unit.state !== 'skipped' && !refersBack(text) && !linksContext(descendants(node)) } : null;
       } else {
         const reasons = { code_block: 'code', block_quote: 'quote', html_block: 'html', thematic_break: 'separator' };
