@@ -7,8 +7,8 @@
 (() => {
   const en = {
     modeLabel: "What to analyze", fileMode: "Instruction file", ruleMode: "One rule",
-    lede: "Review your agent's instructions. Take the findings back to your agent with a refactoring prompt.",
-    source: "Your instruction file", sourceHint: "Paste the full file in English, drop a Markdown file here, or choose one. Up to {kib} KiB; the first {excerpts} selected excerpts are analyzed.",
+    lede: "Paste or drop your CLAUDE.md or AGENTS.md and get a prompt your agent can use to improve it.",
+    source: "Your instruction file", sourceHint: "Paste the file, drop it here, or choose it. English only, up to {kib} KiB.",
     upload: "Choose a file", name: "File name in the prompt", create: "Create the prompt for my agent", bytes: "{n} / {max} bytes",
     nameHint: "The prompt names the file this way. Change it if the file has another name in your repository.",
     drop: "Drop the file to read it.", one_file: "Drop one file at a time.",
@@ -78,8 +78,8 @@
   };
   const es = {
     modeLabel: "Qué analizar", fileMode: "Archivo de instrucciones", ruleMode: "Una regla",
-    lede: "Revisa las instrucciones de tu agente. Lleva los hallazgos a tu agente con un prompt de refactorización.",
-    source: "Tu archivo de instrucciones", sourceHint: "Pega el archivo completo en inglés, suelta aquí un archivo Markdown o elige uno. Hasta {kib} KiB; se analizan los primeros {excerpts} fragmentos seleccionados.",
+    lede: "Pega o suelta tu CLAUDE.md o AGENTS.md y obtén un prompt que tu agente puede usar para mejorarlo.",
+    source: "Tu archivo de instrucciones", sourceHint: "Pega el archivo, suéltalo aquí o elígelo. Solo en inglés, hasta {kib} KiB.",
     upload: "Elegir un archivo", name: "Nombre del archivo en el prompt", create: "Crear el prompt para mi agente", bytes: "{n} / {max} bytes",
     nameHint: "El prompt nombra así al archivo. Cámbialo si en tu repositorio el archivo tiene otro nombre.",
     drop: "Suelta el archivo para leerlo.", one_file: "Suelta un solo archivo a la vez.",
@@ -149,8 +149,8 @@
   };
   const fr = {
     modeLabel: "Que souhaitez-vous analyser\u00a0?", fileMode: "Fichier d’instructions", ruleMode: "Une règle",
-    lede: "Examinez les instructions de votre agent. Transmettez-lui les résultats avec un prompt de refactorisation.",
-    source: "Votre fichier d’instructions", sourceHint: "Collez le fichier complet en anglais, déposez ici un fichier Markdown ou choisissez-en un. Jusqu’à {kib} Kio\u00a0; les {excerpts} premiers extraits sélectionnés sont analysés.",
+    lede: "Collez ou déposez votre CLAUDE.md ou AGENTS.md et obtenez un prompt que votre agent peut utiliser pour l’améliorer.",
+    source: "Votre fichier d’instructions", sourceHint: "Collez le fichier, déposez-le ici ou choisissez-le. En anglais uniquement, jusqu’à {kib} Kio.",
     upload: "Choisir un fichier", name: "Nom du fichier dans le prompt", create: "Créer le prompt pour mon agent", bytes: "{n} / {max} octets",
     nameHint: "Le prompt désigne le fichier sous ce nom. Modifiez-le si le fichier porte un autre nom dans votre dépôt.",
     drop: "Déposez le fichier pour le lire.", one_file: "Déposez un seul fichier à la fois.",
@@ -221,8 +221,8 @@
   };
   const zh = {
     modeLabel: "分析内容", fileMode: "指令文件", ruleMode: "单条规则",
-    lede: "检查智能体的指令，并通过重构提示词将发现的问题交给智能体处理。",
-    source: "你的指令文件", sourceHint: "粘贴完整的英文文件、将 Markdown 文件拖放到此处，或选择一个文件。文件大小上限为 {kib} KiB；只分析选取的前 {excerpts} 个片段。",
+    lede: "粘贴或拖入你的 CLAUDE.md 或 AGENTS.md，获得一个可交给智能体用来改进它的提示词。",
+    source: "你的指令文件", sourceHint: "粘贴文件、拖到这里或选择文件。仅限英文，最多 {kib} KiB。",
     upload: "选择文件", name: "提示词中的文件名", create: "为我的智能体生成提示词", bytes: "{n} / {max} 字节",
     nameHint: "提示词用这个名称指代该文件。如果该文件在你的代码仓库中另有名称，请修改。",
     drop: "松开即可读取该文件。", one_file: "一次只能拖放一个文件。",
@@ -291,8 +291,8 @@
   };
   const hi = {
     modeLabel: "क्या विश्लेषण करें", fileMode: "निर्देशों की फ़ाइल", ruleMode: "एक नियम",
-    lede: "अपने एजेंट के निर्देशों की समीक्षा करें। रिफ़ैक्टरिंग प्रॉम्प्ट के साथ विश्लेषण के निष्कर्ष अपने एजेंट को दें।",
-    source: "आपके निर्देशों की फ़ाइल", sourceHint: "पूरी फ़ाइल अंग्रेज़ी में पेस्ट करें, Markdown फ़ाइल यहाँ छोड़ें या कोई फ़ाइल चुनें। सीमा: {kib} KiB; चुने गए पहले {excerpts} अंशों का विश्लेषण होता है।",
+    lede: "अपनी CLAUDE.md या AGENTS.md पेस्ट करें या यहाँ छोड़ें, और ऐसा प्रॉम्प्ट पाएँ जिससे आपका एजेंट उसे बेहतर बना सके।",
+    source: "आपके निर्देशों की फ़ाइल", sourceHint: "फ़ाइल पेस्ट करें, यहाँ छोड़ें या चुनें। केवल अंग्रेज़ी, अधिकतम {kib} KiB।",
     upload: "फ़ाइल चुनें", name: "प्रॉम्प्ट में फ़ाइल का नाम", create: "मेरे एजेंट के लिए प्रॉम्प्ट बनाएँ", bytes: "{n} / {max} बाइट",
     nameHint: "प्रॉम्प्ट फ़ाइल को इसी नाम से बताता है। अगर आपकी रिपॉज़िटरी में फ़ाइल का नाम अलग है, तो इसे बदलें।",
     drop: "फ़ाइल पढ़ने के लिए उसे यहाँ छोड़ें।", one_file: "एक बार में एक ही फ़ाइल छोड़ें।",
@@ -361,8 +361,8 @@
   };
   const ar = {
     modeLabel: "ما الذي تريد تحليله؟", fileMode: "ملف التعليمات", ruleMode: "قاعدة واحدة",
-    lede: "راجع تعليمات وكيلك. انقل إليه النتائج مع نص طلب لإعادة تنظيم الملف.",
-    source: "ملف تعليماتك", sourceHint: "الصق الملف كاملًا بالإنجليزية، أو أفلِت ملف Markdown هنا، أو اختر ملفًا. الحد الأقصى {kib} KiB، ويُحلَّل أول {excerpts} مقطعًا محددًا فقط.",
+    lede: "الصق ملف CLAUDE.md أو AGENTS.md أو أفلِته هنا، واحصل على نص طلب يستطيع وكيلك استخدامه لتحسينه.",
+    source: "ملف تعليماتك", sourceHint: "الصق الملف أو أفلِته هنا أو اختره. بالإنجليزية فقط، حتى {kib} KiB.",
     upload: "اختيار ملف", name: "اسم الملف في نص الطلب", create: "إنشاء نص الطلب لوكيلي", bytes: "{n} / {max} بايت",
     nameHint: "يشير نص الطلب إلى الملف بهذا الاسم. غيّره إذا كان للملف اسم آخر في مستودعك.",
     drop: "أفلِت الملف لقراءته.", one_file: "أفلِت ملفًا واحدًا في كل مرة.",
@@ -441,12 +441,12 @@
   const locales = { en, es, fr, zh, hi, ar };
   // The page intro, each table's lede and this promise, describes both input modes.
   const promises = {
-    en: "This checks how instructions are written. It does not predict whether an AI will follow them. Selected English text is sent to TypeSafe for scoring — ",
-    es: "Esto revisa cómo están escritas las instrucciones. No predice si una IA las cumplirá. La selección de fragmentos en inglés se envía a TypeSafe para puntuarla — ",
-    fr: "Ceci vérifie la rédaction des instructions, sans prédire si une IA les suivra. Votre sélection de passages en anglais est envoyée à TypeSafe pour évaluation — ",
-    zh: "这里检查指令的写法，不预测 AI 是否会遵守。选中的英文片段会发送到 TypeSafe 评分——",
-    hi: "यह जाँचता है कि निर्देश कैसे लिखे गए हैं। यह नहीं बताता कि AI उनका पालन करेगा या नहीं। चुने हुए अंग्रेज़ी अंश अंक देने के लिए TypeSafe को भेजे जाते हैं — ",
-    ar: "هذا فحص لطريقة كتابة التعليمات، ولا يتنبأ بما إذا كان الذكاء الاصطناعي سيلتزم بها. تُرسل المقاطع الإنجليزية المحددة إلى TypeSafe لتقييمها — ",
+    en: "This checks how instructions are written. It does not predict whether an AI will follow them. Don't paste secrets, credentials or anyone's personal data.",
+    es: "Esto revisa cómo están escritas las instrucciones. No predice si una IA las cumplirá. No pegues secretos, credenciales ni datos personales de nadie.",
+    fr: "Ceci vérifie la rédaction des instructions, sans prédire si une IA les suivra. Ne collez ni secrets, ni identifiants, ni données personnelles.",
+    zh: "这里检查指令的写法，不预测 AI 是否会遵守。请勿粘贴密钥、凭据或任何人的个人数据。",
+    hi: "यह जाँचता है कि निर्देश कैसे लिखे गए हैं। यह नहीं बताता कि AI उनका पालन करेगा या नहीं। गुप्त कुंजियाँ, क्रेडेंशियल या किसी का निजी डेटा यहाँ न चिपकाएँ।",
+    ar: "هذا فحص لطريقة كتابة التعليمات، ولا يتنبأ بما إذا كان الذكاء الاصطناعي سيلتزم بها. لا تلصق أسرارًا أو بيانات اعتماد أو بيانات شخصية لأحد.",
   };
   for (const [code, strings] of Object.entries(window.STRINGS)) {
     strings.file = locales[code] || en;

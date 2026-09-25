@@ -128,6 +128,8 @@ async function keyboard(page, theme, layout, locale) {
   check("success restores submit focus", await activeId(page) === "go");
   if (await activeId(page) !== "go") await page.locator("#go").focus();
   await page.keyboard.press("Tab");
+  check("tab reaches privacy explanation", await page.evaluate(() => document.activeElement.matches("#rule-consent a")));
+  await page.keyboard.press("Tab");
   check("tab reaches result disclosure", await page.evaluate(() => document.activeElement.matches("#out > details > summary")));
   const disclosureFocus = (await colors(page)).focus; focus.push(disclosureFocus);
   check("disclosure has visible focus", disclosureFocus?.passed && disclosureFocus.unobscured);
@@ -137,8 +139,6 @@ async function keyboard(page, theme, layout, locale) {
   check("tab reaches copy prompt", await page.evaluate(() => document.activeElement.matches("#out .copy-prompt")));
   await page.keyboard.press("Tab");
   check("tab reaches prompt preview", await page.evaluate(() => document.activeElement.matches("#out .prompt-preview > summary")));
-  await page.keyboard.press("Tab");
-  check("tab reaches privacy explanation", await page.evaluate(() => document.activeElement.matches("#promise a")));
 
   await page.evaluate(() => {
     window.__heldEnterEvents = [];

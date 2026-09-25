@@ -226,7 +226,7 @@ async function followPrivacy(page, stay) {
   const answer = (dialog) => { asked.push(dialog.type()); return stay ? dialog.dismiss() : dialog.accept(); };
   page.on("dialog", answer);
   try {
-    await page.click("#promise a");
+    await page.click("footer a[href='/privacy']");
     if (stay) await page.waitForTimeout(300); else await page.waitForURL("**/privacy");
   } finally { page.off("dialog", answer); }
   return { asked, path: new URL(page.url()).pathname };
