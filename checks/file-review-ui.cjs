@@ -155,6 +155,15 @@ const reusedLines = {
   ar: "الأجزاء التي فُحصت: 3 من 3. الأجزاء التي لم تتغير منذ فحصك الأخير ولم تُرسل مرة أخرى: 3.",
   fr: "Parties vérifiées\u00a0: 3 sur 3. 3 d’entre elles n’avaient pas changé depuis votre dernière vérification et n’ont pas été renvoyées.",
 };
+// The unchanged built-in sample: 5 of its 8 parts checked from the results bundled with the page.
+const sampleLines = {
+  en: "5 of 8 parts were checked. Results for the sample file come with this page, so nothing was sent. Your agent will read the rest.",
+  es: "Partes revisadas: 5 de 8. Los resultados del archivo de ejemplo vienen con esta página, así que no se envió nada. Tu agente leerá el resto.",
+  zh: "已检查 8 个部分中的 5 个。示例文件的结果随本页面提供，因此没有发送任何内容。其余部分由你的智能体阅读。",
+  hi: "जाँचे गए हिस्से: 8 में से 5। नमूना फ़ाइल के नतीजे इसी पेज के साथ आते हैं, इसलिए कुछ नहीं भेजा गया। बाकी हिस्से आपका एजेंट पढ़ेगा।",
+  ar: "الأجزاء التي فُحصت: 5 من 8. نتائج الملف النموذجي مرفقة بهذه الصفحة، لذلك لم يُرسل أي شيء. سيقرأ وكيلك الباقي.",
+  fr: "Parties vérifiées\u00a0: 5 sur 8. Les résultats du fichier d’exemple sont fournis avec cette page, donc rien n’a été envoyé. Votre agent lira le reste.",
+};
 // The length note's heading written out per locale for a file of 201 lines.
 const longTitles = {
   en: "This file has 201 lines.", es: "Este archivo tiene 201 líneas.", zh: "此文件共有 201 行。",
@@ -299,6 +308,15 @@ async function unitHints(page) {
         [(await page.inputValue("#file-source")).startsWith("# Project instructions\n"), await page.inputValue("#file-name"), requests.length,
           (await sampleButton()).hidden, await page.evaluate(() => document.activeElement.id), (await intake()).disabled, (await intake()).report],
         [true, "AGENTS.md", 0, true, "file-create", false, true]);
+      // The unchanged sample shows the results bundled with the page and sends nothing; an edited one is scored.
+      await page.click("#file-create"); await settled(page);
+      check(prefix + " the unchanged sample sends nothing and shows its bundled results", [requests.length,
+        await page.locator('.instruction-unit[data-state="ok"]').count(), await page.locator("#file-export .copy-prompt").count(),
+        await page.textContent("#file-summary")], [0, 5, 1, sampleLines[locale]]);
+      await page.fill("#file-source", (await page.inputValue("#file-source")).replace("best practices", "the style guide"));
+      await page.click("#file-create"); await settled(page);
+      check(prefix + " an edited sample is scored", [requests.length, requests.some((entry) => entry.rule === "Follow the style guide.")], [5, true]);
+      requests = [];
       await page.fill("#file-source", "");
       check(prefix + " emptying the box offers the sample again", (await sampleButton()).hidden, false);
       await page.fill("#file-source", "\n \n");
