@@ -97,6 +97,8 @@ dt { font-weight: 600; color: var(--ink); }
 dd { margin: 0; font-variant-numeric: tabular-nums; }
 footer { max-width: 46rem; margin: var(--space-6) auto 0; padding-top: var(--space-3); border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
 footer a { color: inherit; }
+footer .support { display: flex; width: fit-content; align-items: center; gap: var(--space-1); margin-top: var(--space-2); padding: var(--space-1) var(--space-3); border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); text-decoration: none; }
+footer .support:hover { background: var(--accent); color: var(--paper); }
 
 [hidden] { display: none !important; }
 ::selection { background: var(--ink); color: var(--paper); }
