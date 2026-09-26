@@ -39,7 +39,8 @@ Review its proposed edits against your intended requirements.
 The agent also lists the rules a tool or the code could check.
 It marks each one covered by the repository, only in prose, or kept by policy.
 A covered rule has cited evidence: a tool configuration, CI step or hook checks it, or every file it applies to follows it.
-Rules on safety, irreversible actions, authorization and secrets are kept by policy, and the agent removes no rule for being covered unless you ask.
+Rules on safety, irreversible actions, authorization and secrets are kept by policy.
+The agent proposes removing a covered rule only when you ask, and never a rule kept by policy.
 The option above the primary action, off by default, adds one paragraph to the prompt and sends nothing: after the rest of the review, the agent proposes moving a rule into a `.claude/rules/` file only where the move is safe, with `paths` patterns that cover every existing file the rule concerns, and it often proposes none.
 Claude Code loads those files only when it reads a matching file, so rules needed earlier, such as commands or where to create new files, stay in place; other agents do not load them, so for an `AGENTS.md` the agent proposes a move only when the repository shows Claude Code is its only reader, and otherwise asks.
 **File name in the prompt** starts as the chosen or dropped file's name, or `AGENTS.md` for pasted text; change it if the file has another name in the repository.

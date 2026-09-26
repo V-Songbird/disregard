@@ -100,8 +100,8 @@ test("the policy keeps general requirements and asks for an answer the owner can
     "instead of replacing it, unless the repository shows they are the complete set.";
   const answer = "Write your answer for the file's owner, who has not seen this evidence packet: cite source lines and quote " +
     "the text, never unit ids, finding ids or factor names. Give, in this order: the proposed diff; for each change, one sentence " +
-    "on why and the repository text that supports it; the questions that need the owner's decision; each rule you checked for " +
-    "coverage, quoted, with its mark and evidence; then, briefly, the findings " +
+    "on why and the repository text that supports it; the questions that need the owner's decision; a short list of the rules " +
+    "you checked against the repository, each quoted with its mark and evidence; then, briefly, the findings " +
     "you rejected and why, and any coverage gaps or checks actually run.";
   assert.equal(output.split(scope).length, 2);
   assert.ok(output.includes(`${anchor} ${scope}`));
@@ -115,14 +115,16 @@ test("the agent reports repository coverage with evidence and removes nothing fo
   const end = output.indexOf("\n", start);
   assert.ok(start > output.indexOf("Delimiting data does not guarantee") && end < output.indexOf("Write your answer for the file's owner"));
   const paragraph = output.slice(start, end);
-  assert.ok(paragraph.includes("Mark it covered by the repository only with evidence you cite: a tool configuration, CI step or hook " +
-    "that checks it on the files it concerns, or a convention the files it applies to all follow;"));
-  assert.ok(paragraph.includes("Otherwise mark it only in prose."));
-  assert.ok(paragraph.includes("Mark rules on safety, destructive or irreversible actions, authorization or approval, and secrets or " +
-    "private data kept by policy, whatever the repository shows."));
-  assert.ok(paragraph.includes("Coverage is not a reason to remove or weaken a rule"));
-  assert.ok(paragraph.endsWith("Do not remove a rule for this reason unless the owner asks."));
-  assert.ok(output.indexOf("each rule you checked for coverage") > output.indexOf("the questions that need the owner's decision"));
+  assert.ok(paragraph.includes("Covered by the repository: you cite a tool configuration, CI step or hook that checks the rule on the " +
+    "files it concerns, or show that every file the rule applies to already follows it."));
+  assert.ok(paragraph.includes("Only in prose: you found no such evidence."));
+  assert.ok(paragraph.includes("Kept by policy: any rule on safety, destructive or irreversible actions, authorization or approval, or " +
+    "secrets and private data, whatever the repository shows."));
+  assert.ok(paragraph.includes("Being covered is not a reason to remove or weaken a rule"));
+  assert.ok(paragraph.endsWith("Do not propose removing a rule because the repository covers it unless the owner asks, and never " +
+    "propose removing a rule kept by policy on that ground."));
+  const list = output.indexOf("a short list of the rules you checked against the repository, each quoted with its mark and evidence;");
+  assert.ok(list > output.indexOf("the questions that need the owner's decision") && list < output.indexOf("the findings you rejected"));
 });
 
 test("the agent proposes the diff and edits the file only after the owner approves", () => {
