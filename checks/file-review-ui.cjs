@@ -301,6 +301,11 @@ async function unitHints(page) {
         [true, "AGENTS.md", 0, true, "file-create", false, true]);
       await page.fill("#file-source", "");
       check(prefix + " emptying the box offers the sample again", (await sampleButton()).hidden, false);
+      await page.fill("#file-source", "\n \n");
+      const blankOffers = !(await sampleButton()).hidden;
+      await page.click("#file-sample");
+      check(prefix + " a box holding only blank lines still offers the sample, which replaces them", [blankOffers,
+        (await page.inputValue("#file-source")).startsWith("# Project instructions\n"), requests.length], [true, true, 0]);
       await page.fill("#file-source", sample);
       check(prefix + " nothing is sent before the primary action", [requests.length, (await intake()).disabled, (await intake()).report], [0, false, true]);
       // While requests are held, the queued and in-flight units repeat no state and the excluded ones keep their reasons.

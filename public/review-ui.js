@@ -115,8 +115,8 @@
     const upload = el("input"); upload.type = "file"; upload.id = "file-upload"; upload.accept = ".md,text/markdown,text/plain";
     upload.hidden = true;
     const choose = el("button", "secondary"); choose.id = "file-choose"; choose.type = "button";
-    // Shown only while the text box is empty, it fills the box with SAMPLE, so no text of the reader's is
-    // replaced; like a chosen file, the sample is sent only by the primary action.
+    // Shown only while the text box holds no text and a file can be read, it fills the box with SAMPLE, so no
+    // text of the reader's is replaced; like a chosen file, the sample is sent only by the primary action.
     const sample = el("button", "secondary"); sample.id = "file-sample"; sample.type = "button";
     const source = el("textarea"); source.id = "file-source"; source.dir = "auto"; source.spellcheck = false;
     source.setAttribute("aria-describedby", "file-hint file-count");
@@ -185,7 +185,7 @@
       source.readOnly = busy;
       upload.disabled = choose.disabled = busy;
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
-      choose.textContent = strings.upload; sample.textContent = strings.sample; sample.hidden = busy || Boolean(source.value);
+      choose.textContent = strings.upload; sample.textContent = strings.sample; sample.hidden = busy || !limits || Boolean(sourceText().trim());
       dropHint.textContent = strings.drop; pathRulesText.textContent = strings.pathRules;
       nameLabel.textContent = strings.name; nameHint.textContent = strings.nameHint;
       // A report in hand hides the primary action, so pressing it again cannot repeat paid requests;
@@ -373,7 +373,7 @@
     }
     choose.addEventListener("click", () => upload.click());
     sample.addEventListener("click", () => {
-      if (busy || source.value) return;
+      if (busy || !limits || sourceText().trim()) return;
       invalidate();
       source.value = SAMPLE; name.value = "AGENTS.md"; uploadedSource = null;
       // The primary action takes focus: its description says what pressing it sends, and it ignores a held
