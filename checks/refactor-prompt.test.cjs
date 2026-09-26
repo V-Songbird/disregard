@@ -5,6 +5,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { createHash } = require("node:crypto");
 const { buildPrompt, lineCount, TEMPLATE_VERSION, MAX_PROMPT_CHARS } = require("../public/refactor-prompt.js");
 const { parseDocument } = require("../public/document-model.js");
 
@@ -409,4 +410,17 @@ test("large prompts fail without silent truncation", () => {
   const input = report();
   input.sourceName = "a".repeat(MAX_PROMPT_CHARS);
   assert.throws(() => buildPrompt(input, english), errorCode("prompt_too_large"));
+});
+
+// recommendation-ui.cjs refuses to run once a pinned source changes, and only
+// the optional browser run reads these pins, so a stale one would go unnoticed.
+test("browser fixture source pins match the current files", () => {
+  const fixtures = path.join(__dirname, "fixtures");
+  for (const name of fs.readdirSync(fixtures).filter((file) => file.endsWith(".json"))) {
+    const pins = JSON.parse(fs.readFileSync(path.join(fixtures, name), "utf8")).sourceHashes || {};
+    for (const [file, expected] of Object.entries(pins)) {
+      const actual = createHash("sha256").update(fs.readFileSync(path.join(__dirname, "..", file))).digest("hex");
+      assert.equal(actual, expected, `${file} changed: confirm checks/fixtures/${name} still fits it, then re-pin it to ${actual}`);
+    }
+  }
 });
