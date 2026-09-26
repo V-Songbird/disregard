@@ -89,6 +89,9 @@
   // starts at most PACE requests in any PACE_WINDOW, so a large file waits instead of being stopped.
   const PACE = 55, PACE_WINDOW = 60000;
   const GUIDE = "https://code.claude.com/docs/en/memory#write-effective-instructions";
+  // A short synthetic instruction file for a first review. It stays English, the scoring language.
+  const SAMPLE = "# Project instructions\n\n## Commands\n\n- Run `npm test` before you commit.\n- Try to keep pull requests small.\n\n" +
+    "## Code\n\n- Follow best practices.\n- Never edit files in `dist/`.\n- API handlers live in `src/api/`.\n";
 
   // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
   function create({ host, getStrings, findingCard, factorList, onBusy }) {
@@ -112,12 +115,15 @@
     const upload = el("input"); upload.type = "file"; upload.id = "file-upload"; upload.accept = ".md,text/markdown,text/plain";
     upload.hidden = true;
     const choose = el("button", "secondary"); choose.id = "file-choose"; choose.type = "button";
+    // Shown only while the text box is empty, it fills the box with SAMPLE, so no text of the reader's is
+    // replaced; like a chosen file, the sample is sent only by the primary action.
+    const sample = el("button", "secondary"); sample.id = "file-sample"; sample.type = "button";
     const source = el("textarea"); source.id = "file-source"; source.dir = "auto"; source.spellcheck = false;
     source.setAttribute("aria-describedby", "file-hint file-count");
     source.placeholder = "# Project instructions\n\n- Run `node --test` before submitting changes.\n- Never log passwords.";
     const count = el("span", "count"); count.id = "file-count";
     const dropHint = el("p", "drop-hint"); dropHint.hidden = true;
-    const intake = el("div", "row"); intake.append(choose, upload, count);
+    const intake = el("div", "row"); intake.append(choose, sample, upload, count);
     zone.append(label, hint, source, intake, dropHint);
     // The one primary action. Nothing is sent before it is pressed, and the sentence beside it says what is.
     const create = el("button"); create.id = "file-create"; create.type = "submit"; create.setAttribute("aria-describedby", "file-consent");
@@ -179,7 +185,8 @@
       source.readOnly = busy;
       upload.disabled = choose.disabled = busy;
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
-      choose.textContent = strings.upload; dropHint.textContent = strings.drop; pathRulesText.textContent = strings.pathRules;
+      choose.textContent = strings.upload; sample.textContent = strings.sample; sample.hidden = busy || Boolean(source.value);
+      dropHint.textContent = strings.drop; pathRulesText.textContent = strings.pathRules;
       nameLabel.textContent = strings.name; nameHint.textContent = strings.nameHint;
       // A report in hand hides the primary action, so pressing it again cannot repeat paid requests;
       // editing the text clears the report and brings it back.
@@ -235,8 +242,8 @@
         fill(strings.lines, { start: number(unit.startLine), end: number(unit.endLine) }));
       // A response that arrived but failed validation was not scored; its request did not fail.
       const invalid = unit.state === "error" && ["invalid_result", "unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
-      // A scored row says what was found while collapsed: its count and each finding's headline, as text
-      // inside the one summary control. The cards that explain them stay in the details.
+      // A scored row says what was found while collapsed: its count and each finding's headline with its next
+      // step, as text inside the one summary control. The cards that explain them stay in the details.
       const flagged = findings(unit);
       const state = el("span", flagged.length ? "unit-state flagged" : "unit-state", invalid ? strings.states.skipped :
         background(unit) ? strings.states.background : flagged.length ? counted(strings.findingCount, flagged.length) :
@@ -249,7 +256,9 @@
         const headlines = el("span", "unit-headlines");
         for (const finding of flagged) {
           const copy = own(getStrings().findings, finding.id);
-          if (copy) headlines.append(el("span", "unit-headline", fill(copy.h, { verb: finding.verb })));
+          // The spaces keep each sentence apart in the summary's accessible name.
+          if (copy) headlines.append(el("span", "unit-headline", fill(copy.h, { verb: finding.verb })), " ",
+            el("span", "unit-next", copy.next), " ");
         }
         row.summary.append(headlines);
       }
@@ -363,6 +372,14 @@
       source.focus(); controls();
     }
     choose.addEventListener("click", () => upload.click());
+    sample.addEventListener("click", () => {
+      if (busy || source.value) return;
+      invalidate();
+      source.value = SAMPLE; name.value = "AGENTS.md"; uploadedSource = null;
+      // The primary action takes focus: its description says what pressing it sends, and it ignores a held
+      // Enter, which in the text box would add lines to the sample.
+      controls(); create.focus();
+    });
     upload.addEventListener("change", async () => { await load([...upload.files]); upload.value = ""; });
     // Only a dragged file is taken over; dragged text keeps its default behavior. A file dropped anywhere
     // on the page counts as dropped on the intake while file mode shows, and is refused in the other mode,

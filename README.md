@@ -32,6 +32,9 @@ Prompt for your agent
 
 Without a key, the page reports `Analysis paused after a service error.` instead. If the file reader cannot load, the page reports that failure and sends nothing.
 
+With the text box empty, **Load a sample file** fills it with a short example.
+Nothing is sent until you create the prompt.
+
 ## Analyze and copy a prompt
 
 Select **Copy prompt** and paste the English prompt into Claude Code or another agent working in the repository that holds the file.
@@ -47,6 +50,7 @@ Claude Code loads those files only when it reads a matching file, so rules neede
 **File name in the prompt** starts as the chosen or dropped file's name, or `AGENTS.md` for pasted text; change it if the file has another name in the repository.
 The summary line says how many parts were checked; your agent reads the rest.
 **See what was found** holds the coverage, each excerpt's findings, and the ranges left unreviewed.
+Each finding in a part shows a short next step.
 The **One rule** mode also accepts a single instruction.
 
 The key stays on the server. Reading the file and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.

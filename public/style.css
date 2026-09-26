@@ -141,6 +141,7 @@ button.secondary { color: var(--ink); background: var(--paper); border: 1px soli
 .unit-title { display: block; margin-top: var(--space-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .unit-headlines { display: block; margin-top: var(--space-2); padding-inline-start: .75rem; border-inline-start: 2px solid var(--accent); }
 .unit-headline { display: block; font-size: .9rem; }
+.unit-next { display: block; font-size: .85rem; color: var(--muted); margin-bottom: var(--space-1); }
 .unit-content { padding: 0 0 var(--space-3); }
 .source-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; font: .85rem/1.6 ui-monospace, Consolas, monospace; color: var(--ink); background: var(--card); padding: .8rem; border: 1px solid var(--line); border-radius: .3rem; }
 .unit-content .findings { gap: .75rem; }

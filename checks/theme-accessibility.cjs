@@ -264,6 +264,11 @@ async function keyboard(page, theme, layout, locale) {
   });
   await page.locator("#mode-file").focus(); await page.keyboard.press("Enter");
   check("Enter switches to file mode", await page.locator("#file-panel").isVisible());
+  // On the empty box, the sample button follows the file chooser and shows its focus.
+  await page.fill("#file-source", ""); await page.locator("#file-choose").focus(); await page.keyboard.press("Tab");
+  check("tab reaches file-sample", await activeId(page) === "file-sample");
+  const sampleFocus = (await colors(page)).focus; focus.push(sampleFocus);
+  check("file-sample visible unobscured focus", sampleFocus?.passed && sampleFocus.unobscured);
   await page.fill("#file-source", ["module0", "module1", "module2"].map((name) => "- Use " + name + " for storage.").join("\n"));
   // From the text box, Tab reaches the file chooser, the path-rules option, then the primary action.
   await page.locator("#file-source").focus();
