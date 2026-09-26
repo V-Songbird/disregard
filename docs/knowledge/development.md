@@ -6,6 +6,7 @@ related_files:
   - .dev.vars.example
   - wrangler.jsonc
   - .github/workflows/check.yml
+  - .github/dependabot.yml
   - checks/wrangler-config.test.cjs
   - checks/sample-results.test.cjs
   - public/review-ui.js
@@ -43,7 +44,9 @@ node --test --test-reporter=dot lib/analyze.test.js
 ```
 
 [GitHub Actions](../../.github/workflows/check.yml) runs the same test runner using
-the version in `.nvmrc`. Tests establish the behavior they assert; they do not
+the version in `.nvmrc`. The workflow pins each action to a full commit SHA, with
+the release version in a trailing comment. [Dependabot](../../.github/dependabot.yml)
+checks weekly and opens a pull request for each action with a newer release. Tests establish the behavior they assert; they do not
 establish provider accuracy or the quality of an agent's resulting edits.
 
 `checks/wrangler-config.test.cjs` fails when [wrangler.jsonc](../../wrangler.jsonc)
