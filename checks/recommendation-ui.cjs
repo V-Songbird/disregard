@@ -174,7 +174,7 @@ const server = http.createServer(async (req, res) => {
           }
         }
         // The same responses as rows of one file: while collapsed, each scored row gives its finding count and
-        // headlines, a row whose only finding is not_a_rule reads as background, and coverage counts it apart.
+        // headlines each with its next step, a row whose only finding is not_a_rule reads as background, and coverage counts it apart.
         // The rows sit in the "See what was found" disclosure, which opens on request.
         await page.click("#mode-file");
         await page.fill("#file-source", packet.cases.map((entry) => "- " + entry.text).join("\n"));
@@ -188,7 +188,7 @@ const server = http.createServer(async (req, res) => {
           const counted = (forms, n) => fill(forms[new Intl.PluralRules(document.documentElement.lang).select(n)] ?? forms.other, { n: String(n) });
           const units = [...document.querySelectorAll(".instruction-unit")];
           const shown = units.map((unit) => [unit.dataset.state, unit.querySelector(".unit-state").textContent,
-            ...[...unit.querySelectorAll("summary .unit-headline")].map((line) => line.getClientRects().length ? line.textContent : "hidden")]);
+            ...[...unit.querySelectorAll("summary .unit-headline, summary .unit-next")].map((line) => line.getClientRects().length ? line.textContent : "hidden")]);
           const scored = bodies.filter((body) => body.status === "ok");
           const background = scored.filter((body) => body.findings.length && body.findings.every((f) => f.id === "not_a_rule")).length;
           const flagged = scored.filter((body) => body.findings.length).length - background;
@@ -196,7 +196,7 @@ const server = http.createServer(async (req, res) => {
             if (body.status !== "ok") return [body.status, t.file.states[body.status]];
             if (body.findings.length && body.findings.every((f) => f.id === "not_a_rule")) return ["ok", t.file.states.background];
             return ["ok", body.findings.length ? counted(t.file.findingCount, body.findings.length) : t.file.states.ok,
-              ...body.findings.map((f) => fill(t.findings[f.id].h, { verb: f.verb }))];
+              ...body.findings.flatMap((f) => [fill(t.findings[f.id].h, { verb: f.verb }), t.findings[f.id].next])];
           });
           const coverage = fill(background ? t.file.coverage.textContext : t.file.coverage.text, { scored: counted(t.file.coverage.scored, scored.length),
             flagged: String(flagged), context: counted(t.file.coverage.context, background), remaining: counted(t.file.coverage.remaining, bodies.length - scored.length) });

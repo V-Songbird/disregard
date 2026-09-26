@@ -285,6 +285,27 @@ async function unitHints(page) {
         report: document.getElementById("file-report").hidden }));
       check(prefix + " the intake has one primary action and no preview or name field", await intake(),
         { preview: 0, name: 0, disabled: true, report: true });
+      // The empty box offers a sample. Pressing it by keyboard fills the box, sends nothing, and hides the button.
+      const sampleButton = () => page.evaluate(() => ({ hidden: document.getElementById("file-sample").hidden,
+        labeled: document.getElementById("file-sample").textContent === STRINGS[document.getElementById("ui-lang").value].file.sample }));
+      check(prefix + " the empty intake offers a labeled sample", await sampleButton(), { hidden: false, labeled: true });
+      await page.focus("#file-choose"); await page.keyboard.press("Tab");
+      check(prefix + " Tab reaches the sample after the file chooser", await page.evaluate(() => document.activeElement.id), "file-sample");
+      // A held Enter: its repeats reach the primary action, which ignores them.
+      await page.keyboard.down("Enter");
+      for (let i = 0; i < 3; i++) await page.keyboard.down("Enter");
+      await page.keyboard.up("Enter");
+      check(prefix + " a held Enter on the sample fills the box, sends nothing and hands focus to the primary action",
+        [(await page.inputValue("#file-source")).startsWith("# Project instructions\n"), await page.inputValue("#file-name"), requests.length,
+          (await sampleButton()).hidden, await page.evaluate(() => document.activeElement.id), (await intake()).disabled, (await intake()).report],
+        [true, "AGENTS.md", 0, true, "file-create", false, true]);
+      await page.fill("#file-source", "");
+      check(prefix + " emptying the box offers the sample again", (await sampleButton()).hidden, false);
+      await page.fill("#file-source", "\n \n");
+      const blankOffers = !(await sampleButton()).hidden;
+      await page.click("#file-sample");
+      check(prefix + " a box holding only blank lines still offers the sample, which replaces them", [blankOffers,
+        (await page.inputValue("#file-source")).startsWith("# Project instructions\n"), requests.length], [true, true, 0]);
       await page.fill("#file-source", sample);
       check(prefix + " nothing is sent before the primary action", [requests.length, (await intake()).disabled, (await intake()).report], [0, false, true]);
       // While requests are held, the queued and in-flight units repeat no state and the excluded ones keep their reasons.
