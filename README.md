@@ -36,6 +36,12 @@ Without a key, the page reports `Analysis paused after a service error.` instead
 
 Select **Copy prompt** and paste the English prompt into Claude Code or another agent working in the repository that holds the file.
 Review its proposed edits against your intended requirements.
+The agent also lists the rules a tool or the code could check, one line each.
+It marks each one covered by the repository, only in prose, or kept by policy.
+A covered rule cites the configuration, CI step or hook file that checks it, or the search and files that follow it.
+Rules on safety, irreversible actions, authorization and secrets are kept by policy.
+The diff never removes a rule for being covered.
+The agent may list that removal as a proposal, but never for a rule kept by policy.
 The option above the primary action, off by default, adds one paragraph to the prompt and sends nothing: after the rest of the review, the agent proposes moving a rule into a `.claude/rules/` file only where the move is safe, with `paths` patterns that cover every existing file the rule concerns, and it often proposes none.
 Claude Code loads those files only when it reads a matching file, so rules needed earlier, such as commands or where to create new files, stay in place; other agents do not load them, so for an `AGENTS.md` the agent proposes a move only when the repository shows Claude Code is its only reader, and otherwise asks.
 **File name in the prompt** starts as the chosen or dropped file's name, or `AGENTS.md` for pasted text; change it if the file has another name in the repository.

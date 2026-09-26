@@ -100,12 +100,38 @@ test("the policy keeps general requirements and asks for an answer the owner can
     "instead of replacing it, unless the repository shows they are the complete set.";
   const answer = "Write your answer for the file's owner, who has not seen this evidence packet: cite source lines and quote " +
     "the text, never unit ids, finding ids or factor names. Give, in this order: the proposed diff; for each change, one sentence " +
-    "on why and the repository text that supports it; the questions that need the owner's decision; then, briefly, the findings " +
+    "on why and the repository text that supports it; the questions that need the owner's decision; the rules you checked against " +
+    "the repository, one line per rule with its mark and evidence, grouping rules that share both; then, briefly, the findings " +
     "you rejected and why, and any coverage gaps or checks actually run.";
   assert.equal(output.split(scope).length, 2);
   assert.ok(output.includes(`${anchor} ${scope}`));
   assert.equal(output.split(answer).length, 2);
   assert.ok(!output.includes("Return the justified changes"));
+});
+
+test("the agent reports repository coverage with evidence and removes nothing for it in the diff", () => {
+  for (const [input, options] of [[report(), {}], [lines(201), { pathRules: true }]]) {
+    const output = buildPrompt(input, english, options);
+    const opening = "Check whether the repository already covers each rule";
+    assert.equal(output.split(opening).length, 2);
+    const start = output.indexOf(opening);
+    const end = output.indexOf("\n", start);
+    assert.ok(start > output.indexOf("Delimiting data does not guarantee") && end < output.indexOf("Write your answer for the file's owner"));
+    const paragraph = output.slice(start, end);
+    assert.ok(paragraph.includes("Covered by the repository: you cite the tool configuration, CI step or hook file that checks the rule " +
+      "on the files it concerns, or name the search you ran and the files it found that all follow the rule."));
+    assert.ok(paragraph.includes("Only in prose: you found no such evidence."));
+    assert.ok(paragraph.includes("Kept by policy: any rule on safety, destructive or irreversible actions, authorization or approval, or " +
+      "secrets and private data, whatever the repository shows."));
+    assert.ok(paragraph.endsWith("Being covered is never a reason to remove or weaken a rule in the diff: the prose can spare the agent " +
+      "a failed run, and other agents that read the file may still need it. You may list removing a covered rule as a proposal for " +
+      "the owner, never for a rule kept by policy."));
+    assert.ok(output.includes("Verify coverage and availability before proposing to remove duplicated guidance."));
+    assert.ok(!output.includes("before removing duplicated guidance"));
+    const list = output.indexOf("the rules you checked against the repository, one line per rule with its mark and evidence, " +
+      "grouping rules that share both;");
+    assert.ok(list > output.indexOf("the questions that need the owner's decision") && list < output.indexOf("the findings you rejected"));
+  }
 });
 
 test("the agent proposes the diff and edits the file only after the owner approves", () => {
