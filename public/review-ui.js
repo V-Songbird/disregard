@@ -92,13 +92,23 @@
   // A short synthetic instruction file for a first review. It stays English, the scoring language.
   const SAMPLE = "# Project instructions\n\n## Commands\n\n- Run `npm test` before you commit.\n- Try to keep pull requests small.\n\n" +
     "## Code\n\n- Follow best practices.\n- Never edit files in `dist/`.\n- API handlers live in `src/api/`.\n";
+  // SAMPLE's results from one real scoring run, keyed by the exact text each excerpt sends. Only the unchanged
+  // SAMPLE takes them, so reviewing it sends nothing; an edited sample is scored like any other text. They do not
+  // follow later criteria or provider changes: rescore SAMPLE after one (checks/sample-results.test.cjs).
+  const SAMPLE_RESULTS = {
+    "Run `npm test` before you commit.": {"status":"ok","risk":0.03,"findings":[{"id":"should_be_a_hook","factor":"F8","value":0.01,"choice":"hook","confidence":0.99}],"factors":{"F1":0.85,"F2":0.85,"F7":0.8,"F3":2,"F8":0.01,"is_rule":0.95,"specificity":0.96,"primitive":{"choice":"hook","confidence":0.99},"rule_role":{"choice":"direct_action","confidence":0.92}},"tokens":3220},
+    "Try to keep pull requests small.": {"status":"ok","risk":0.03,"findings":[{"id":"hedge_dominance","factor":"F1","value":0.2,"verb":"try to"}],"factors":{"F1":0.2,"F2":0.85,"F7":0.8,"F3":1.99,"F8":1.67,"is_rule":0.96,"specificity":0.17,"primitive":{"choice":"rule","confidence":0.89},"rule_role":{"choice":"direct_action","confidence":0.44}},"tokens":3218},
+    "Follow best practices.": {"status":"ok","risk":0.04,"findings":[{"id":"no_trigger","factor":"F3","value":1.07},{"id":"no_concrete_anchor","factor":"F7","value":0.1}],"factors":{"F1":0.85,"F2":0.85,"F7":0.1,"F3":1.07,"F8":2.83,"is_rule":0.94,"specificity":0.04,"primitive":{"choice":"rule","confidence":1},"rule_role":{"choice":"direct_action","confidence":0.72}},"tokens":3215},
+    "Never edit files in `dist/`.": {"status":"ok","risk":0.03,"findings":[{"id":"could_be_a_hook","factor":"F8","value":0.3,"choice":"rule","confidence":0.66},{"id":"stall_risk","factor":"F2","value":0.2}],"factors":{"F1":0.95,"F2":0.2,"F7":0.8,"F3":2.53,"F8":0.3,"is_rule":0.94,"specificity":0.94,"primitive":{"choice":"rule","confidence":0.66},"rule_role":{"choice":"direct_action","confidence":0.96}},"tokens":3219},
+    "API handlers live in `src/api/`.": {"status":"ok","risk":0.02,"findings":[{"id":"not_a_rule","factor":"is_rule","value":0.4}],"factors":{"F1":null,"F2":0.85,"F7":0.8,"F3":2.42,"F8":0.51,"is_rule":0.4,"specificity":0.95,"primitive":{"choice":"rule","confidence":0.8},"rule_role":{"choice":"artifact_requirement","confidence":0.39}},"tokens":3220},
+  };
 
   // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
   function create({ host, getStrings, findingCard, factorList, onBusy }) {
     const model = window.DisregardDocument;
     let report = null, busy = false, revision = 0, uploadedSource = null;
     let errorCode = null, message = null, runTotal = 0, runDone = 0;
-    let stopped = false, pacing = 0, reused = 0;
+    let stopped = false, pacing = 0, reused = 0, sampled = false;
     // Start times of this page's recent score requests, oldest first, across runs.
     const started = [];
     // Results this page received, by the exact text sent, held in memory until the page is left or
@@ -116,7 +126,7 @@
     upload.hidden = true;
     const choose = el("button", "secondary"); choose.id = "file-choose"; choose.type = "button";
     // Shown only while the text box holds no text and a file can be read, it fills the box with SAMPLE, so no
-    // text of the reader's is replaced; like a chosen file, the sample is sent only by the primary action.
+    // text of the reader's is replaced; the primary action shows SAMPLE_RESULTS for it, and sends it only once edited.
     const sample = el("button", "secondary"); sample.id = "file-sample"; sample.type = "button";
     const source = el("textarea"); source.id = "file-source"; source.dir = "auto"; source.spellcheck = false;
     source.setAttribute("aria-describedby", "file-hint file-count");
@@ -219,7 +229,8 @@
       const prompted = !busy && Boolean(exported.querySelector(".copy-prompt"));
       nameField.hidden = summaryLine.hidden = !prompted;
       const checked = counted(strings.checked, summary.total, { checked: number(summary.scored), n: number(summary.total) });
-      const told = reused ? fill(strings.withReused, { checked, reused: counted(strings.reused, reused) }) : checked;
+      const told = sampled ? fill(strings.withReused, { checked, reused: strings.sampleKept }) :
+        reused ? fill(strings.withReused, { checked, reused: counted(strings.reused, reused) }) : checked;
       summaryLine.textContent = summary.scored < summary.total ? fill(strings.withRest, { checked: told, rest: strings.rest }) : told;
       // Filtering keeps rows with findings, rows a retry would send and rows in flight.
       filter.hidden = !report.units.some((unit) => findings(unit).length);
@@ -337,7 +348,7 @@
 
     function invalidate() {
       revision++;
-      stop(); report = null; errorCode = null; message = null; reused = 0; only.checked = false; more.open = false;
+      stop(); report = null; errorCode = null; message = null; reused = 0; sampled = false; only.checked = false; more.open = false;
       renderReport();
     }
 
@@ -405,12 +416,16 @@
       try { report = model.parseDocument(sourceText(), name.value.trim() || "AGENTS.md"); }
       // Without the document model script, the page failed to load, not the reader's file.
       catch (error) { errorCode = error.code || (model ? "invalid_source" : "parser_unavailable"); }
+      // The unchanged sample takes its bundled results; other text takes this page's earlier ones.
+      sampled = Boolean(report) && sourceText() === SAMPLE;
       for (const unit of report?.units || []) {
-        const kept = retryable(unit) && scored.get(unit.rule);
-        if (kept) { unit.state = kept.status; unit.result = kept; reused++; }
+        const kept = retryable(unit) && (sampled ? own(SAMPLE_RESULTS, unit.rule) : scored.get(unit.rule));
+        if (kept) { unit.state = kept.status; unit.result = kept; if (!sampled) reused++; }
       }
       // With nothing left to send, the review is finished here, and a prompt takes focus as after a run.
       if (report && !report.units.some(retryable)) message = "done";
+      // An excerpt missing from SAMPLE_RESULTS is sent, so the summary must not say nothing was.
+      else sampled = false;
       renderReport();
       if (!report) source.focus();
       else if (!message) run();

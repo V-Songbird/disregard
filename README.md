@@ -33,7 +33,8 @@ Prompt for your agent
 Without a key, the page reports `Analysis paused after a service error.` instead. If the file reader cannot load, the page reports that failure and sends nothing.
 
 With the text box empty, **Load a sample file** fills it with a short example.
-Nothing is sent until you create the prompt.
+Its results come with the page, so creating the prompt for the unchanged sample sends nothing.
+An edited sample is sent like any other file.
 
 ## Analyze and copy a prompt
 
