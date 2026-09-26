@@ -68,9 +68,22 @@ excerpt the sample sends with `analyze()` from [lib/analyze.js](../../lib/analyz
 Then replace `SAMPLE_RESULTS` with the results. This makes one paid provider call per
 excerpt.
 
-`checks/sample-results.test.cjs` fails when `SAMPLE_RESULTS` does not match the
-excerpts `SAMPLE` sends, or when a result names a finding the prompt does not support.
-It cannot detect results that are only out of date.
+A comment beside `SAMPLE_RESULTS` records the fingerprint of the code that scored
+them: a SHA-256 hash of `lib/analyze.js`, `criteria.js`, `language.js`,
+`questions.js` and `scorer.js`. Those files hold the model id, the thresholds, the
+criteria, the questions and the local scoring.
+
+`checks/sample-results.test.cjs` fails when:
+
+- `SAMPLE_RESULTS` does not match the excerpts `SAMPLE` sends;
+- a result names a finding the prompt does not support, or fails the page's
+  `displayable()` check;
+- any of those five files changed since the fingerprint was recorded. The failure
+  message gives the new fingerprint. Rescore the sample as described above, then
+  replace the fingerprint in `public/review-ui.js`. If your change cannot alter a
+  result, such as a comment edit, replace only the fingerprint.
+
+The test cannot notice a provider-side change behind the same model id.
 
 ## Local server
 

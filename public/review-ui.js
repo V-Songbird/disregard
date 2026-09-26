@@ -95,6 +95,7 @@
   // SAMPLE's results from one real scoring run, keyed by the exact text each excerpt sends. Only the unchanged
   // SAMPLE takes them, so reviewing it sends nothing; an edited sample is scored like any other text. They do not
   // follow later criteria or provider changes: rescore SAMPLE after one (checks/sample-results.test.cjs).
+  // Scored with lib/ fingerprint e9805b741163556788ba511fa38e39869ad38ef4bdba4c60242d815bfead397d
   const SAMPLE_RESULTS = {
     "Run `npm test` before you commit.": {"status":"ok","risk":0.03,"findings":[{"id":"should_be_a_hook","factor":"F8","value":0.01,"choice":"hook","confidence":0.99}],"factors":{"F1":0.85,"F2":0.85,"F7":0.8,"F3":2,"F8":0.01,"is_rule":0.95,"specificity":0.96,"primitive":{"choice":"hook","confidence":0.99},"rule_role":{"choice":"direct_action","confidence":0.92}},"tokens":3220},
     "Try to keep pull requests small.": {"status":"ok","risk":0.03,"findings":[{"id":"hedge_dominance","factor":"F1","value":0.2,"verb":"try to"}],"factors":{"F1":0.2,"F2":0.85,"F7":0.8,"F3":1.99,"F8":1.67,"is_rule":0.96,"specificity":0.17,"primitive":{"choice":"rule","confidence":0.89},"rule_role":{"choice":"direct_action","confidence":0.44}},"tokens":3218},
