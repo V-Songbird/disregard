@@ -18,7 +18,7 @@ Run from the repository root with the pinned Node version.
 
 | Command | Purpose | External effects |
 | --- | --- | --- |
-| `node --test --test-reporter=dot` | All offline product tests | None; uses included fixtures and mocks. |
+| `node --test --test-reporter=dot` | All offline product tests; dot prints no totals, so exit code 0 means every test passed (`--test-reporter=tap` prints `# pass` and `# fail` lines) | None; uses included fixtures and mocks. |
 | `node --test --test-reporter=dot lib/analyze.test.js` | Focused analyzer tests | None. |
 | `npx --yes wrangler dev` | Local application server | Downloads Wrangler if needed; analysis can call the paid provider. |
 
@@ -33,7 +33,7 @@ Browser checks require Playwright and installed Microsoft Edge. Their setup, out
 | `lib/analyze.js`, `lib/questions.js`, `lib/criteria.js` | Provider request, current criteria, screening, and findings. |
 | `lib/scorer.js`, `lib/language.js`, `lib/score-rate-limit.js` | Local scoring, language screening, and request guards. |
 | `lib/*.test.js`, `lib/fixtures/` | Offline logic tests and synthetic fixtures. |
-| `public/` | Served interface, product pages, document reader, and prompt generator. |
+| `public/` | Served interface, product pages, document reader, and prompt generator. The One rule view's script is inline in `public/index.html`; file mode lives in `public/review-ui.js`. |
 | `public/vendor/` | Pinned browser parser and its license; required product assets. |
 | `checks/` | Document, prompt, translation and configuration tests, and optional browser harnesses. |
 | `docs/knowledge/`, `docs/apis/` | Maintained product documentation. |
