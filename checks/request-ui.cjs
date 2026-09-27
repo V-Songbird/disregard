@@ -458,6 +458,18 @@ async function localized(page, locale, kind) {
     check("inherited language code falls back to the name", keyLanguage.banner, keyLanguage.expected.language);
     check("inherited error code shows the generic failure", keyError.banner, keyError.expected.error);
     check("inherited server keys raise no page error", keyErrors, []);
+    // A rate limit says the limit is shared, how long to wait and that the rule is kept; an
+    // unexpected failure says what to do next.
+    const serviceErrors = [];
+    for (const [status, code] of [[429, "rate_limited"], [500, "failed"]]) {
+      mode = "canned"; canned = { status, body: { code } };
+      await keyPage.click("#go"); await settle(keyPage);
+      const shown = await state(keyPage);
+      serviceErrors.push([shown.title, shown.body, shown.rule, shown.readOnly, shown.disabled]);
+    }
+    check("a rate limit and an unexpected failure say what happened and what to do next", serviceErrors, [
+      ["That did not go through.", "The shared request limit for scoring was reached. Your rule is still here; try again in about a minute.", "Use `const`.", false, false],
+      ["That did not go through.", "The rule could not be scored because of an unexpected error. Try again; if it fails again, try later.", "Use `const`.", false, false]]);
     await keyContext.close();
 
     // /review-ui.js fails to load: in every locale the strings render, a single-rule analysis runs

@@ -29,7 +29,8 @@
     running: { one: "Analyzing instructions… {done} of {total} finished.", other: "Analyzing instructions… {done} of {total} finished." },
     pacing: "{progress} Waiting to stay within the request limit; the analysis continues within a minute.",
     stopped: "Analysis stopped. Completed results are kept. Requests already sent may still be charged.",
-    limited: "Analysis paused after a service error. Keep the completed results and try the remaining instructions later.",
+    limited: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; analyze the remaining instructions in about a minute.",
+    outage: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; the remaining instructions can be analyzed once it is fixed.",
     done: "Analysis finished.", partial: "Analysis finished, but some parts could not be scored. You can try them again.", none: "No part of this file could be scored, so there is no prompt. “See what was found” below says why.",
     lines: "Lines {start}–{end}", line: "Line {line}", context: "Surrounding headings: {path}", contextPath: "{outer} / {inner}", ruleSent: "Text sent for scoring", ruleSentContext: "Text sent for scoring, with its section context", ruleSentCode: "Text sent for scoring, with the code block after it", linkNotRead: "Only this instruction is scored. The linked file or section has not been read here.",unchanged: "No checks fired on this excerpt. This does not predict whether an agent will follow it.",
     prompt: "Refactoring prompt", promptHint: "In English. Includes scored excerpts, findings and coverage gaps. Paste it into an agent that can read your current file.",
@@ -54,6 +55,7 @@
     unitErrors: {
       unsupported_finding: "This excerpt was not scored because its result includes a finding this page does not support yet. Analyzing it again from this page returns the same result.",
       timeout: "The service took too long to respond, so this excerpt was not scored. You can analyze it again.",
+      rate_limited: "The shared request limit for scoring was reached, so this excerpt was not scored. You can analyze it again in about a minute.",
     },
     reasons: {
       heading_context: "A heading supplies context; it is not scored on its own.",
@@ -105,7 +107,8 @@
     running: { one: "Analizando instrucciones… {done} de {total} terminó.", many: "Analizando instrucciones… {done} de {total} terminaron.", other: "Analizando instrucciones… {done} de {total} terminaron." },
     pacing: "{progress} En espera para no superar el límite de solicitudes; el análisis continúa en menos de un minuto.",
     stopped: "Se detuvo el análisis. Los resultados obtenidos se conservan. Las solicitudes enviadas aún pueden generar un cargo.",
-    limited: "El análisis se pausó por un error del servicio. Los resultados se conservan; puedes intentar las instrucciones pendientes después.",
+    limited: "El análisis se pausó: se alcanzó el límite compartido de solicitudes de puntuación. Los resultados obtenidos se conservan; analiza las instrucciones pendientes en un minuto aproximadamente.",
+    outage: "El análisis se pausó: el servicio de puntuación no está disponible, y el problema es nuestro. Los resultados obtenidos se conservan; las instrucciones pendientes podrán analizarse cuando se resuelva.",
     done: "Terminó el análisis.", partial: "Terminó el análisis, pero algunas partes no se pudieron puntuar. Puedes volver a intentarlo.", none: "No se pudo analizar ninguna parte de este archivo, así que no hay prompt. Abajo, «Ver lo que se encontró» explica por qué.",
     lines: "Líneas {start}–{end}", line: "Línea {line}", context: "Encabezados del contexto: {path}", contextPath: "{outer} / {inner}", ruleSent: "Texto enviado al análisis", ruleSentContext: "Texto enviado al análisis, con el contexto de su sección", ruleSentCode: "Texto enviado al análisis, con el bloque de código que le sigue", linkNotRead: "Solo se analiza esta instrucción. Aquí no se leyó el archivo ni la sección enlazados.",unchanged: "Ninguna comprobación se activó en este fragmento. Eso no predice si un agente lo cumplirá.",
     prompt: "Prompt de refactorización", promptHint: "En inglés. Incluye fragmentos analizados, hallazgos y partes pendientes. Pégalo en un agente que pueda leer tu archivo actual.",
@@ -129,6 +132,7 @@
     unitErrors: {
       unsupported_finding: "Este fragmento no se analizó porque su resultado incluye un hallazgo que esta página todavía no admite. Si lo analizas otra vez desde esta página, obtendrás el mismo resultado.",
       timeout: "El servicio tardó demasiado en responder, así que este fragmento no se analizó. Puedes analizarlo otra vez.",
+      rate_limited: "Se alcanzó el límite compartido de solicitudes de puntuación, así que este fragmento no se analizó. Puedes analizarlo otra vez en un minuto aproximadamente.",
     },
     reasons: {
       heading_context: "El encabezado aporta contexto; no se analiza por separado.",
@@ -181,7 +185,8 @@
     running: { one: "Analyse des instructions… {done} sur {total} terminée.", many: "Analyse des instructions… {done} sur {total} terminées.", other: "Analyse des instructions… {done} sur {total} terminées." },
     pacing: "{progress} En attente pour respecter la limite de requêtes\u00a0; l’analyse reprend en moins d’une minute.",
     stopped: "Analyse arrêtée. Les résultats obtenus sont conservés. Les requêtes déjà envoyées peuvent encore être facturées.",
-    limited: "L’analyse est en pause après une erreur du service. Les résultats sont conservés\u00a0; réessayez les instructions restantes plus tard.",
+    limited: "L’analyse est en pause\u00a0: la limite partagée de requêtes d’évaluation a été atteinte. Les résultats obtenus sont conservés\u00a0; analysez les instructions restantes dans une minute environ.",
+    outage: "L’analyse est en pause\u00a0: le service d’évaluation est indisponible, et le problème vient de nous. Les résultats obtenus sont conservés\u00a0; les instructions restantes pourront être analysées une fois le problème résolu.",
     done: "Analyse terminée.", partial: "Analyse terminée, mais certaines parties n’ont pas pu être évaluées. Vous pouvez réessayer.", none: "Aucune partie de ce fichier n’a pu être évaluée\u00a0; il n’y a donc pas de prompt. «\u00a0Voir ce qui a été relevé\u00a0», ci-dessous, en donne les raisons.",
     lines: "Lignes {start}–{end}", line: "Ligne {line}", context: "Titres environnants\u00a0: {path}", contextPath: "{outer} / {inner}", ruleSent: "Texte envoyé pour évaluation", ruleSentContext: "Texte envoyé pour évaluation, avec le contexte de sa section", ruleSentCode: "Texte envoyé pour évaluation, avec le bloc de code qui le suit", linkNotRead: "Seule cette instruction est évaluée. Le fichier ou la section liés n’ont pas été lus ici.",unchanged: "Aucun contrôle n’a signalé cet extrait. Cela ne prédit pas si un agent le respectera.",
     prompt: "Prompt de refactorisation", promptHint: "En anglais. Contient les extraits évalués, les points relevés et les parties non analysées. Collez-le dans un agent pouvant lire votre fichier actuel.",
@@ -204,6 +209,7 @@
     unitErrors: {
       unsupported_finding: "Cet extrait n’a pas été évalué, car son résultat contient un point relevé que cette page ne prend pas encore en charge. L’analyser à nouveau depuis cette page donnera le même résultat.",
       timeout: "Le service a mis trop de temps à répondre\u00a0; cet extrait n’a donc pas été évalué. Vous pouvez l’analyser à nouveau.",
+      rate_limited: "La limite partagée de requêtes d’évaluation a été atteinte\u00a0; cet extrait n’a donc pas été évalué. Vous pourrez l’analyser à nouveau dans une minute environ.",
     },
     states: {ready: "Prêt", pending: "Analyse en cours", ok: "Aucun point à examiner", background: "Informations de contexte", requires_context: "Contexte nécessaire", skipped: "Non évalué", not_english: "Non reconnu comme anglais", review: "Examen nécessaire", refused: "Non évalué", error: "Échec de la requête", cancelled: "Arrêté"},
     reasons: {
@@ -255,7 +261,8 @@
     running: { other: "正在分析指令…已完成 {done} / {total} 项。" },
     pacing: "{progress}为不超出请求限制，正在等待；分析将在一分钟内继续。",
     stopped: "分析已停止。已完成的结果会保留。已发送的请求仍可能产生费用。",
-    limited: "服务出错，分析已暂停。已完成的结果会保留；请稍后重试剩余指令。",
+    limited: "分析已暂停：已达到共享的评分请求限制。已完成的结果会保留；请在大约一分钟后分析剩余指令。",
+    outage: "分析已暂停：评分服务目前不可用，这是我们这边的问题。已完成的结果会保留；问题解决后即可分析剩余指令。",
     done: "分析已完成。", partial: "分析已完成，但有些部分未能评分。你可以重试。", none: "此文件中没有任何部分能够评分，因此没有提示词。下方的“查看发现的内容”说明了原因。",
     lines: "第 {start}–{end} 行", line: "第 {line} 行", context: "上下文标题：{path}", contextPath: "{outer} / {inner}", ruleSent: "发送评分的文本", ruleSentContext: "发送评分的文本（含所在章节的上下文）", ruleSentCode: "发送评分的文本（含其后的代码块）", linkNotRead: "仅对这条指令评分。此处未读取链接的文件或章节。",unchanged: "此片段未触发任何检查项。这并不预测智能体是否会遵守它。",
     prompt: "重构提示词", promptHint: "以英文生成，包含已评分的片段、发现的问题和未覆盖的部分。请粘贴到能够读取当前文件的智能体中。",
@@ -278,6 +285,7 @@
     unitErrors: {
       unsupported_finding: "此片段未评分，因为其结果包含本页面暂不支持的发现。从本页面重新分析会得到相同的结果。",
       timeout: "服务响应超时，因此此片段未评分。你可以重新分析。",
+      rate_limited: "已达到共享的评分请求限制，因此此片段未评分。你可以在大约一分钟后重新分析。",
     },
     states: {ready: "已准备好", pending: "分析中", ok: "无发现", background: "背景信息", requires_context: "需要上下文", skipped: "未评分", not_english: "未识别为英文", review: "需要检查", refused: "未评分", error: "请求失败", cancelled: "已停止"},
     reasons: {
@@ -329,7 +337,8 @@
     running: { one: "निर्देशों का विश्लेषण हो रहा है… {total} में से {done} पूरा हुआ।", other: "निर्देशों का विश्लेषण हो रहा है… {total} में से {done} पूरे हुए।" },
     pacing: "{progress} अनुरोध सीमा के भीतर रहने के लिए प्रतीक्षा हो रही है; विश्लेषण एक मिनट के भीतर जारी रहेगा।",
     stopped: "विश्लेषण रोक दिया गया। पूरे हो चुके परिणाम सुरक्षित हैं। पहले से भेजे गए अनुरोधों का शुल्क फिर भी लग सकता है।",
-    limited: "सेवा में त्रुटि के कारण विश्लेषण रुक गया। पूरे हो चुके परिणाम सुरक्षित हैं; बाकी निर्देशों के लिए बाद में फिर कोशिश करें।",
+    limited: "विश्लेषण रुक गया: अंक देने के अनुरोधों की साझा सीमा पूरी हो गई। पूरे हो चुके परिणाम सुरक्षित हैं; बाकी निर्देशों का विश्लेषण लगभग एक मिनट बाद करें।",
+    outage: "विश्लेषण रुक गया: अंक देने वाली सेवा अभी उपलब्ध नहीं है, और यह समस्या हमारी ओर से है। पूरे हो चुके परिणाम सुरक्षित हैं; समस्या ठीक होने के बाद बाकी निर्देशों का विश्लेषण किया जा सकेगा।",
     done: "विश्लेषण पूरा हुआ।", partial: "विश्लेषण पूरा हुआ, लेकिन कुछ हिस्सों को स्कोर नहीं किया जा सका। आप उन्हें दोबारा आज़मा सकते हैं।", none: "इस फ़ाइल के किसी भी हिस्से का विश्लेषण नहीं हो सका, इसलिए कोई प्रॉम्प्ट नहीं है। नीचे “देखें कि क्या मिला” में कारण दिए गए हैं।",
     lines: "पंक्तियाँ {start}–{end}", line: "पंक्ति {line}", context: "आसपास के शीर्षक: {path}", contextPath: "{outer} / {inner}", ruleSent: "अंक देने के लिए भेजा गया पाठ", ruleSentContext: "अंक देने के लिए भेजा गया पाठ, उसके अनुभाग के संदर्भ के साथ", ruleSentCode: "अंक देने के लिए भेजा गया पाठ, उसके बाद वाले कोड ब्लॉक के साथ", linkNotRead: "केवल इस निर्देश को अंक दिए जाते हैं। लिंक की गई फ़ाइल या अनुभाग यहाँ पढ़ा नहीं गया है।",unchanged: "इस अंश पर किसी जाँच ने संकेत नहीं दिया। इससे यह अनुमान नहीं लगाया जा सकता कि एजेंट इसका पालन करेगा या नहीं।",
     prompt: "रिफ़ैक्टरिंग प्रॉम्प्ट", promptHint: "अंग्रेज़ी में। इसमें अंक दिए गए अंश, निष्कर्ष और बिना समीक्षा वाले हिस्से शामिल हैं। इसे ऐसे एजेंट में पेस्ट करें जो आपकी वर्तमान फ़ाइल पढ़ सके।",
@@ -352,6 +361,7 @@
     unitErrors: {
       unsupported_finding: "इस अंश को अंक नहीं दिए गए, क्योंकि इसके परिणाम में ऐसा निष्कर्ष है जिसे यह पेज अभी समर्थन नहीं करता। इस पेज से इसका फिर विश्लेषण करने पर वही परिणाम मिलेगा।",
       timeout: "सेवा ने जवाब देने में बहुत देर की, इसलिए इस अंश को अंक नहीं दिए गए। आप इसका फिर से विश्लेषण कर सकते हैं।",
+      rate_limited: "अंक देने के अनुरोधों की साझा सीमा पूरी हो गई, इसलिए इस अंश को अंक नहीं दिए गए। आप लगभग एक मिनट बाद इसका फिर से विश्लेषण कर सकते हैं।",
     },
     states: {ready: "तैयार", pending: "विश्लेषण जारी", ok: "कोई निष्कर्ष नहीं", background: "संदर्भ जानकारी", requires_context: "संदर्भ चाहिए", skipped: "अंक नहीं दिए गए", not_english: "अंग्रेज़ी के रूप में पहचाना नहीं गया", review: "समीक्षा चाहिए", refused: "अंक नहीं दिए गए", error: "अनुरोध विफल", cancelled: "रुका हुआ"},
     reasons: {
@@ -412,7 +422,8 @@
       few: "جارٍ تحليل التعليمات… اكتمل {done} من {total}.", many: "جارٍ تحليل التعليمات… اكتمل {done} من {total}.", other: "جارٍ تحليل التعليمات… اكتمل {done} من {total}." },
     pacing: "{progress} التحليل في انتظار مؤقت كي لا يتجاوز حد الطلبات؛ وسيُستأنف خلال دقيقة.",
     stopped: "توقف التحليل. تم الاحتفاظ بالنتائج المكتملة. قد تُحتسب رسوم للطلبات التي أُرسلت بالفعل.",
-    limited: "توقف التحليل مؤقتًا بسبب خطأ في الخدمة. تم الاحتفاظ بالنتائج المكتملة؛ حاول تحليل التعليمات المتبقية لاحقًا.",
+    limited: "توقف التحليل مؤقتًا: تم بلوغ الحد المشترك لطلبات التقييم. تم الاحتفاظ بالنتائج المكتملة؛ حلّل التعليمات المتبقية بعد دقيقة تقريبًا.",
+    outage: "توقف التحليل مؤقتًا: خدمة التقييم غير متاحة، والمشكلة من جهتنا. تم الاحتفاظ بالنتائج المكتملة؛ ويمكن تحليل التعليمات المتبقية بعد حل المشكلة.",
     done: "اكتمل التحليل.", partial: "اكتمل التحليل، لكن تعذّر تقييم بعض الأجزاء. يمكنك إعادة المحاولة.", none: "تعذّر تقييم أي جزء من هذا الملف، لذلك لا يوجد نص طلب. يوضح قسم «عرض ما تم العثور عليه» أدناه السبب.",
     lines: "الأسطر {start}–{end}", line: "السطر {line}", context: "العناوين المحيطة: {path}", contextPath: "{outer} / {inner}", ruleSent: "النص المرسل للتقييم", ruleSentContext: "النص المرسل للتقييم مع سياق قسمه", ruleSentCode: "النص المرسل للتقييم مع كتلة الشيفرة التي تليه", linkNotRead: "تُقيَّم هذه التعليمة وحدها. لم تتم قراءة الملف أو القسم المرتبط هنا.",unchanged: "لم يرصد أي فحص ملاحظة في هذا المقطع. هذا لا يتنبأ بما إذا كان الوكيل سيلتزم به.",
     prompt: "طلب إعادة تنظيم الملف", promptHint: "بالإنجليزية. يتضمن المقاطع المقيّمة والملاحظات والأجزاء غير المشمولة. الصقه في وكيل يستطيع قراءة ملفك الحالي.",
@@ -435,6 +446,7 @@
     unitErrors: {
       unsupported_finding: "لم يُقيَّم هذا المقطع لأن نتيجته تتضمن ملاحظة لا تدعمها هذه الصفحة بعد. ستؤدي إعادة تحليله من هذه الصفحة إلى النتيجة نفسها.",
       timeout: "استغرقت الخدمة وقتًا طويلًا في الرد، لذلك لم يُقيَّم هذا المقطع. يمكنك تحليله مجددًا.",
+      rate_limited: "تم بلوغ الحد المشترك لطلبات التقييم، لذلك لم يُقيَّم هذا المقطع. يمكنك تحليله مجددًا بعد دقيقة تقريبًا.",
     },
     states: {ready: "جاهز", pending: "جارٍ التحليل", ok: "لا ملاحظات", background: "معلومات سياقية", requires_context: "يحتاج إلى سياق", skipped: "لم يُقيّم", not_english: "لم يُتعرّف عليه كنص إنجليزي", review: "يحتاج إلى مراجعة", refused: "لم يُقيّم", error: "فشل الطلب", cancelled: "متوقف"},
     reasons: {

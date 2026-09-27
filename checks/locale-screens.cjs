@@ -50,6 +50,7 @@ const docs = {
   batch: Array.from({ length: 5 }, (_, i) => item(`Keep module ${i + 1} small.`)).join("\n"),
 };
 const limitedRule = "Keep module 1 small.";
+const pauses = { limited: { status: 429, body: { code: "rate_limited" } }, unavailable: { status: 503, body: { code: "not_configured" } } };
 
 const report = { browser: "installed Edge", network: "loopback mock; other hosts are unreachable",
   clipboard: "simulated writeText; system clipboard untouched",
@@ -60,10 +61,11 @@ const server = http.createServer(async (req, res) => {
   if (req.url === "/api/score") {
     requests++;
     const raw = await site.readBody(req);
-    // Left pending; closing the page or a stop aborts it. In limited mode only the first batch item
-    // is refused, so the same unit shows the pause in every run whichever request lands first.
-    if (raw === null || mode === "hold" || (mode === "limited" && JSON.parse(raw).rule !== limitedRule)) return;
-    const decision = mode === "limited" ? { status: 429, body: { code: "rate_limited" } } : outcomes.get(JSON.parse(raw).rule) || { body: several };
+    // Left pending; closing the page or a stop aborts it. In the limited and unavailable modes only the
+    // first batch item is refused, so the same unit shows the pause in every run whichever request lands first.
+    const paused = pauses[mode];
+    if (raw === null || mode === "hold" || (paused && JSON.parse(raw).rule !== limitedRule)) return;
+    const decision = paused || outcomes.get(JSON.parse(raw).rule) || { body: several };
     res.writeHead(decision.status || 200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(decision.body));
     return;
@@ -113,6 +115,7 @@ const states = [
   ["file-running", runningFile],
   ["file-stopped", async (page) => { await runningFile(page); await page.click("#file-cancel"); await fileSettled(page); }],
   ["file-limited", async (page) => { mode = "limited"; await analyzeFile(page, docs.batch); await openUnits(page); }],
+  ["file-unavailable", async (page) => { mode = "unavailable"; await analyzeFile(page, docs.batch); await openUnits(page); }],
   ["file-results", (page) => analyzeFile(page, docs.results)],
   ["file-details", async (page) => { await analyzeFile(page, docs.preview); await openUnits(page); }],
   ["file-copied", async (page) => {
@@ -140,6 +143,7 @@ const states = [
   ["rule-review", (page) => submitRule(page, texts.review)],
   ["rule-refused", (page) => submitRule(page, texts.refused)],
   ["rule-error", (page) => submitRule(page, texts.failed)],
+  ["rule-limited", async (page) => { mode = "limited"; await submitRule(page, limitedRule); }],
 ];
 report.states = states.map(([state]) => state);
 
