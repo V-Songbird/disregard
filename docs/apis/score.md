@@ -74,19 +74,20 @@ or `null` when the provider supplies no valid value. It is not a currency amount
 ## Factor meanings
 
 `factors` carries separate signals, not a composite grade. A higher value does not
-consistently mean a better instruction.
+consistently mean a better instruction. The interface lists each field under
+**What was measured** with the label shown here.
 
-| Field | Range or shape | Meaning |
-| --- | --- | --- |
-| `F1` | 0–1 or `null` | Strength of recognized verbs; `null` means no verb value was assigned. |
-| `F2` | 0–1 | Local classification of prohibition and alternative wording. |
-| `F3` | 0–4 | Model judgment of when the instruction becomes relevant and how explicitly the occasion is stated. |
-| `F7` | 0–1 | Concrete anchors recognized by local patterns. |
-| `F8` | 0–3 | Model judgment of enforceability; lower values mean more mechanical coverage. |
-| `is_rule` | 0–1 | Model judgment that the text directs the reader rather than describing background. |
-| `specificity` | 0–1 | Model judgment that the text is concrete enough to check whether it was followed. |
-| `primitive` | `{ choice, confidence }` | Suggested home: `rule`, `hook`, `skill`, or `subagent`; confidence is 0–1. |
-| `rule_role` | `{ choice, confidence }` | `direct_action`, `artifact_requirement`, `background`, or `unclear`; confidence is 0–1. |
+| Field | Interface label | Range or shape | Meaning |
+| --- | --- | --- | --- |
+| `F1` | Verb force | 0–1 or `null` | Strength of recognized verbs; `null` means no verb value was assigned. |
+| `F2` | Prohibition framing | 0–1 | Local classification of prohibition and alternative wording. |
+| `F3` | Trigger distance | 0–4 | Model judgment of when the instruction becomes relevant and how explicitly the occasion is stated. |
+| `F7` | Concreteness | 0–1 | Paths, tools, quantities, and other concrete targets recognized by local patterns. |
+| `F8` | Enforceability | 0–3 | Model judgment of how much a deterministic tool could check; lower values mean more mechanical coverage. |
+| `is_rule` | Reads as an instruction | 0–1 | Model judgment that the text directs the reader rather than describing background. |
+| `specificity` | Concrete enough to check | 0–1 | Model judgment that the text is concrete enough to check whether it was followed. |
+| `primitive` | Suggested form | `{ choice, confidence }` | Suggested home: `rule`, `hook`, `skill`, or `subagent`; confidence is 0–1. |
+| `rule_role` | Suggested interpretation | `{ choice, confidence }` | `direct_action`, `artifact_requirement`, `background`, or `unclear`; confidence is 0–1. |
 
 F1, F2, and F7 use deterministic local checks. F3, F8, `is_rule`, `specificity`,
 classification, routing, and injection screening use one provider request. Fractional F3 and F8 values represent
