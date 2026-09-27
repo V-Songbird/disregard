@@ -30,7 +30,7 @@ Prompt for your agent
 1 of 1 part was checked.
 ```
 
-Without a key, the page reports `Analysis paused after a service error.` instead. If the file reader cannot load, the page reports that failure and sends nothing.
+Without a key, the page reports `Analysis paused: the scoring service is unavailable` instead. If the file reader cannot load, the page reports that failure and sends nothing.
 
 With the text box empty, **Load a sample file** fills it with a short example.
 Its results come with the page, so creating the prompt for the unchanged sample sends nothing.

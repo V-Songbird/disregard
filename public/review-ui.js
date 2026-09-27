@@ -469,17 +469,18 @@
               body: JSON.stringify({ rule: unit.rule }), signal: controller.signal });
             // Edge/proxy errors may contain HTML or no body. Pause on the HTTP
             // status before attempting JSON so they cannot trigger more spend.
+            // A rate limit and an unavailable service pause with different messages.
             if ([429, 503].includes(response.status)) {
               unit.state = "error";
               unit.errorCode = response.status === 429 ? "rate_limited" : "not_configured";
-              stop("limited");
+              stop(response.status === 429 ? "limited" : "outage");
               continue;
             }
             const body = await response.json();
             if (!isCurrent(snapshot, token)) { stop(); break; }
             if (!response.ok) {
               unit.state = "error"; unit.errorCode = body?.code || "failed";
-              if ([429, 503].includes(response.status) || body?.code === "not_configured") stop("limited");
+              if ([429, 503].includes(response.status) || body?.code === "not_configured") stop(response.status === 429 ? "limited" : "outage");
             } else if (["ok", "not_english", "review", "refused"].includes(body?.status)) {
               if (body.status === "ok") {
                 // Validate the consumed evidence before showing a completed unit. If the prompt

@@ -200,6 +200,8 @@ const server = http.createServer(async (req, res) => {
     else if (mode === "retry") { if (retryCases[rule]) reply(entry, ...retryCases[rule]); else waiting.push(entry); }
     else if (mode === "html-rate") { res.writeHead(429, { "Content-Type": "text/html" }); res.end("<html>Limited</html>"); }
     else if (mode === "empty-unavailable") { res.writeHead(503); res.end(); }
+    // The handler's answer when the server has no scoring key.
+    else if (mode === "unconfigured") reply(entry, 500, { code: "not_configured" });
     else if (mode === "rate") reply(entry, 429, { code: "rate_limited" });
     // The Worker's client limit of 60 a minute; the check resets the count when it advances the page's clock a minute.
     else if (mode === "window") { if (++windowCount > 60) reply(entry, 429, { code: "rate_limited" }); else reply(entry); }
@@ -668,10 +670,22 @@ async function unitHints(page) {
         check("rate limit stops unsent work", requests.length <= 2);
         check("a run that pauses on its own keeps focus on the retry control", await page.evaluate(() => document.activeElement.id), "file-start");
         check("rate-limited file has no prompt", await page.locator(".copy-prompt").count(), 0);
-        for (const errorMode of ["html-rate", "empty-unavailable"]) {
+        // A rate limit and an unavailable service pause with different messages, and the excerpt that met
+        // either says why. Both first requests may fail before the pause, so one or two excerpts say it.
+        const paused = async () => ({ progress: await page.textContent("#file-progress"),
+          hints: [...new Set((await unitHints(page)).filter((unit) => unit.state === "error").map((unit) => unit.hints.join(" ")))] });
+        const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; analyze the remaining instructions in about a minute.",
+          hints: ["The shared request limit for scoring was reached, so this excerpt was not scored. You can analyze it again in about a minute."] };
+        const outagePause = { progress: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; the remaining instructions can be analyzed once it is fixed.",
+          hints: ["The scoring service is not set up. This one is on us."] };
+        check("a rate limit pauses with the shared limit and the wait", await paused(), limitedPause);
+        for (const [errorMode, expected] of [["html-rate", limitedPause], ["empty-unavailable", outagePause]]) {
           await reset(page); mode = errorMode; await analyze(page, batch);
           check(errorMode + " stops unsent requests without JSON", requests.length <= 2);
+          check(errorMode + " pauses with its own message", await paused(), expected);
         }
+        await reset(page); mode = "unconfigured"; await analyze(page, batch);
+        check("a missing scoring key pauses as an unavailable service", [requests.length <= 2, await paused()], [true, outagePause]);
 
         await reset(page); mode = "hold"; await create(page, batch);
         await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
