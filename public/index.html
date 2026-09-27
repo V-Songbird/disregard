@@ -361,7 +361,8 @@
         body: JSON.stringify({ rule: rule }),
         signal: current.controller.signal,
       });
-      const body = await res.json();
+      // A 503 is an unavailable service whatever its body, as in file mode; edge errors may not be JSON.
+      const body = res.status === 503 ? { code: "not_configured" } : await res.json();
       // A stopped request never renders, even when its response still arrives.
       if (current.stopped) return;
       // Also discard responses after a programmatic edit of the read-only field.

@@ -144,6 +144,7 @@ const states = [
   ["rule-refused", (page) => submitRule(page, texts.refused)],
   ["rule-error", (page) => submitRule(page, texts.failed)],
   ["rule-limited", async (page) => { mode = "limited"; await submitRule(page, limitedRule); }],
+  ["rule-unavailable", async (page) => { mode = "unavailable"; await submitRule(page, limitedRule); }],
 ];
 report.states = states.map(([state]) => state);
 

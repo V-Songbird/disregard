@@ -39,6 +39,7 @@ const server = http.createServer(async (req, res) => {
     }
     else if (mode === "error") respond(res, 502, { code: "upstream" });
     else if (mode === "broken") { res.writeHead(502); res.end("<html>Bad gateway</html>"); }
+    else if (mode === "unavailable") { res.writeHead(503); res.end(); }
     else if (mode === "canned") respond(res, canned.status, canned.body);
     else respond(res);
     return;
@@ -82,6 +83,7 @@ async function state(page) {
       expected: { busyTitle: t.busyTitle, submitBusy: t.submitBusy, submit: t.submit, emptyTitle: t.emptyTitle, stop: t.file.cancel,
         stoppedTitle: t.stoppedTitle, stoppedBody: t.stoppedBody,
         cleanTitle: t.cleanTitle, upstream: t.errors.upstream, timeout: t.errors.timeout, network: t.errors.network,
+        errorTitle: t.errorTitle, unavailable: t.errors.not_configured,
         tooLong: t.errors.too_long.replace("{max}", "2000") } };
   });
 }
@@ -459,17 +461,30 @@ async function localized(page, locale, kind) {
     check("inherited error code shows the generic failure", keyError.banner, keyError.expected.error);
     check("inherited server keys raise no page error", keyErrors, []);
     // A rate limit says the limit is shared, how long to wait and that the rule is kept; an
+    // unavailable service says the problem is on our side, in the file-mode wording; an
     // unexpected failure says what to do next.
     const serviceErrors = [];
-    for (const [status, code] of [[429, "rate_limited"], [500, "failed"]]) {
+    for (const [status, code] of [[429, "rate_limited"], [503, "not_configured"], [500, "failed"]]) {
       mode = "canned"; canned = { status, body: { code } };
       await keyPage.click("#go"); await settle(keyPage);
       const shown = await state(keyPage);
       serviceErrors.push([shown.title, shown.body, shown.rule, shown.readOnly, shown.disabled]);
     }
-    check("a rate limit and an unexpected failure say what happened and what to do next", serviceErrors, [
+    check("a rate limit, an unavailable service and an unexpected failure say what happened and what to do next", serviceErrors, [
       ["That did not go through.", "The shared request limit for scoring was reached. Your rule is still here; try again in about a minute.", "Use `const`.", false, false],
+      ["That did not go through.", "The scoring service is unavailable, which is a problem on our side. Your rule is still here; try again later.", "Use `const`.", false, false],
       ["That did not go through.", "The rule could not be scored because of an unexpected error. Try again; if it fails again, try later.", "Use `const`.", false, false]]);
+    // In every locale, a 503 with or without a JSON body and a missing scoring key read as an unavailable service.
+    for (const locale of locales) {
+      await keyPage.selectOption("#ui-lang", locale);
+      for (const [status, body] of [[503, null], [503, { code: "not_configured" }], [500, { code: "not_configured" }]]) {
+        mode = body ? "canned" : "unavailable"; canned = { status, body };
+        await keyPage.click("#go"); await settle(keyPage);
+        const shown = await state(keyPage);
+        check(locale + " " + status + (body ? " " + body.code : " without a body") + " says the service is unavailable",
+          [shown.title, shown.body, shown.readOnly, shown.disabled], [shown.expected.errorTitle, shown.expected.unavailable, false, false]);
+      }
+    }
     await keyContext.close();
 
     // /review-ui.js fails to load: in every locale the strings render, a single-rule analysis runs
