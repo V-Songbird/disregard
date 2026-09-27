@@ -1,12 +1,14 @@
 ---
 type: knowledge
-summary: "Explains contribution setup, code conventions, and verification expectations; read before proposing a change to Disregard."
+summary: "Explains contribution setup, code conventions, interface terms, and verification expectations; read before proposing a change to Disregard."
 related_files:
   - .nvmrc
   - lib/analyze.js
   - api/score.js
   - worker.js
   - public/review-ui.js
+  - public/file-i18n.js
+  - public/research.html
   - docs/knowledge/development.md
 ---
 
@@ -44,6 +46,26 @@ Otherwise, provide a minimal example with the same behavior.
 Live scoring calls use the configured TypeSafe account and can incur charges.
 Use mock responses for routine request and interface tests.
 Never run automated load tests against the public service.
+
+## Interface terms
+
+Interface text uses one word for each concept, so a reader who learns a word on one screen recognizes it on the next.
+The file report uses these English terms in [public/file-i18n.js](../../public/file-i18n.js):
+
+| Concept | Term | Example |
+| --- | --- | --- |
+| A stretch of the file shown as one row of the report | excerpt | "Show only excerpts with findings" |
+| What the service does to an excerpt | score: scored, not scored, scoring | "3 scored · 1 with findings · 5 not scored" |
+| The whole run over a file or a rule, and its stop control | analysis | "Stop analysis", "Analysis paused" |
+| A Markdown structure, such as a code block, and the limit on them | block | "This file has too many blocks to review at once." |
+| What a text means as a requirement | instruction | "is not scored as an instruction" |
+
+Each translated locale keeps one word per term in the same way.
+One condition also gets one wording wherever it appears: an unavailable scoring service reads the same on the pause line and on the excerpt row.
+
+[How scoring works](../../public/research.html) names each factor with the label the review screen shows, from `factors` in [public/i18n.js](../../public/i18n.js), such as **Verb force** (F1), **Concreteness** (F7), **Reads as an instruction** and **Concrete enough to check**.
+[checks/i18n.test.cjs](../../checks/i18n.test.cjs) fails when the English labels and that page differ.
+The review screen and the scoring page both call the length limit characters; the scoring page adds that they are counted as JavaScript string units.
 
 ## Reporting a security issue
 

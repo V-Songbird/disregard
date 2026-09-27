@@ -27,7 +27,7 @@ Then select **Create the prompt for my agent**. Nothing is sent for scoring befo
 
 ```text
 Prompt for your agent
-1 of 1 part was checked.
+1 of 1 excerpt was scored.
 ```
 
 Without a key, the page reports `Analysis paused: the scoring service is unavailable` instead. If the file reader cannot load, the page reports that failure and sends nothing.
@@ -49,9 +49,9 @@ The agent may list that removal as a proposal, but never for a rule kept by poli
 The option above the primary action, off by default, adds one paragraph to the prompt and sends nothing: after the rest of the review, the agent proposes moving a rule into a `.claude/rules/` file only where the move is safe, with `paths` patterns that cover every existing file the rule concerns, and it often proposes none.
 Claude Code loads those files only when it reads a matching file, so rules needed earlier, such as commands or where to create new files, stay in place; other agents do not load them, so for an `AGENTS.md` the agent proposes a move only when the repository shows Claude Code is its only reader, and otherwise asks.
 **File name in the prompt** starts as the chosen or dropped file's name, or `AGENTS.md` for pasted text; change it if the file has another name in the repository.
-The summary line says how many parts were checked; your agent reads the rest.
+The summary line says how many excerpts were scored; your agent reads the rest.
 **See what was found** holds the coverage, each excerpt's findings, and the ranges left unreviewed.
-Each finding in a part shows a short next step.
+Each finding in an excerpt shows a short next step.
 The **One rule** mode also accepts a single instruction.
 
 The key stays on the server. Reading the file and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
@@ -60,7 +60,7 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
 ## Limits and configuration
 
 - Scoring supports English instructions; the interface supports six languages.
-- Files may contain up to 64 KiB and 512 structural blocks. The first 150 eligible excerpts are scored; later ones stay listed as not analyzed.
+- Files may contain up to 64 KiB and 512 structural blocks. The first 150 eligible excerpts are scored; later ones stay listed as not scored.
   A file review starts at most 55 requests a minute and says when it waits.
 - A file longer than 200 lines gets a note citing the Claude Code guide's target of under 200 lines per instruction file.
   Its prompt then lets the agent propose path-scoped rules or skills as a question for the owner.

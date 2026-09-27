@@ -122,6 +122,14 @@ test("public/i18n.js and public/file-i18n.js type no numbers outside placeholder
   assert.deepEqual(typed, []);
 });
 
+// research.html explains each measured factor under the English label the review screen shows.
+test("public/research.html uses the review screen's English factor labels", () => {
+  const page = source("research.html"), factors = interfaceStrings.en.factors;
+  const labels = ["F1", "F2", "F3", "F7", "F8"].map((id) => `<strong>${factors[id].replace(/ \(.*\)$/, "")} (${id}).</strong>`)
+    .concat(["is_rule", "specificity"].map((id) => `<strong>${factors[id]}</strong>`));
+  assert.deepEqual(labels.filter((label) => !page.includes(label)), []);
+});
+
 // Every code public/document-model.js raises through fail() has English file-mode wording. Without
 // it the file form falls back to invalid_source and blames the reader's file.
 test("public/file-i18n.js words every error code public/document-model.js raises", () => {

@@ -94,7 +94,7 @@ const notEnglishSentences = {
     klingon: "Ce texte semble être Klingon. L’analyse est évaluée sur des règles en anglais\u00a0; ce texte n’a donc pas été analysé. Vérifiez la langue ou traduisez la règle, puis réessayez." },
 };
 // Joins and numbers written out: the heading path shown for the deploy step, and the measured
-// values of the first analyzed excerpt in page order, ending with the two confidence joins.
+// values of the first scored excerpt in page order, ending with the two confidence joins.
 const joinExamples = {
   fr: { context: "Titres environnants\u00a0: Project instructions / Before deployment",
     values: ["0,95", "2", "2", "0,2", "0,85", "0,8", "0,9", "une consigne d’action (confiance 0,9)", "une règle (confiance 0,9)"] },
@@ -110,59 +110,59 @@ const unitLocations = {
 // finished, and coverage with 3 scored, 1 flagged, 5 left; 1 left; and 11 left. Row labels for 1 and
 // 2 findings, none and background, and coverage with 3 scored, 1 flagged, 1 background, 0 left.
 const countedLabels = {
-  en: { retry1: "Analyze 1 remaining instruction", retry2: "Analyze 2 remaining instructions",
-    running0: "Analyzing instructions… 0 of 2 finished.", running1: "Analyzing instructions… 1 of 2 finished.",
-    coverage315: "3 analyzed · 1 with findings · 5 not analyzed", coverage001: "0 analyzed · 0 with findings · 1 not analyzed",
-    coverage11: "0 analyzed · 0 with findings · 11 not analyzed" },
-  es: { retry1: "Analizar 1 instrucción pendiente", retry2: "Analizar 2 instrucciones pendientes",
-    running0: "Analizando instrucciones… 0 de 2 terminaron.", running1: "Analizando instrucciones… 1 de 2 terminó.",
-    coverage315: "3 analizados · 1 con hallazgos · 5 sin analizar", coverage001: "0 analizados · 0 con hallazgos · 1 sin analizar",
-    coverage11: "0 analizados · 0 con hallazgos · 11 sin analizar" },
-  zh: { retry1: "分析剩余的 1 条指令", retry2: "分析剩余的 2 条指令",
-    running0: "正在分析指令…已完成 0 / 2 项。", running1: "正在分析指令…已完成 1 / 2 项。",
-    coverage315: "已分析 3 项 · 1 项有发现 · 5 项未分析", coverage001: "已分析 0 项 · 0 项有发现 · 1 项未分析",
-    coverage11: "已分析 0 项 · 0 项有发现 · 11 项未分析" },
-  hi: { retry1: "बाकी 1 निर्देश का विश्लेषण करें", retry2: "बाकी 2 निर्देशों का विश्लेषण करें",
-    running0: "निर्देशों का विश्लेषण हो रहा है… 2 में से 0 पूरा हुआ।", running1: "निर्देशों का विश्लेषण हो रहा है… 2 में से 1 पूरा हुआ।",
-    coverage315: "3 का विश्लेषण हुआ · 1 में निष्कर्ष मिले · 5 का विश्लेषण नहीं हुआ",
-    coverage001: "0 का विश्लेषण हुआ · 0 में निष्कर्ष मिले · 1 का विश्लेषण नहीं हुआ",
-    coverage11: "0 का विश्लेषण हुआ · 0 में निष्कर्ष मिले · 11 का विश्लेषण नहीं हुआ" },
-  ar: { retry1: "تحليل التعليمة المتبقية", retry2: "تحليل التعليمتين المتبقيتين",
-    running0: "جارٍ تحليل التعليمات… اكتمل 0 من 2.", running1: "جارٍ تحليل التعليمات… اكتمل 1 من 2.",
-    coverage315: "تم تحليل 3 · ظهرت ملاحظات في 1 · لم يُحلل 5", coverage001: "تم تحليل 0 · ظهرت ملاحظات في 0 · لم يُحلل 1",
-    coverage11: "تم تحليل 0 · ظهرت ملاحظات في 0 · لم يُحلل 11" },
-  fr: { retry1: "Analyser 1 instruction restante", retry2: "Analyser les 2 instructions restantes",
-    running0: "Analyse des instructions… 0 sur 2 terminée.", running1: "Analyse des instructions… 1 sur 2 terminée.",
-    coverage315: "3 analysés · 1 avec des points à examiner · 5 non analysés", coverage001: "0 analysé · 0 avec des points à examiner · 1 non analysé",
-    coverage11: "0 analysé · 0 avec des points à examiner · 11 non analysés" },
+  en: { retry1: "Score 1 remaining excerpt", retry2: "Score 2 remaining excerpts",
+    running0: "Scoring excerpts… 0 of 2 finished.", running1: "Scoring excerpts… 1 of 2 finished.",
+    coverage315: "3 scored · 1 with findings · 5 not scored", coverage001: "0 scored · 0 with findings · 1 not scored",
+    coverage11: "0 scored · 0 with findings · 11 not scored" },
+  es: { retry1: "Puntuar 1 fragmento pendiente", retry2: "Puntuar 2 fragmentos pendientes",
+    running0: "Puntuando fragmentos… 0 de 2 terminaron.", running1: "Puntuando fragmentos… 1 de 2 terminó.",
+    coverage315: "3 puntuados · 1 con hallazgos · 5 sin puntuar", coverage001: "0 puntuados · 0 con hallazgos · 1 sin puntuar",
+    coverage11: "0 puntuados · 0 con hallazgos · 11 sin puntuar" },
+  zh: { retry1: "为剩余的 1 个片段评分", retry2: "为剩余的 2 个片段评分",
+    running0: "正在为片段评分…已完成 0 / 2 项。", running1: "正在为片段评分…已完成 1 / 2 项。",
+    coverage315: "已评分 3 项 · 1 项有发现 · 5 项未评分", coverage001: "已评分 0 项 · 0 项有发现 · 1 项未评分",
+    coverage11: "已评分 0 项 · 0 项有发现 · 11 项未评分" },
+  hi: { retry1: "बाकी 1 अंश को अंक दें", retry2: "बाकी 2 अंशों को अंक दें",
+    running0: "अंशों को अंक दिए जा रहे हैं… 2 में से 0 पूरा हुआ।", running1: "अंशों को अंक दिए जा रहे हैं… 2 में से 1 पूरा हुआ।",
+    coverage315: "3 को अंक दिए गए · 1 में निष्कर्ष मिले · 5 को अंक नहीं दिए गए",
+    coverage001: "0 को अंक दिए गए · 0 में निष्कर्ष मिले · 1 को अंक नहीं दिए गए",
+    coverage11: "0 को अंक दिए गए · 0 में निष्कर्ष मिले · 11 को अंक नहीं दिए गए" },
+  ar: { retry1: "تقييم المقطع المتبقي", retry2: "تقييم المقطعين المتبقيين",
+    running0: "جارٍ تقييم المقاطع… اكتمل 0 من 2.", running1: "جارٍ تقييم المقاطع… اكتمل 1 من 2.",
+    coverage315: "تم تقييم 3 · ظهرت ملاحظات في 1 · لم يُقيَّم 5", coverage001: "تم تقييم 0 · ظهرت ملاحظات في 0 · لم يُقيَّم 1",
+    coverage11: "تم تقييم 0 · ظهرت ملاحظات في 0 · لم يُقيَّم 11" },
+  fr: { retry1: "Évaluer 1 extrait restant", retry2: "Évaluer les 2 extraits restants",
+    running0: "Évaluation des extraits… 0 sur 2 terminé.", running1: "Évaluation des extraits… 1 sur 2 terminé.",
+    coverage315: "3 évalués · 1 avec des points à examiner · 5 non évalués", coverage001: "0 évalué · 0 avec des points à examiner · 1 non évalué",
+    coverage11: "0 évalué · 0 avec des points à examiner · 11 non évalués" },
 };
-// The summary line under the prompt written out per locale: every part of a 3-part file checked, and
-// 3 of 5 checked with the rest left to the agent.
+// The summary line under the prompt written out per locale: every excerpt of a 3-excerpt file scored, and
+// 3 of 5 scored with the rest left to the agent.
 const summaryLines = {
-  en: { all: "3 of 3 parts were checked.", rest: "3 of 5 parts were checked. Your agent will read the rest." },
-  es: { all: "Partes revisadas: 3 de 3.", rest: "Partes revisadas: 3 de 5. Tu agente leerá el resto." },
-  zh: { all: "已检查 3 个部分中的 3 个。", rest: "已检查 5 个部分中的 3 个。其余部分由你的智能体阅读。" },
-  hi: { all: "जाँचे गए हिस्से: 3 में से 3।", rest: "जाँचे गए हिस्से: 5 में से 3। बाकी हिस्से आपका एजेंट पढ़ेगा।" },
-  ar: { all: "الأجزاء التي فُحصت: 3 من 3.", rest: "الأجزاء التي فُحصت: 3 من 5. سيقرأ وكيلك الباقي." },
-  fr: { all: "Parties vérifiées\u00a0: 3 sur 3.", rest: "Parties vérifiées\u00a0: 3 sur 5. Votre agent lira le reste." },
+  en: { all: "3 of 3 excerpts were scored.", rest: "3 of 5 excerpts were scored. Your agent will read the rest." },
+  es: { all: "Fragmentos puntuados: 3 de 3.", rest: "Fragmentos puntuados: 3 de 5. Tu agente leerá el resto." },
+  zh: { all: "已为 3 个片段中的 3 个评分。", rest: "已为 5 个片段中的 3 个评分。其余部分由你的智能体阅读。" },
+  hi: { all: "अंक दिए गए अंश: 3 में से 3।", rest: "अंक दिए गए अंश: 5 में से 3। बाकी हिस्से आपका एजेंट पढ़ेगा।" },
+  ar: { all: "المقاطع التي قُيِّمت: 3 من 3.", rest: "المقاطع التي قُيِّمت: 3 من 5. سيقرأ وكيلك الباقي." },
+  fr: { all: "Extraits évalués\u00a0: 3 sur 3.", rest: "Extraits évalués\u00a0: 3 sur 5. Votre agent lira le reste." },
 };
-// The same 3-part file checked again unchanged: its summary line adds that the 3 were not sent again.
+// The same 3-excerpt file checked again unchanged: its summary line adds that the 3 were not sent again.
 const reusedLines = {
-  en: "3 of 3 parts were checked. 3 of them were unchanged since your last check and were not sent again.",
-  es: "Partes revisadas: 3 de 3. 3 de ellas no habían cambiado desde tu última revisión y no se volvieron a enviar.",
-  zh: "已检查 3 个部分中的 3 个。其中 3 个部分自上次检查以来没有变化，因此没有再次发送。",
-  hi: "जाँचे गए हिस्से: 3 में से 3। पिछली जाँच के बाद से न बदले और दोबारा न भेजे गए हिस्से: 3।",
-  ar: "الأجزاء التي فُحصت: 3 من 3. الأجزاء التي لم تتغير منذ فحصك الأخير ولم تُرسل مرة أخرى: 3.",
-  fr: "Parties vérifiées\u00a0: 3 sur 3. 3 d’entre elles n’avaient pas changé depuis votre dernière vérification et n’ont pas été renvoyées.",
+  en: "3 of 3 excerpts were scored. 3 of them were unchanged since they were last scored and were not sent again.",
+  es: "Fragmentos puntuados: 3 de 3. 3 de ellos no habían cambiado desde que se puntuaron y no se volvieron a enviar.",
+  zh: "已为 3 个片段中的 3 个评分。其中 3 个片段自上次评分以来没有变化，因此没有再次发送。",
+  hi: "अंक दिए गए अंश: 3 में से 3। पिछली बार अंक मिलने के बाद से न बदले और दोबारा न भेजे गए अंश: 3।",
+  ar: "المقاطع التي قُيِّمت: 3 من 3. المقاطع التي لم تتغير منذ تقييمها الأخير ولم تُرسل مرة أخرى: 3.",
+  fr: "Extraits évalués\u00a0: 3 sur 3. 3 d’entre eux n’avaient pas changé depuis leur dernière évaluation et n’ont pas été renvoyés.",
 };
-// The unchanged built-in sample: 5 of its 8 parts checked from the results bundled with the page.
+// The unchanged built-in sample: 5 of its 8 excerpts scored from the results bundled with the page.
 const sampleLines = {
-  en: "5 of 8 parts were checked. Results for the sample file come with this page, so nothing was sent. Your agent will read the rest.",
-  es: "Partes revisadas: 5 de 8. Los resultados del archivo de ejemplo vienen con esta página, así que no se envió nada. Tu agente leerá el resto.",
-  zh: "已检查 8 个部分中的 5 个。示例文件的结果随本页面提供，因此没有发送任何内容。其余部分由你的智能体阅读。",
-  hi: "जाँचे गए हिस्से: 8 में से 5। नमूना फ़ाइल के नतीजे इसी पेज के साथ आते हैं, इसलिए कुछ नहीं भेजा गया। बाकी हिस्से आपका एजेंट पढ़ेगा।",
-  ar: "الأجزاء التي فُحصت: 5 من 8. نتائج الملف النموذجي مرفقة بهذه الصفحة، لذلك لم يُرسل أي شيء. سيقرأ وكيلك الباقي.",
-  fr: "Parties vérifiées\u00a0: 5 sur 8. Les résultats du fichier d’exemple sont fournis avec cette page, donc rien n’a été envoyé. Votre agent lira le reste.",
+  en: "5 of 8 excerpts were scored. Results for the sample file come with this page, so nothing was sent. Your agent will read the rest.",
+  es: "Fragmentos puntuados: 5 de 8. Los resultados del archivo de ejemplo vienen con esta página, así que no se envió nada. Tu agente leerá el resto.",
+  zh: "已为 8 个片段中的 5 个评分。示例文件的结果随本页面提供，因此没有发送任何内容。其余部分由你的智能体阅读。",
+  hi: "अंक दिए गए अंश: 8 में से 5। नमूना फ़ाइल के नतीजे इसी पेज के साथ आते हैं, इसलिए कुछ नहीं भेजा गया। बाकी हिस्से आपका एजेंट पढ़ेगा।",
+  ar: "المقاطع التي قُيِّمت: 5 من 8. نتائج الملف النموذجي مرفقة بهذه الصفحة، لذلك لم يُرسل أي شيء. سيقرأ وكيلك الباقي.",
+  fr: "Extraits évalués\u00a0: 5 sur 8. Les résultats du fichier d’exemple sont fournis avec cette page, donc rien n’a été envoyé. Votre agent lira le reste.",
 };
 // The length note's heading written out per locale for a file of 201 lines.
 const longTitles = {
@@ -172,17 +172,17 @@ const longTitles = {
 const longDoc = (count) => Array.from({ length: count }, (_, i) => `- Use module${i} for storage.`).join("\n") + "\n";
 const rowLabels = {
   en: { finding1: "1 finding", findings2: "2 findings", clean: "No findings", background: "Background",
-    coverage: "3 analyzed · 1 with findings · 1 read as background · 0 not analyzed" },
+    coverage: "3 scored · 1 with findings · 1 read as background · 0 not scored" },
   es: { finding1: "1 hallazgo", findings2: "2 hallazgos", clean: "Sin hallazgos", background: "Información de contexto",
-    coverage: "3 analizados · 1 con hallazgos · 1 de contexto · 0 sin analizar" },
+    coverage: "3 puntuados · 1 con hallazgos · 1 de contexto · 0 sin puntuar" },
   zh: { finding1: "1 项发现", findings2: "2 项发现", clean: "无发现", background: "背景信息",
-    coverage: "已分析 3 项 · 1 项有发现 · 1 项为背景信息 · 0 项未分析" },
+    coverage: "已评分 3 项 · 1 项有发现 · 1 项为背景信息 · 0 项未评分" },
   hi: { finding1: "1 निष्कर्ष", findings2: "2 निष्कर्ष", clean: "कोई निष्कर्ष नहीं", background: "संदर्भ जानकारी",
-    coverage: "3 का विश्लेषण हुआ · 1 में निष्कर्ष मिले · 1 संदर्भ जानकारी के रूप में पढ़ा गया · 0 का विश्लेषण नहीं हुआ" },
+    coverage: "3 को अंक दिए गए · 1 में निष्कर्ष मिले · 1 संदर्भ जानकारी के रूप में पढ़ा गया · 0 को अंक नहीं दिए गए" },
   ar: { finding1: "ملاحظة واحدة", findings2: "ملاحظتان", clean: "لا ملاحظات", background: "معلومات سياقية",
-    coverage: "تم تحليل 3 · ظهرت ملاحظات في 1 · قُرئ 1 كمعلومات سياقية · لم يُحلل 0" },
+    coverage: "تم تقييم 3 · ظهرت ملاحظات في 1 · قُرئ 1 كمعلومات سياقية · لم يُقيَّم 0" },
   fr: { finding1: "1 point à examiner", findings2: "2 points à examiner", clean: "Aucun point à examiner", background: "Informations de contexte",
-    coverage: "3 analysés · 1 avec des points à examiner · 1 lu comme du contexte · 0 non analysé" },
+    coverage: "3 évalués · 1 avec des points à examiner · 1 lu comme du contexte · 0 non évalué" },
 };
 function reply(entry, code = 200, body = result(entry.rule)) {
   if (entry.res.destroyed) return;
@@ -415,7 +415,7 @@ async function unitHints(page) {
       check(prefix + " inherited error code shows the generic failure", shown[3], expected.inherited);
       check(prefix + " unknown finding fails its unit", [shown[4], await page.locator(".copy-prompt").count()], [expected.unknown, 0]);
       if (locale === "en") check(prefix + " unknown finding is labelled not scored", shown[4],
-        ["error", "Not scored", "This excerpt was not scored because its result includes a finding this page does not support yet. Analyzing it again from this page returns the same result."]);
+        ["error", "Not scored", "This excerpt was not scored because its result includes a finding this page does not support yet. Scoring it again from this page returns the same result."]);
       // The unknown-finding unit leaves the bulk retry; only the inherited error remains to send.
       check(prefix + " unknown finding leaves the bulk retry", afterStatus, countedLabels[locale].retry1);
       await analyze(page, "- Report an inherited error code.\n- Report an inherited error code.");
@@ -428,7 +428,7 @@ async function unitHints(page) {
       reply(waiting.shift()); await page.waitForSelector('[data-state="ok"]', { state: "attached" });
       const running1 = await page.textContent("#file-progress");
       releaseAll(); await settled(page);
-      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is analyzed. None of
+      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is scored. None of
       // its excerpts was scored earlier on this page, so none takes an earlier result.
       mode = "rate"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use store${i} for storage.`).join("\n")); mode = "status";
       check(prefix + " counted labels use each count's plural form", { retry1, retry2, running0, running1, coverage315, coverage001,
@@ -465,7 +465,7 @@ async function unitHints(page) {
           rowsHidden: [...document.querySelectorAll(".instruction-unit")].every((unit) => !unit.checkVisibility()),
           primary: document.getElementById("file-create").getClientRects().length };
       }), { focused: true, heading: true, ordered: true, closed: true, label: true, inside: true, rowsHidden: true, primary: 0 });
-      check(prefix + " the summary line counts every part as checked", await page.textContent("#file-summary"), summaryLines[locale].all);
+      check(prefix + " the summary line counts every excerpt as scored", await page.textContent("#file-summary"), summaryLines[locale].all);
       // Checked again unchanged, the file sends nothing, and the rows below read the same.
       const beforeAgain = requests.length; await page.fill("#file-source", ""); await analyze(page, summaryDoc);
       check(prefix + " an unchanged file is checked again without sending and says so", [requests.length - beforeAgain,
@@ -618,13 +618,13 @@ async function unitHints(page) {
         check("151 independent rules send the first 150 and list the last over the limit", { error: await page.locator("#file-error").isVisible(),
           sent: requests.length, queued: overLimit.filter((unit) => ["ready", "pending"].includes(unit.state)).length, last: overLimit.at(-1),
           progress: await page.textContent("#file-progress") },
-          { error: false, sent: 2, queued: 150, progress: "Analyzing instructions\u2026 0 of 150 finished.", last: { state: "skipped", label: "Not scored",
-            hints: ["Only the first 150 selected excerpts of a file are analyzed. Review this part in a separate file to analyze it."] } });
+          { error: false, sent: 2, queued: 150, progress: "Scoring excerpts\u2026 0 of 150 finished.", last: { state: "skipped", label: "Not scored",
+            hints: ["Only the first 150 selected excerpts of a file are scored. Review this excerpt in a separate file to score it."] } });
         await page.click("#file-cancel"); await settled(page); mode = "ok"; releaseAll(); requests = [];
         await create(page, "@AGENTS.md");
         check("reference-only file sends nothing, offers no scoring and says there is no prompt", [requests.length, await page.locator("#file-start").isHidden(),
           await page.locator(".copy-prompt").count(), await page.textContent("#file-progress")],
-          [0, true, 0, "No part of this file could be scored, so there is no prompt. \u201CSee what was found\u201D below says why."]);
+          [0, true, 0, "No excerpt of this file could be scored, so there is no prompt. \u201CSee what was found\u201D below says why."]);
 
         // Checking a file again sends only new or changed excerpts, still only after the primary action;
         // an unchanged one takes the result this page received for the same text sent.
@@ -638,24 +638,24 @@ async function unitHints(page) {
           focused: await page.evaluate(() => document.activeElement.matches("#file-export .copy-prompt")),
           progress: await page.textContent("#file-progress"), summary: await page.textContent("#file-summary") },
           { unsent: [3, true], sent: 0, same: true, focused: true, progress: "Analysis finished.",
-            summary: "3 of 8 parts were checked. 3 of them were unchanged since your last check and were not sent again. Your agent will read the rest." });
+            summary: "3 of 8 excerpts were scored. 3 of them were unchanged since they were last scored and were not sent again. Your agent will read the rest." });
         let beforeEdit = requests.length;
         await analyze(page, sample.replace("Never log passwords.", "Never log secrets."));
         check("editing one excerpt sends only that excerpt", [requests.slice(beforeEdit).map((entry) => entry.rule), await page.textContent("#file-summary")],
-          [["Never log secrets."], "3 of 8 parts were checked. 2 of them were unchanged since your last check and were not sent again. Your agent will read the rest."]);
+          [["Never log secrets."], "3 of 8 excerpts were scored. 2 of them were unchanged since they were last scored and were not sent again. Your agent will read the rest."]);
         // A failed excerpt keeps no result, so checking the file again sends it and nothing else.
         mode = "partial"; await analyze(page, batch); mode = "ok";
         beforeEdit = requests.length; await page.fill("#file-source", ""); await analyze(page, batch);
         check("a failed excerpt is sent again and the scored ones are not", [requests.slice(beforeEdit).map((entry) => entry.rule),
-          await page.textContent("#file-summary")], [["Use module1 for storage."], "5 of 5 parts were checked. 4 of them were unchanged since your last check and were not sent again."]);
+          await page.textContent("#file-summary")], [["Use module1 for storage."], "5 of 5 excerpts were scored. 4 of them were unchanged since they were last scored and were not sent again."]);
         await reset(page); await analyze(page, batch);
-        check("a reload forgets earlier results and sends every excerpt again", [requests.length, await page.textContent("#file-summary")], [5, "5 of 5 parts were checked."]);
+        check("a reload forgets earlier results and sends every excerpt again", [requests.length, await page.textContent("#file-summary")], [5, "5 of 5 excerpts were scored."]);
 
         await reset(page); mode = "partial"; await analyze(page, batch);
         check("partial result retains 4 successes", await page.locator('.instruction-unit[data-state="ok"]').count(), 4);
         // A run that ends on its own focuses Copy when there is a prompt; the retry for the failed unit is offered beside it.
         check("a run that finishes with a failed unit focuses Copy and offers the retry", await page.evaluate(() =>
-          [document.activeElement.matches("#file-export .copy-prompt"), document.getElementById("file-start").textContent]), [true, "Analyze 1 remaining instruction"]);
+          [document.activeElement.matches("#file-export .copy-prompt"), document.getElementById("file-start").textContent]), [true, "Score 1 remaining excerpt"]);
         const beforeRetry = requests.length; mode = "ok";
         await page.click("#file-start"); await settled(page);
         check("retry only failed unit", requests.length - beforeRetry, 1);
@@ -674,10 +674,10 @@ async function unitHints(page) {
         // either says why. Both first requests may fail before the pause, so one or two excerpts say it.
         const paused = async () => ({ progress: await page.textContent("#file-progress"),
           hints: [...new Set((await unitHints(page)).filter((unit) => unit.state === "error").map((unit) => unit.hints.join(" ")))] });
-        const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; analyze the remaining instructions in about a minute.",
-          hints: ["The shared request limit for scoring was reached, so this excerpt was not scored. You can analyze it again in about a minute."] };
-        const outagePause = { progress: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; the remaining instructions can be analyzed once it is fixed.",
-          hints: ["The scoring service is not set up. This one is on us."] };
+        const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; score the remaining excerpts in about a minute.",
+          hints: ["The shared request limit for scoring was reached, so this excerpt was not scored. You can score it again in about a minute."] };
+        const outagePause = { progress: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; score the remaining excerpts later.",
+          hints: ["The scoring service is unavailable, which is a problem on our side, so this excerpt was not scored. You can score it again later."] };
         check("a rate limit pauses with the shared limit and the wait", await paused(), limitedPause);
         for (const [errorMode, expected] of [["html-rate", limitedPause], ["empty-unavailable", outagePause]]) {
           await reset(page); mode = errorMode; await analyze(page, batch);
@@ -727,7 +727,7 @@ async function unitHints(page) {
         const unitText = (target) => target.evaluate(() => [...document.querySelectorAll(".instruction-unit")].map((unit) =>
           [unit.dataset.state, unit.querySelector(".unit-state").textContent, unit.querySelector(".unit-content > p.hint")?.textContent]));
         check("a response that fails validation is labelled not scored", await unitText(page),
-          [["error", "Not scored", "A result is incomplete or could not be verified. Analyze that instruction again before exporting."]]);
+          [["error", "Not scored", "A result is incomplete or could not be verified. Score that excerpt again before exporting."]]);
 
         // A large file paces its requests on the page's clock: 55 start, the run says it waits, and the rest start
         // once a minute has passed. Unpaced, the 61st request would meet the server's stand-in for the Worker limit.
@@ -743,7 +743,7 @@ async function unitHints(page) {
         await paced.waitForTimeout(300);
         check("a large file waits after 55 requests and says so", { sent: requests.length - beforePaced,
           ok: await paced.locator('[data-state="ok"]').count(), progress: await paced.textContent("#file-progress") },
-          { sent: 55, ok: 55, progress: "Analyzing instructions… 55 of 70 finished. Waiting to stay within the request limit; the analysis continues within a minute." });
+          { sent: 55, ok: 55, progress: "Scoring excerpts… 55 of 70 finished. Waiting to stay within the request limit; the analysis continues within a minute." });
         windowCount = 0; await paced.clock.fastForward(60000); await settled(paced);
         check("a paced file finishes without a 429", { sent: requests.length - beforePaced, ok: await paced.locator('[data-state="ok"]').count(),
           progress: await paced.textContent("#file-progress") }, { sent: 70, ok: 70, progress: "Analysis finished." });
@@ -767,7 +767,7 @@ async function unitHints(page) {
         await deadline.goto(url);
         mode = "hold"; await analyze(deadline, "- Keep requirements.");
         check("a request past the deadline shows the timeout message", await unitText(deadline),
-          [["error", "Request failed", "The service took too long to respond, so this excerpt was not scored. You can analyze it again."]]);
+          [["error", "Request failed", "The service took too long to respond, so this excerpt was not scored. You can score it again."]]);
         releaseAll();
         // In every locale, each failure shows its file-mode text, and the bulk retry resends only the unverifiable
         // and timed-out units; the unknown-finding and oversized-prompt units would repeat their outcome.
@@ -787,7 +787,7 @@ async function unitHints(page) {
           // After the first language, the one scored excerpt is unchanged and is not sent again.
           check(code + " retry counts only units a new request can change", [firstRun, shown.retry, shown.progress[0]],
             [code === locales[0] ? 5 : 4, countedLabels[code].retry2, shown.progress[1]]);
-          if (code === "en") check("coverage counts unscored failures as not analyzed", shown.coverage, "1 analyzed · 0 with findings · 4 not analyzed");
+          if (code === "en") check("coverage counts unscored failures as not scored", shown.coverage, "1 scored · 0 with findings · 4 not scored");
           before = requests.length; await deadline.click("#file-start"); await settled(deadline);
           check(code + " bulk retry resends only the unverifiable and timed-out units",
             requests.slice(before).map((entry) => entry.rule).sort(), ["Return an unverifiable result.", "Wait past the deadline."]);

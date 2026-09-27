@@ -36,13 +36,14 @@
   checks with model judgments. An excerpt can receive several findings or none.</p>
 
   <p>File input accepts up to 64 KiB and 512 structural blocks. The first 150 ready
-  excerpts are scored. A scored excerpt can contain at most 2000 JavaScript string units.
+  excerpts are scored. A scored excerpt can contain at most 2000 characters, counted as
+  JavaScript string units.
   Later excerpts, context-dependent ones and oversized ones remain visible as unreviewed text.</p>
 
   <h2>What the factors mean</h2>
 
   <ul>
-    <li><strong>Verb strength (F1).</strong> Recognized verbs and phrases describe how
+    <li><strong>Verb force (F1).</strong> Recognized verbs and phrases describe how
     strongly an action is stated. A preference can be deliberate; making it mandatory
     would change its meaning.</li>
     <li><strong>Prohibition framing (F2).</strong> A local check looks for a prohibition
@@ -50,16 +51,18 @@
     <li><strong>Trigger distance (F3).</strong> A model judges when an instruction
     becomes relevant and whether that occasion is explicit. Standing requirements can
     be valid without a named event.</li>
-    <li><strong>Concrete anchors (F7).</strong> Local patterns recognize paths, tools,
+    <li><strong>Concreteness (F7).</strong> Local patterns recognize paths, tools,
     quantities, and other concrete targets. A missing match does not prove that an
     instruction is unclear, so a model also judges whether someone could check that
-    the instruction was followed; the finding needs both.</li>
+    the instruction was followed (<strong>Concrete enough to check</strong>); the
+    finding needs both.</li>
     <li><strong>Enforceability (F8).</strong> A model judges how much a deterministic
     tool could check. Lower values indicate more mechanical coverage; higher values
     indicate a greater need for judgment.</li>
   </ul>
 
-  <p>Additional model questions distinguish instructions from background and suggest
+  <p>Additional model questions distinguish instructions from background
+  (<strong>Reads as an instruction</strong>) and suggest
   a possible home: a standing rule, an event-driven hook, a task-specific skill, or
   a separate review pass. These suggestions require checking against your project.</p>
 
