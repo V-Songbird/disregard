@@ -54,7 +54,7 @@ window.STRINGS = {
     errors: {
       empty: "There was nothing to score.",
       too_long: "That is longer than one rule. Trim it to {max} characters.",
-      not_configured: "The scoring service is not set up. This one is on us.",
+      not_configured: "The scoring service is unavailable, which is a problem on our side. Your rule is still here; try again later.",
       upstream: "The scoring service did not answer. Try again in a moment.",
       rate_limited: "The shared request limit for scoring was reached. Your rule is still here; try again in about a minute.",
       failed: "The rule could not be scored because of an unexpected error. Try again; if it fails again, try later.",
@@ -174,7 +174,7 @@ window.STRINGS = {
     errors: {
       empty: "No había nada que puntuar.",
       too_long: "Eso es más largo que una regla. Recórtalo a {max} caracteres.",
-      not_configured: "El servicio de puntuación no está configurado. Esta es culpa nuestra.",
+      not_configured: "El servicio de puntuación no está disponible, y el problema es nuestro. Tu regla sigue aquí; vuelve a intentarlo más tarde.",
       upstream: "El servicio de puntuación no respondió. Inténtalo en un momento.",
       rate_limited: "Se alcanzó el límite compartido de solicitudes de puntuación. Tu regla sigue aquí; vuelve a intentarlo en un minuto aproximadamente.",
       failed: "No se pudo puntuar la regla por un error inesperado. Vuelve a intentarlo; si falla otra vez, inténtalo más tarde.",
@@ -294,7 +294,7 @@ window.STRINGS = {
     errors: {
       empty: "没有可评分的内容。",
       too_long: "这比一条规则长。请缩短到 {max} 个字符以内。",
-      not_configured: "评分服务尚未配置。这是我们的问题。",
+      not_configured: "评分服务目前不可用，这是我们这边的问题。你的规则仍在这里，请稍后重试。",
       upstream: "评分服务没有响应。请稍后再试。",
       rate_limited: "已达到共享的评分请求限制。你的规则仍在这里，请在大约一分钟后重试。",
       failed: "发生意外错误，无法为这条规则评分。请重试；如果再次失败，请稍后再试。",
@@ -414,7 +414,7 @@ window.STRINGS = {
     errors: {
       empty: "अंक देने के लिए कुछ था ही नहीं।",
       too_long: "यह एक नियम से लंबा है। इसे {max} अक्षरों तक छोटा करें।",
-      not_configured: "अंक देने वाली सेवा सेट नहीं है। यह गलती हमारी है।",
+      not_configured: "अंक देने वाली सेवा अभी उपलब्ध नहीं है, और यह समस्या हमारी ओर से है। आपका नियम यहीं है; बाद में फिर कोशिश करें।",
       upstream: "अंक देने वाली सेवा ने जवाब नहीं दिया। थोड़ी देर बाद देखें।",
       rate_limited: "अंक देने के अनुरोधों की साझा सीमा पूरी हो गई। आपका नियम यहीं है; लगभग एक मिनट बाद फिर कोशिश करें।",
       failed: "किसी अनपेक्षित त्रुटि के कारण इस नियम को अंक नहीं दिए जा सके। फिर कोशिश करें; अगर फिर भी न हो सके, तो कुछ देर बाद कोशिश करें।",
@@ -534,7 +534,7 @@ window.STRINGS = {
     errors: {
       empty: "لم يكن هناك ما يُقيَّم.",
       too_long: "هذا أطول من قاعدة واحدة. اختصره إلى {max} حرفًا.",
-      not_configured: "خدمة التقييم غير مُهيأة. هذه مسؤوليتنا.",
+      not_configured: "خدمة التقييم غير متاحة، والمشكلة من جهتنا. قاعدتك ما زالت هنا؛ أعد المحاولة لاحقًا.",
       upstream: "لم تستجب خدمة التقييم. أعد المحاولة بعد قليل.",
       rate_limited: "تم بلوغ الحد المشترك لطلبات التقييم. قاعدتك ما زالت هنا؛ أعد المحاولة بعد دقيقة تقريبًا.",
       failed: "تعذّر تقييم القاعدة بسبب خطأ غير متوقع. أعد المحاولة؛ وإن فشلت مرة أخرى، فحاول لاحقًا.",
@@ -654,7 +654,7 @@ window.STRINGS = {
     errors: {
       empty: "Il n’y avait rien à évaluer.",
       too_long: "C’est plus long qu’une règle. Réduisez à {max} caractères.",
-      not_configured: "Le service d’évaluation n’est pas configuré. Celle-là est pour nous.",
+      not_configured: "Le service d’évaluation est indisponible, et le problème vient de nous. Votre règle est toujours là\u00a0; réessayez plus tard.",
       upstream: "Le service d’évaluation n’a pas répondu. Réessayez dans un instant.",
       rate_limited: "La limite partagée de requêtes d’évaluation a été atteinte. Votre règle est toujours là\u00a0; réessayez dans une minute environ.",
       failed: "La règle n’a pas pu être évaluée à cause d’une erreur inattendue. Réessayez\u00a0; si l’erreur se répète, réessayez plus tard.",

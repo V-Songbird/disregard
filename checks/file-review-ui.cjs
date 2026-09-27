@@ -694,6 +694,13 @@ async function unitHints(page) {
         }
         await reset(page); mode = "unconfigured"; await analyze(page, batch);
         check("a missing scoring key pauses as an unavailable service", [requests.length <= 2, await paused()], [true, outagePause]);
+        // Every locale words a 503 the same on the pause line and on the excerpt row.
+        for (const code of locales) {
+          await reset(page); await page.selectOption("#ui-lang", code); mode = "empty-unavailable"; await analyze(page, batch);
+          const t = await page.evaluate(() => STRINGS[document.getElementById("ui-lang").value].file);
+          check(code + " a 503 pauses as an unavailable service", await paused(), { progress: t.outage, hints: [t.unitErrors.not_configured] });
+        }
+        await page.selectOption("#ui-lang", "en");
 
         await reset(page); mode = "hold"; await create(page, batch);
         await page.waitForFunction(() => document.querySelectorAll('[data-state="pending"]').length === 2);
