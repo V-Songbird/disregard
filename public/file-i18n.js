@@ -56,7 +56,7 @@
     unitErrors: {
       unsupported_finding: "This excerpt was not scored because its result includes a finding this page does not support yet. Scoring it again from this page returns the same result.",
       timeout: "The service took too long to respond, so this excerpt was not scored. You can score it again.",
-      rate_limited: "The shared request limit for scoring was reached, so this excerpt was not scored. You can score it again in about a minute.",
+      rate_limited: "The shared request limit for scoring was reached, so this excerpt was not scored.",
       not_configured: "The scoring service is unavailable, which is a problem on our side, so this excerpt was not scored. You can score it again later.",
     },
     reasons: {
@@ -135,7 +135,7 @@
     unitErrors: {
       unsupported_finding: "Este fragmento no se puntuó porque su resultado incluye un hallazgo que esta página todavía no admite. Si lo puntúas otra vez desde esta página, obtendrás el mismo resultado.",
       timeout: "El servicio tardó demasiado en responder, así que este fragmento no se puntuó. Puedes puntuarlo otra vez.",
-      rate_limited: "Se alcanzó el límite compartido de solicitudes de puntuación, así que este fragmento no se puntuó. Puedes puntuarlo otra vez en un minuto aproximadamente.",
+      rate_limited: "Se alcanzó el límite compartido de solicitudes de puntuación, así que este fragmento no se puntuó.",
       not_configured: "El servicio de puntuación no está disponible, y el problema es nuestro, así que este fragmento no se puntuó. Puedes puntuarlo otra vez más tarde.",
     },
     reasons: {
@@ -214,7 +214,7 @@
     unitErrors: {
       unsupported_finding: "Cet extrait n’a pas été évalué, car son résultat contient un point relevé que cette page ne prend pas encore en charge. L’évaluer à nouveau depuis cette page donnera le même résultat.",
       timeout: "Le service a mis trop de temps à répondre\u00a0; cet extrait n’a donc pas été évalué. Vous pouvez l’évaluer à nouveau.",
-      rate_limited: "La limite partagée de requêtes d’évaluation a été atteinte\u00a0; cet extrait n’a donc pas été évalué. Vous pourrez l’évaluer à nouveau dans une minute environ.",
+      rate_limited: "La limite partagée de requêtes d’évaluation a été atteinte\u00a0; cet extrait n’a donc pas été évalué.",
       not_configured: "Le service d’évaluation est indisponible, et le problème vient de nous\u00a0; cet extrait n’a donc pas été évalué. Vous pourrez l’évaluer à nouveau plus tard.",
     },
     states: {ready: "Prêt", pending: "Évaluation en cours", ok: "Aucun point à examiner", background: "Informations de contexte", requires_context: "Contexte nécessaire", skipped: "Non évalué", not_english: "Non reconnu comme anglais", review: "Examen nécessaire", refused: "Non évalué", error: "Échec de la requête", cancelled: "Arrêté"},
@@ -292,7 +292,7 @@
     unitErrors: {
       unsupported_finding: "此片段未评分，因为其结果包含本页面暂不支持的发现。从本页面重新评分会得到相同的结果。",
       timeout: "服务响应超时，因此此片段未评分。你可以重新评分。",
-      rate_limited: "已达到共享的评分请求限制，因此此片段未评分。你可以在大约一分钟后重新评分。",
+      rate_limited: "已达到共享的评分请求限制，因此此片段未评分。",
       not_configured: "评分服务目前不可用，这是我们这边的问题，因此此片段未评分。你可以稍后重新评分。",
     },
     states: {ready: "已准备好", pending: "评分中", ok: "无发现", background: "背景信息", requires_context: "需要上下文", skipped: "未评分", not_english: "未识别为英文", review: "需要检查", refused: "未评分", error: "请求失败", cancelled: "已停止"},
@@ -370,7 +370,7 @@
     unitErrors: {
       unsupported_finding: "इस अंश को अंक नहीं दिए गए, क्योंकि इसके परिणाम में ऐसा निष्कर्ष है जिसे यह पेज अभी समर्थन नहीं करता। इस पेज से इसे फिर से अंक देने पर वही परिणाम मिलेगा।",
       timeout: "सेवा ने जवाब देने में बहुत देर की, इसलिए इस अंश को अंक नहीं दिए गए। आप इसे फिर से अंक दे सकते हैं।",
-      rate_limited: "अंक देने के अनुरोधों की साझा सीमा पूरी हो गई, इसलिए इस अंश को अंक नहीं दिए गए। आप लगभग एक मिनट बाद इसे फिर से अंक दे सकते हैं।",
+      rate_limited: "अंक देने के अनुरोधों की साझा सीमा पूरी हो गई, इसलिए इस अंश को अंक नहीं दिए गए।",
       not_configured: "अंक देने वाली सेवा अभी उपलब्ध नहीं है, और यह समस्या हमारी ओर से है, इसलिए इस अंश को अंक नहीं दिए गए। आप बाद में इसे फिर से अंक दे सकते हैं।",
     },
     states: {ready: "तैयार", pending: "अंक दिए जा रहे हैं", ok: "कोई निष्कर्ष नहीं", background: "संदर्भ जानकारी", requires_context: "संदर्भ चाहिए", skipped: "अंक नहीं दिए गए", not_english: "अंग्रेज़ी के रूप में पहचाना नहीं गया", review: "समीक्षा चाहिए", refused: "अंक नहीं दिए गए", error: "अनुरोध विफल", cancelled: "रुका हुआ"},
@@ -457,7 +457,7 @@
     unitErrors: {
       unsupported_finding: "لم يُقيَّم هذا المقطع لأن نتيجته تتضمن ملاحظة لا تدعمها هذه الصفحة بعد. ستؤدي إعادة تقييمه من هذه الصفحة إلى النتيجة نفسها.",
       timeout: "استغرقت الخدمة وقتًا طويلًا في الرد، لذلك لم يُقيَّم هذا المقطع. يمكنك تقييمه مجددًا.",
-      rate_limited: "تم بلوغ الحد المشترك لطلبات التقييم، لذلك لم يُقيَّم هذا المقطع. يمكنك تقييمه مجددًا بعد دقيقة تقريبًا.",
+      rate_limited: "تم بلوغ الحد المشترك لطلبات التقييم، لذلك لم يُقيَّم هذا المقطع.",
       not_configured: "خدمة التقييم غير متاحة، والمشكلة من جهتنا، لذلك لم يُقيَّم هذا المقطع. يمكنك تقييمه مجددًا لاحقًا.",
     },
     states: {ready: "جاهز", pending: "جارٍ التقييم", ok: "لا ملاحظات", background: "معلومات سياقية", requires_context: "يحتاج إلى سياق", skipped: "لم يُقيَّم", not_english: "لم يُتعرّف عليه كنص إنجليزي", review: "يحتاج إلى مراجعة", refused: "لم يُقيَّم", error: "فشل الطلب", cancelled: "متوقف"},

@@ -437,10 +437,13 @@
       if (report && !report.units.some(retryable)) message = "done";
       // An excerpt missing from SAMPLE_RESULTS is sent, so the summary must not say nothing was.
       else sampled = false;
+      // During a rate-limit wait nothing is sent: the pause line says when the held retry control can score the rest.
+      if (report && !message && readyAt) message = "limited";
       renderReport();
       if (!report) source.focus();
       else if (!message) run();
       else if (exported.querySelector(".copy-prompt")) exported.querySelector(".copy-prompt").focus();
+      else if (!start.hidden) start.focus();
       else { reportTitle.tabIndex = -1; reportTitle.focus(); }
     });
 
@@ -496,7 +499,7 @@
             if (!isCurrent(snapshot, token)) { stop(); break; }
             if (!response.ok) {
               unit.state = "error"; unit.errorCode = body?.code || "failed";
-              if ([429, 503].includes(response.status) || body?.code === "not_configured") stop(response.status === 429 ? "limited" : "outage");
+              if (body?.code === "not_configured") stop("outage");
             } else if (["ok", "not_english", "review", "refused"].includes(body?.status)) {
               if (body.status === "ok") {
                 // Validate the consumed evidence before showing a completed unit. If the prompt

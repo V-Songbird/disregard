@@ -431,17 +431,17 @@ async function unitHints(page) {
       reply(waiting.shift()); await page.waitForSelector('[data-state="ok"]', { state: "attached" });
       const running1 = await page.textContent("#file-progress");
       releaseAll(); await settled(page);
-      // A rate limit stops an 11-unit file after its first requests, so none of the 11 is scored. None of
+      // An unavailable service stops an 11-unit file after its first requests, so none of the 11 is scored. None of
       // its excerpts was scored earlier on this page, so none takes an earlier result.
-      mode = "rate"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use store${i} for storage.`).join("\n")); mode = "status";
+      mode = "empty-unavailable"; await analyze(page, Array.from({ length: 11 }, (_, i) => `- Use store${i} for storage.`).join("\n")); mode = "status";
       check(prefix + " counted labels use each count's plural form", { retry1, retry2, running0, running1, coverage315, coverage001,
         coverage11: await page.textContent("#file-report .coverage") }, countedLabels[locale]);
       await analyze(page, "- Keep requirements\n  across lines.\n- Keep one line.");
       check(prefix + " unit locations name a range or one line", await page.evaluate(() =>
         [...document.querySelectorAll(".instruction-unit .unit-location")].map((location) => location.textContent)), unitLocations[locale]);
       // Over the Claude Code guide's 200-line target, one note above the excerpts; at 200 lines, whose last
-      // line ends in a newline, none. A rate limit keeps these runs to their first requests.
-      mode = "rate"; await analyze(page, longDoc(200));
+      // line ends in a newline, none. An unavailable service keeps these runs to their first requests.
+      mode = "empty-unavailable"; await analyze(page, longDoc(200));
       const at200 = await page.locator("#file-length").isHidden();
       await analyze(page, longDoc(201)); mode = "status";
       check(prefix + " only a file over 200 lines shows one length note above the excerpts", { at200, ...await page.evaluate(() => {
@@ -683,7 +683,7 @@ async function unitHints(page) {
         const paused = async () => ({ progress: (await page.textContent("#file-progress")).replace(/\d{1,2}:\d{2}:\d{2}\s?[AP]M/, "{time}"),
           hints: [...new Set((await unitHints(page)).filter((unit) => unit.state === "error").map((unit) => unit.hints.join(" ")))] });
         const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; you can score the remaining excerpts at {time}.",
-          hints: ["The shared request limit for scoring was reached, so this excerpt was not scored. You can score it again in about a minute."] };
+          hints: ["The shared request limit for scoring was reached, so this excerpt was not scored."] };
         const outagePause = { progress: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; score the remaining excerpts later.",
           hints: ["The scoring service is unavailable, which is a problem on our side, so this excerpt was not scored. You can score it again later."] };
         check("a rate limit pauses with the shared limit and the wait", await paused(), limitedPause);
@@ -806,6 +806,18 @@ async function unitHints(page) {
           check(`with ${name}, the available control scores the remaining excerpt`,
             [requests.length - sent, await held.textContent("#file-progress")], [1, "Analysis finished."]);
         }
+        // During a wait, an edited text and the primary action send nothing: the new report's pause line gives the
+        // same time, its held retry control takes focus, and once the wait ends that control scores the file.
+        mode = "rate"; retryAfter = "30"; await analyze(held, batch.replaceAll("storage", "tracing"));
+        beforeEdit = requests.length; mode = "ok";
+        await create(held, batch.replaceAll("storage", "metrics"));
+        check("during a wait, an edit and the primary action send nothing and say when scoring can start", { ...(await retryState()),
+          sent: requests.length - beforeEdit, focus: await held.evaluate(() => document.activeElement.id) },
+          { progress: pauseLine + "at 12:03:00 PM.", label: "Score 5 remaining excerpts", hidden: false, unavailable: "true",
+            describedBy: "file-progress", sent: 0, focus: "file-start" });
+        await held.clock.fastForward(30000); await held.click("#file-start"); await settled(held);
+        check("after the wait, the retry control scores the edited file", [requests.length - beforeEdit, await held.textContent("#file-progress")],
+          [5, "Analysis finished."]);
         retryAfter = null; await holdContext.close();
 
         // A request past the deadline shows the file-mode timeout message; its label still says the request failed.
