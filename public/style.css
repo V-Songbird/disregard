@@ -60,7 +60,7 @@ button {
   color: var(--paper); background: var(--ink);
   border: 0; border-radius: .4rem; cursor: pointer;
 }
-button[disabled] { background: var(--muted); cursor: default; }
+button[disabled], button[aria-disabled="true"] { background: var(--muted); cursor: default; }
 .count { color: var(--muted); font-size: .9rem; font-variant-numeric: tabular-nums; }
 .count.over { color: var(--accent); font-weight: 600; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -103,7 +103,7 @@ footer .support:hover { background: var(--accent); color: var(--paper); }
 [hidden] { display: none !important; }
 ::selection { background: var(--ink); color: var(--paper); }
 textarea, input { caret-color: var(--accent); }
-button:not([disabled]):hover { filter: brightness(.88); }
+button:not([disabled], [aria-disabled="true"]):hover { filter: brightness(.88); }
 .mode-picker { display: flex; gap: var(--space-2); margin: 0 0 var(--space-4); flex-wrap: wrap; }
 .mode-picker button { background: transparent; color: var(--muted); border: 1px solid var(--muted); }
 .mode-picker button[aria-pressed="true"] { color: var(--paper); background: var(--ink); border-color: var(--ink); }

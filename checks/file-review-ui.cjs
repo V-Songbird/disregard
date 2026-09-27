@@ -41,7 +41,7 @@ const filterLabels = {
   ar: { label: "إظهار المقاطع التي فيها ملاحظات فقط", showing: "المقاطع المعروضة: 2 من 5" },
   fr: { label: "Afficher uniquement les extraits avec des points à examiner", showing: "Extraits affichés\u00a0: 2 sur 5" },
 };
-let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0;
+let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0, retryAfter = null;
 function result(rule) {
   const hedge = rule.includes("try to"), vague = rule.includes("quality"), background = rule.includes("is stored in");
   const findings = background ? [{ id: "not_a_rule", factor: "is_rule", value: 0.3 }] : [
@@ -184,9 +184,9 @@ const rowLabels = {
   fr: { finding1: "1 point à examiner", findings2: "2 points à examiner", clean: "Aucun point à examiner", background: "Informations de contexte",
     coverage: "3 évalués · 1 avec des points à examiner · 1 lu comme du contexte · 0 non évalué" },
 };
-function reply(entry, code = 200, body = result(entry.rule)) {
+function reply(entry, code = 200, body = result(entry.rule), headers = {}) {
   if (entry.res.destroyed) return;
-  entry.res.writeHead(code, { "Content-Type": "application/json" }); entry.res.end(JSON.stringify(body));
+  entry.res.writeHead(code, { "Content-Type": "application/json", ...headers }); entry.res.end(JSON.stringify(body));
 }
 function releaseAll() { for (const entry of waiting.splice(0)) reply(entry); }
 const server = http.createServer(async (req, res) => {
@@ -202,7 +202,7 @@ const server = http.createServer(async (req, res) => {
     else if (mode === "empty-unavailable") { res.writeHead(503); res.end(); }
     // The handler's answer when the server has no scoring key.
     else if (mode === "unconfigured") reply(entry, 500, { code: "not_configured" });
-    else if (mode === "rate") reply(entry, 429, { code: "rate_limited" });
+    else if (mode === "rate") reply(entry, 429, { code: "rate_limited" }, retryAfter ? { "Retry-After": retryAfter } : {});
     // The Worker's client limit of 60 a minute; the check resets the count when it advances the page's clock a minute.
     else if (mode === "window") { if (++windowCount > 60) reply(entry, 429, { code: "rate_limited" }); else reply(entry); }
     else if (mode === "partial" && rule.includes("module1")) reply(entry, 502, { code: "upstream" });
@@ -679,9 +679,10 @@ async function unitHints(page) {
         check("rate-limited file has no prompt", await page.locator(".copy-prompt").count(), 0);
         // A rate limit and an unavailable service pause with different messages, and the excerpt that met
         // either says why. Both first requests may fail before the pause, so one or two excerpts say it.
-        const paused = async () => ({ progress: await page.textContent("#file-progress"),
+        // A rate-limit pause names the clock time its wait ends; the check further down fixes the clock to read it exactly.
+        const paused = async () => ({ progress: (await page.textContent("#file-progress")).replace(/\d{1,2}:\d{2}:\d{2}\s?[AP]M/, "{time}"),
           hints: [...new Set((await unitHints(page)).filter((unit) => unit.state === "error").map((unit) => unit.hints.join(" ")))] });
-        const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; score the remaining excerpts in about a minute.",
+        const limitedPause = { progress: "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; you can score the remaining excerpts at {time}.",
           hints: ["The shared request limit for scoring was reached, so this excerpt was not scored. You can score it again in about a minute."] };
         const outagePause = { progress: "Analysis paused: the scoring service is unavailable, which is a problem on our side. Completed results are kept; score the remaining excerpts later.",
           hints: ["The scoring service is unavailable, which is a problem on our side, so this excerpt was not scored. You can score it again later."] };
@@ -755,6 +756,50 @@ async function unitHints(page) {
         check("a paced file finishes without a 429", { sent: requests.length - beforePaced, ok: await paced.locator('[data-state="ok"]').count(),
           progress: await paced.textContent("#file-progress") }, { sent: 70, ok: 70, progress: "Analysis finished." });
         mode = "ok"; await pacedContext.close();
+
+        // After a rate limit, the retry control stays unavailable for the response's Retry-After seconds, else a
+        // minute, on a paused page clock. The pause line says when it will be ready; the prompt, the text box and the
+        // mode switch stay free, and the control becomes available without a reload.
+        const holdContext = await browser.newContext({ locale: "en-US", timezoneId: "UTC" });
+        site.watch(holdContext, url);
+        await holdContext.addInitScript(() => {
+          window.copiedPrompt = null;
+          Object.defineProperty(navigator, "clipboard", { value: { writeText: async (text) => { window.copiedPrompt = text; } } });
+        });
+        await holdContext.clock.install({ time: new Date("2026-01-01T12:00:00Z") });
+        const held = await holdContext.newPage(); held.on("pageerror", (error) => report.pageErrors.push(error.message));
+        await held.goto(url); await held.clock.pauseAt(new Date("2026-01-01T12:01:00Z"));
+        const retryState = () => held.evaluate(() => {
+          const start = document.getElementById("file-start");
+          return { progress: document.getElementById("file-progress").textContent.replace(/\u202f/g, " "), label: start.textContent,
+            hidden: start.hidden, unavailable: start.getAttribute("aria-disabled"), describedBy: start.getAttribute("aria-describedby") };
+        });
+        const pauseLine = "Analysis paused: the shared request limit for scoring was reached. Completed results are kept; you can score the remaining excerpts ";
+        for (const [header, seconds, readyAt, topic] of [["30", 30, "12:01:30 PM", "caching"], [null, 60, "12:02:30 PM", "logging"]]) {
+          const name = header ? "Retry-After " + header : "no Retry-After";
+          mode = "partial"; await analyze(held, batch.replaceAll("storage", topic));
+          mode = "rate"; retryAfter = header; await held.click("#file-start"); await settled(held);
+          const sent = requests.length;
+          check(`with ${name}, the retry control is unavailable and the pause line says when it will be ready`, await retryState(),
+            { progress: pauseLine + "at " + readyAt + ".", label: "Score 1 remaining excerpt", hidden: false, unavailable: "true", describedBy: "file-progress" });
+          // Neither a pointer nor a key press on the held control sends anything.
+          await held.locator("#file-start").click({ force: true }); await held.focus("#file-start"); await held.keyboard.press("Enter");
+          await held.locator(".copy-prompt").click();
+          check(`with ${name}, the wait sends nothing and leaves the prompt, the text box and the mode switch free`, await held.evaluate(() => ({
+            copied: Boolean(window.copiedPrompt), editable: !document.getElementById("file-source").readOnly,
+            running: !document.getElementById("file-cancel").hidden,
+            modes: ["mode-file", "mode-rule"].map((id) => document.getElementById(id).disabled) })).then((state) => ({ ...state, sent: requests.length - sent })),
+            { copied: true, editable: true, running: false, modes: [false, false], sent: 0 });
+          await held.clock.fastForward((seconds - 1) * 1000);
+          check(`with ${name}, the control is still unavailable a second before the wait ends`, (await retryState()).unavailable, "true");
+          await held.clock.fastForward(1000);
+          check(`with ${name}, the control becomes available when the wait ends`, await retryState(),
+            { progress: pauseLine + "now.", label: "Score 1 remaining excerpt", hidden: false, unavailable: null, describedBy: null });
+          mode = "ok"; await held.click("#file-start"); await settled(held);
+          check(`with ${name}, the available control scores the remaining excerpt`,
+            [requests.length - sent, await held.textContent("#file-progress")], [1, "Analysis finished."]);
+        }
+        retryAfter = null; await holdContext.close();
 
         // A request past the deadline shows the file-mode timeout message; its label still says the request failed.
         const deadlineContext = await browser.newContext({ locale: "en-US" });

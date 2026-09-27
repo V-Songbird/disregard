@@ -20,6 +20,8 @@
     if (!formats.has(tag)) formats.set(tag, new Intl.NumberFormat(tag, { numberingSystem: "latn", useGrouping: false, maximumFractionDigits: 20 }));
     return formats.get(tag).format(value);
   };
+  // A clock time in the page language with seconds, in Latin digits like number().
+  const clock = (time) => new Intl.DateTimeFormat(document.documentElement.lang, { timeStyle: "medium", numberingSystem: "latn" }).format(time);
   // A counted label has one form per plural category of the page language, chosen from the raw count.
   const counted = (forms, count, values = { n: number(count) }) =>
     fill(forms[new Intl.PluralRules(document.documentElement.lang).select(count)] ?? forms.other, values);
@@ -110,6 +112,8 @@
     let report = null, busy = false, revision = 0, uploadedSource = null;
     let errorCode = null, message = null, runTotal = 0, runDone = 0;
     let stopped = false, pacing = 0, reused = 0, sampled = false;
+    // After a rate limit, when the retry control becomes available again; 0 once it has.
+    let readyAt = 0, readyTimer;
     // Start times of this page's recent score requests, oldest first, across runs.
     const started = [];
     // Results this page received, by the exact text sent, held in memory until the page is left or
@@ -188,6 +192,8 @@
     // would repeat; editing the text and creating the prompt again re-runs it.
     const retryable = (unit) => !unit.result && ["ready", "error", "cancelled"].includes(unit.state) &&
       !["unsupported_finding", "prompt_too_large"].includes(unit.errorCode);
+    // A rate-limit pause holds the retry control until its wait ends; other pauses do not.
+    const waiting = () => message === "limited" && readyAt > 0;
     // The file name only labels the file in the prompt, so changing it rebuilds the prompt and nothing else.
     const isCurrent = (snapshot, token) => report === snapshot && token === revision && sourceText() === snapshot.sourceText;
 
@@ -221,10 +227,14 @@
       const remaining = report.units.filter(retryable).length;
       start.textContent = counted(strings.retry, remaining);
       start.hidden = busy || !remaining;
+      // While held, the control keeps its place in the Tab order, says it is unavailable, and the pause line says until when.
+      start.ariaDisabled = waiting() ? "true" : null;
+      if (waiting()) start.setAttribute("aria-describedby", progress.id); else start.removeAttribute("aria-describedby");
       const running = busy && counted(strings.running, runDone, { done: number(runDone), total: number(runTotal) });
       // A finished run says whether it left parts a retry could score, or no scored part and so no prompt.
       progress.textContent = busy ? (pacing ? fill(strings.pacing, { progress: running }) : running) :
         message === "done" ? (!summary.scored ? strings.none : remaining ? strings.partial : strings.done) :
+        message === "limited" ? (waiting() ? fill(strings.limited, { time: clock(readyAt) }) : strings.limitedReady) :
         message ? strings[message] : remaining ? "" : strings.none;
       // With a prompt: how much of the file it covers, and the name it gives the file.
       const prompted = !busy && Boolean(exported.querySelector(".copy-prompt"));
@@ -435,7 +445,7 @@
     });
 
     async function run() {
-      if (busy || !report) return;
+      if (busy || !report || waiting()) return;
       const snapshot = report, token = revision;
       if (!isCurrent(snapshot, token)) { invalidate(); return; }
       const queue = snapshot.units.filter(retryable);
@@ -473,6 +483,12 @@
             if ([429, 503].includes(response.status)) {
               unit.state = "error";
               unit.errorCode = response.status === 429 ? "rate_limited" : "not_configured";
+              if (response.status === 429) {
+                // The wait is the response's Retry-After seconds, else a minute; one timer ends it.
+                const after = response.headers.get("Retry-After");
+                readyAt = Math.max(readyAt, Date.now() + (/^\d+$/.test(after) ? Number(after) : 60) * 1000);
+                clearTimeout(readyTimer); readyTimer = setTimeout(() => { readyAt = 0; controls(); }, readyAt - Date.now());
+              }
               stop(response.status === 429 ? "limited" : "outage");
               continue;
             }
