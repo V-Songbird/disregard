@@ -296,6 +296,9 @@ async function unitHints(page) {
         report: document.getElementById("file-report").hidden }));
       check(prefix + " the intake has one primary action and no preview or name field", await intake(),
         { preview: 0, name: 0, disabled: true, report: true });
+      // The picker offers only what loading takes, and the hint names that type.
+      check(prefix + " the picker offers only .md files and the hint names them", await page.evaluate(() =>
+        [document.getElementById("file-upload").accept, /[(（]\.md[)）]/.test(document.getElementById("file-hint").textContent)]), [".md,text/markdown", true]);
       // The empty box offers a sample. Pressing it by keyboard fills the box, sends nothing, and hides the button.
       const sampleButton = () => page.evaluate(() => ({ hidden: document.getElementById("file-sample").hidden,
         labeled: document.getElementById("file-sample").textContent === STRINGS[document.getElementById("ui-lang").value].file.sample }));
@@ -572,6 +575,10 @@ async function unitHints(page) {
           check("a wrong drop (" + files.map((file) => file.name).join(", ") + ") says why and keeps the text", [await page.textContent("#file-error"),
             await page.inputValue("#file-source"), await page.inputValue("#file-name"), requests.length], [message, sample, "RULES.md", 0]);
         }
+        // A non-.md file chosen with the dialog's all-files filter is refused like a dropped one.
+        await page.locator("#file-upload").setInputFiles({ name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("Use tabs.") });
+        check("a chosen non-.md file says why and keeps the text", [await page.textContent("#file-error"), await page.inputValue("#file-source"),
+          await page.inputValue("#file-name"), requests.length], ["Choose a plain-text Markdown (.md) file.", sample, "RULES.md", 0]);
         // Outside the drop area a dragged file shows the same state and a dropped one loads the same way; dragged text is left alone.
         const pageFile = [{ name: "PAGE.md", text: "- Page drop." }];
         await drag(page, "dragenter", pageFile, "h1");
