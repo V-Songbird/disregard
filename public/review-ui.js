@@ -123,7 +123,7 @@
     zone.setAttribute("aria-labelledby", "file-source-label");
     const label = el("label"); label.id = "file-source-label"; label.htmlFor = "file-source";
     const hint = el("p", "hint"); hint.id = "file-hint";
-    const upload = el("input"); upload.type = "file"; upload.id = "file-upload"; upload.accept = ".md,text/markdown,text/plain";
+    const upload = el("input"); upload.type = "file"; upload.id = "file-upload"; upload.accept = ".md,text/markdown";
     upload.hidden = true;
     const choose = el("button", "secondary"); choose.id = "file-choose"; choose.type = "button";
     // Shown only while the text box holds no text and a file can be read, it fills the box with SAMPLE, so no
