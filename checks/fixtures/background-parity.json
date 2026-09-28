@@ -1,0 +1,34 @@
+{
+  "purpose": "Synthetic parity fixture: the file page's background rows (background() in public/review-ui.js) and the rule check packet's readAsBackground (buildNecessityPrompt in public/refactor-prompt.js) must mark the same excerpts. checks/refactor-prompt.test.cjs and checks/file-review-ui.cjs both read it.",
+  "scope": "SYNTHETIC display-only fixture. Scores and findings are prescribed UI inputs, not analyzer output, provider samples, or accuracy evidence.",
+  "cases": [
+    {
+      "rule": "The build cache is stored in `.cache/`.",
+      "background": true,
+      "body": {"status": "ok", "findings": [{"id": "not_a_rule", "factor": "is_rule", "value": 0.3}],
+        "factors": {"F1": 1, "F2": 0.85, "F7": 0.8, "F3": 2, "F8": 2, "is_rule": 0.3, "specificity": 0.9,
+          "primitive": {"choice": "rule", "confidence": 0.9}, "rule_role": {"choice": "background", "confidence": 0.9}}}
+    },
+    {
+      "rule": "Try to keep generated files in `dist/`.",
+      "background": false,
+      "body": {"status": "ok", "findings": [{"id": "not_a_rule", "factor": "is_rule", "value": 0.3}, {"id": "hedge_dominance", "factor": "F1", "value": 0.2, "verb": "Try to"}],
+        "factors": {"F1": 0.2, "F2": 0.85, "F7": 0.8, "F3": 2, "F8": 2, "is_rule": 0.3, "specificity": 0.9,
+          "primitive": {"choice": "rule", "confidence": 0.9}, "rule_role": {"choice": "background", "confidence": 0.9}}}
+    },
+    {
+      "rule": "Always try to run the linter.",
+      "background": false,
+      "body": {"status": "ok", "findings": [{"id": "hedge_dominance", "factor": "F1", "value": 0.2, "verb": "try to"}],
+        "factors": {"F1": 0.2, "F2": 0.85, "F7": 0.8, "F3": 2, "F8": 2, "is_rule": 0.95, "specificity": 0.9,
+          "primitive": {"choice": "rule", "confidence": 0.9}, "rule_role": {"choice": "direct_action", "confidence": 0.9}}}
+    },
+    {
+      "rule": "Run `node --test` before committing.",
+      "background": false,
+      "body": {"status": "ok", "findings": [],
+        "factors": {"F1": 0.85, "F2": 0.85, "F7": 0.8, "F3": 2, "F8": 2, "is_rule": 0.95, "specificity": 0.9,
+          "primitive": {"choice": "rule", "confidence": 0.9}, "rule_role": {"choice": "direct_action", "confidence": 0.9}}}
+    }
+  ]
+}

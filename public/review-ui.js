@@ -37,6 +37,7 @@
     (result.factors === undefined || (result.factors !== null && typeof result.factors === "object"));
   // An excerpt whose only finding is not_a_rule reads as background. It is counted and labeled apart
   // from findings: a line the repository cannot show, such as where something lives, can guide an agent.
+  // readAsBackground in refactor-prompt.js repeats this test; checks/fixtures/background-parity.json keeps them equal.
   const background = (unit) => unit.state === "ok" && unit.result.findings.length > 0 &&
     unit.result.findings.every((finding) => finding.id === "not_a_rule");
   // The findings a row counts and names: a scored excerpt's own, none for background.

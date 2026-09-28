@@ -307,7 +307,8 @@ console.log(JSON.stringify({ model, without: withoutArg, with: withArg ?? null, 
         sourceLines: unit.sourceLines,
         rawExcerpt: unit.rawExcerpt,
         exactScoredText: unit.exactScoredText,
-        // Only a not_a_rule finding: the page shows it as background, not as a rule.
+        // Only a not_a_rule finding: the page shows it as background, not as a rule. This repeats background() in
+        // review-ui.js, which works without this script; checks/fixtures/background-parity.json keeps them equal.
         ...(unit.findings.length && unit.findings.every((finding) => finding.id === "not_a_rule") ? { readAsBackground: true } : {}),
       })),
       notScoredLines: units.notScored.map((unit) => unit.sourceLines),
