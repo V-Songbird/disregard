@@ -208,6 +208,39 @@ test("all nine findings reuse canonical English explanations and retain measured
   }
 });
 
+const READERS = ["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5-5"];
+const redundant = (over = {}) => {
+  const response = result({ agent_default: { choice: "agent_default", confidence: 0.93 } });
+  response.findings = [{ id: "likely_redundant", factor: "agent_default", value: 0.93, readers: [...READERS], ...over }];
+  return response;
+};
+
+test("likely_redundant carries its readers into the explanation and evidence", () => {
+  const output = buildPrompt(report(undefined, redundant()), english);
+  const actual = packet(output).scored[0];
+  assert.deepEqual(actual.factors.agent_default, { choice: "agent_default", confidence: 0.93 });
+  assert.deepEqual(actual.findings[0].evidence, { factor: "agent_default", value: 0.93, readers: READERS });
+  assert.equal(actual.findings[0].title, english.findings.likely_redundant.h);
+  assert.equal(actual.findings[0].explanation, english.findings.likely_redundant.d);
+  assert.match(output, /never that it can be removed/);
+});
+
+test("likely_redundant must agree with its agent_default answer and name valid readers", () => {
+  const cases = [
+    redundant({ value: 0.92 }),
+    redundant({ readers: undefined }),
+    redundant({ readers: [] }),
+    redundant({ readers: ["Claude Haiku"] }),
+    redundant({ readers: [7] }),
+    Object.assign(redundant(), { factors: { ...redundant().factors, agent_default: { choice: "project_specific", confidence: 0.93 } } }),
+    Object.assign(redundant(), { factors: { ...redundant().factors, agent_default: undefined } }),
+    Object.assign(redundant(), { factors: { ...redundant().factors, agent_default: { choice: "redundant", confidence: 0.93 } } }),
+  ];
+  for (const response of cases) {
+    assert.throws(() => buildPrompt(report(undefined, response), english), errorCode("invalid_result"), JSON.stringify(response.findings));
+  }
+});
+
 test("suppressed background warnings and rounded routing confidence do not generate findings", () => {
   const response = result({
     is_rule: 0.18,

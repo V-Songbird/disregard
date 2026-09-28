@@ -42,10 +42,12 @@ and carries the rule with all of its requirements, exceptions and reasons, toget
     stall_risk: { factor: "F2" },
     hedge_dominance: { factor: "F1", verb: true },
     no_concrete_anchor: { factor: "F7" },
+    likely_redundant: { factor: "agent_default", readers: true },
   });
   const FACTORS = { F1: 1, F2: 1, F7: 1, F3: 4, F8: 3, is_rule: 1 };
   const PRIMITIVES = ["rule", "hook", "skill", "subagent"];
   const ROLES = ["direct_action", "artifact_requirement", "background", "unclear"];
+  const DEFAULTS = ["agent_default", "project_specific", "kept_by_policy"];
 
   function fail(code = "invalid_result") {
     const error = new Error(code === "unsupported_finding"
@@ -87,8 +89,9 @@ and carries the rule with all of its requirements, exceptions and reasons, toget
       factors[key] = value;
     }
     factors.primitive = choice(result.factors.primitive, PRIMITIVES);
-    // Older successful responses did not yet include the supplemental guard or specificity.
+    // Older successful responses did not yet include the supplemental guard, specificity or agent_default.
     if (result.factors.rule_role !== undefined) factors.rule_role = choice(result.factors.rule_role, ROLES);
+    if (result.factors.agent_default !== undefined) factors.agent_default = choice(result.factors.agent_default, DEFAULTS);
     if (result.factors.specificity !== undefined) {
       if (!inRange(result.factors.specificity, 1)) fail();
       factors.specificity = result.factors.specificity;
@@ -101,8 +104,13 @@ and carries the rule with all of its requirements, exceptions and reasons, toget
       if (seen.has(finding.id)) fail();
       seen.add(finding.id);
       const expected = FINDINGS[finding.id];
-      if (finding.factor !== expected.factor || !inRange(finding.value, FACTORS[expected.factor]) ||
-          finding.value !== factors[expected.factor]) fail();
+      if (finding.factor !== expected.factor) fail();
+      if (expected.readers) {
+        // The readers are the models this self-prediction was checked against; the prompt must name them.
+        if (factors.agent_default?.choice !== "agent_default" || finding.value !== factors.agent_default.confidence ||
+            !Array.isArray(finding.readers) || !finding.readers.length || finding.readers.length > 20 ||
+            !finding.readers.every((id) => typeof id === "string" && /^[a-z0-9][a-z0-9.-]{0,79}$/.test(id))) fail();
+      } else if (!inRange(finding.value, FACTORS[expected.factor]) || finding.value !== factors[expected.factor]) fail();
       const copy = englishStrings?.findings?.[finding.id];
       if (!object(copy) || ![copy.h, copy.d, copy.fix].every((text) => typeof text === "string" && text.trim())) fail();
       const evidence = { factor: finding.factor, value: finding.value };
@@ -113,6 +121,7 @@ and carries the rule with all of its requirements, exceptions and reasons, toget
         evidence.choice = route.choice;
         evidence.confidence = route.confidence;
       }
+      if (expected.readers) evidence.readers = [...finding.readers];
       if (expected.verb) {
         if (typeof finding.verb !== "string" || !finding.verb.trim() || finding.verb.length > 2000) fail();
         evidence.verb = finding.verb;
@@ -213,6 +222,7 @@ Factor meanings:
 - F8 (0–3): enforceability, from mechanically checkable work toward work requiring judgment. Higher is not a better quality score.
 - is_rule (0–1): how the text reads as an instruction. Declarative artifact requirements and useful background must not be discarded on this value alone.
 - primitive and optional rule_role: suggested form or interpretation plus reported confidence, not a verified replacement or a removal instruction. Confidence may be rounded.
+- optional agent_default: model judgment of whether a capable coding agent would do what the rule asks without being told (agent_default), needs to be told (project_specific), or the rule is kept by policy (kept_by_policy), plus reported confidence. A likely_redundant finding lists in evidence.readers the only models whose measured behaviour this judgment was checked against. It says the rule is probably covered for those readers, never that it can be removed: other models that read the file, including subagents and cheaper tiers, may still need it. List it for the owner as a question, and never remove or weaken the rule in the diff on this finding alone.
 
 For each finding, decide whether it applies in the actual project context. Make the smallest justified change to the instruction file while retaining requirements, scope, exceptions, deliberate preferences, background the code does not show (reasons for decisions, gotchas, environment quirks, where something lives), prohibitions, and skill activation guidance. Background the repository itself shows, such as its layout, file lists, or what a module does, costs context in every session: list its removal as a proposal for the owner instead of editing it, and never propose removing a requirement this way. Check the file's statements of fact (commands, paths, versions, how the code works) against the repository and correct any that are out of date. When a finding or your own reading points to something the source or repository already settles, apply that small edit instead of only raising it: for example, name the command, path, or file that another repository file gives for a vague reference, or complete a list the repository shows is incomplete, keeping the source's conditions and exceptions. Such an edit restates or points to what the repository already says. When you name the places, commands or files behind a general requirement, add them to that requirement instead of replacing it, unless the repository shows they are the complete set. Do not invent project commands, thresholds, facts, permissions, alternatives, exceptions, or host capabilities, and do not add a duty or option the repository does not state. A hook, skill, or subagent recommendation does not prove the replacement exists or covers the requirement. Verify coverage and availability before proposing to remove duplicated guidance. Creating new automation or changing project behavior is a separate scope decision.
 
