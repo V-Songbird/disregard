@@ -449,6 +449,21 @@ test("the necessity prompt exports scored excerpts and unscored line ranges only
   assert.deepEqual(data.notScoredLines, [{ startLine: 3, endLine: 3 }]);
 });
 
+// checks/file-review-ui.cjs checks that the page shows the same excerpts as background.
+test("the necessity packet reads as background exactly the parity fixture's background excerpts", () => {
+  const { cases } = require("./fixtures/background-parity.json");
+  const input = report(cases.map((entry) => entry.rule).join("\n"));
+  let startOffset = 0;
+  input.units = cases.map((entry, i) => {
+    const unit = { id: `unit-${i + 1}`, startLine: i + 1, endLine: i + 1, startOffset, endOffset: startOffset + entry.rule.length,
+      rawText: entry.rule, rule: entry.rule, context: [], state: "ok", result: entry.body };
+    startOffset = unit.endOffset + 1;
+    return unit;
+  });
+  assert.deepEqual(packet(buildNecessityPrompt(input, english)).excerpts.map((excerpt) => excerpt.readAsBackground === true),
+    cases.map((entry) => entry.background));
+});
+
 test("the necessity prompt fails and returns null exactly as the refactoring prompt does", () => {
   const unscored = report();
   unscored.units[0].state = "refused";

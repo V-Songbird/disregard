@@ -41,8 +41,13 @@ const filterLabels = {
   ar: { label: "إظهار المقاطع التي فيها ملاحظات فقط", showing: "المقاطع المعروضة: 2 من 5" },
   fr: { label: "Afficher uniquement les extraits avec des points à examiner", showing: "Extraits affichés\u00a0: 2 sur 5" },
 };
+// The excerpts the rule check packet reads as background, which checks/refactor-prompt.test.cjs also checks.
+const parity = require("./fixtures/background-parity.json").cases;
+const parityDoc = parity.map((entry) => "- " + entry.rule).join("\n");
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0, retryAfter = null;
 function result(rule) {
+  const fixed = parity.find((entry) => entry.rule === rule);
+  if (fixed) return fixed.body;
   const hedge = rule.includes("try to"), vague = rule.includes("quality"), background = rule.includes("is stored in");
   const findings = background ? [{ id: "not_a_rule", factor: "is_rule", value: 0.3 }] : [
     ...(hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : []),
@@ -224,6 +229,12 @@ async function create(page, text = sample) {
   await page.fill("#file-source", text); await page.click("#file-create");
 }
 async function analyze(page, text = sample) { await create(page, text); await settled(page); }
+// Scores the parity fixture and says, per row, whether the page labels it background.
+async function backgroundRows(page) {
+  await analyze(page, parityDoc);
+  return page.evaluate(() => [...document.querySelectorAll(".instruction-unit .unit-state")]
+    .map((label) => label.textContent === STRINGS.en.file.states.background));
+}
 // Rows sit in the closed "See what was found" disclosure; opening it shows them.
 async function openDetails(page) {
   if (!await page.locator("#file-details").evaluate((node) => node.open)) await page.click("#file-details > summary");
@@ -928,13 +939,25 @@ async function unitHints(page) {
         await new Promise((resolve) => setTimeout(resolve, 300));
         check("held results ask before closing the tab", { asked: closing, closed: page.isClosed() }, { asked: ["beforeunload"], closed: false });
 
-        // The prompt script fails to load: results and findings stay, the prompt panel says only the
-        // prompt is unavailable, and a retry sends only the excerpt that has no result.
+        // The page and the rule check packet read the parity fixture's excerpts as background alike.
+        const expectedBackground = parity.map((entry) => entry.background);
+        const parityContext = await browser.newContext({ locale: "en-US" });
+        site.watch(parityContext, url);
+        const parityPage = await parityContext.newPage(); parityPage.on("pageerror", (error) => report.pageErrors.push(error.message));
+        await parityPage.goto(url); mode = "ok";
+        check("the page shows as background the parity fixture's background excerpts", await backgroundRows(parityPage), expectedBackground);
+        check("the rule check packet reads as background the same excerpts", JSON.parse((await parityPage.inputValue("#file-necessity .prompt-text"))
+          .split("quoted data):\n")[1]).excerpts.map((excerpt) => excerpt.readAsBackground === true), expectedBackground);
+        await parityContext.close();
+
+        // The prompt script fails to load: results and findings stay, background rows keep their label, the prompt
+        // panel says only the prompt is unavailable, and a retry sends only the excerpt that has no result.
         const blockedContext = await browser.newContext({ locale: "en-US" });
         site.watch(blockedContext, url);
         await blockedContext.route("**/refactor-prompt.js", (route) => route.abort());
         const blocked = await blockedContext.newPage(); blocked.on("pageerror", (error) => report.pageErrors.push(error.message));
         await blocked.goto(url);
+        check("blocked prompt script still shows the parity fixture's background excerpts", await backgroundRows(blocked), expectedBackground);
         requests = []; mode = "partial";
         await analyze(blocked, "- Always try to use functional components.\n- Use module1 for storage.\n- Keep functions short.");
         const firstRun = requests.length;
