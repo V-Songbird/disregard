@@ -642,6 +642,23 @@ async function unitHints(page) {
         await page.fill("#file-name", "docs/AGENTS.md");
         check("the file name labels both prompts", (await prompts()).map(label), ["docs/AGENTS.md", "docs/AGENTS.md"]);
         await page.fill("#file-name", "docs/CLAUDE.md");
+        // A refactoring prompt just under the size limit goes over it with the path-rules option, so the rule check
+        // panel leaves with it and returns when the option is off. JSON escapes each quote, which makes 40 rows enough.
+        await analyze(page, Array.from({ length: 40 }, (_, i) => `- Quote module${i} as ${"\"x\" ".repeat(339)}in logs.`).join("\n"));
+        const promptState = () => page.evaluate(() => ["#file-export", "#file-necessity"].map((host) => {
+          const text = document.querySelector(host + " .prompt-text");
+          // Without a prompt, the panel's only line is the reason it failed, if any.
+          return text ? { size: text.value.length < window.DisregardPrompt.MAX_PROMPT_CHARS, hint: null }
+            : { size: null, hint: document.querySelector(host + " .prompt-panel > .hint")?.textContent ?? null };
+        }));
+        const nearLimit = await promptState();
+        await page.check("#file-path-rules");
+        const pastLimit = await promptState();
+        await page.uncheck("#file-path-rules");
+        check("the path-rules option that pushes the refactoring prompt over the limit removes the rule check prompt until it is off",
+          [nearLimit, pastLimit, await promptState()], [[{ size: true, hint: null }, { size: true, hint: null }],
+            [{ size: null, hint: "This prompt is too large to copy as one report. Review a smaller section; do not repeat scoring just to retry copying." }, { size: null, hint: null }],
+            [{ size: true, hint: null }, { size: true, hint: null }]]);
         await page.locator("#file-upload").setInputFiles({name:"broken.md",mimeType:"text/markdown",buffer:Buffer.from([255,10,45,32,85,115,101,32,99,97,99,104,101,46])});
         check("invalid UTF-8 upload rejected without replacement", await page.locator("#file-error").isVisible());
         requests = [];
