@@ -52,6 +52,7 @@ Claude Code loads those files only when it reads a matching file, so rules neede
 The summary line says how many excerpts were scored; your agent reads the rest.
 **See what was found** holds the coverage, each excerpt's findings, and the ranges left unreviewed.
 Each finding in an excerpt shows a short next step.
+After a review, file mode offers an optional [rule check prompt](docs/knowledge/rule-necessity-check.md) that your own agent runs, billed to your account or plan.
 The **One rule** mode also accepts a single instruction.
 
 The key stays on the server. Reading the file and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
