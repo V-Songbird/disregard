@@ -105,6 +105,107 @@
   <a href="https://github.com/V-Songbird/disregard/blob/main/docs/apis/score.md">API reference</a>
   describes the factor ranges, screening states, and request contract.</p>
 
+  <h2 id="rule-necessity">Which rules each model still needs</h2>
+
+  <p>Disregard scores wording. A separate study asks a different question: which
+  rules does a coding agent follow only when the instruction file states them? The
+  answer differs by model, so each result below names the model it holds for.</p>
+
+  <h3>Method</h3>
+
+  <ul>
+    <li><strong>Rules.</strong> 17 rules in eight categories: model idiom, conventions
+    the repository shows, rules a tool already enforces, behavior the agent host
+    already asks for, arbitrary conventions, duties in another file, facts the
+    repository does not show, and rules that contradict the repository. Each rule has
+    one small fixture repository and one coding task. Safety, authorization and
+    secrets rules were not tested; they are kept by policy.</li>
+    <li><strong>Models.</strong> <code>claude-haiku-4-5-20251001</code>,
+    <code>claude-sonnet-5</code>, <code>claude-opus-5-5</code> and
+    <code>claude-fable-5-1</code> through Claude Code 2.1.283;
+    <code>gpt-6-luna</code>, <code>gpt-5.6-terra</code>, <code>gpt-6-sol</code> and
+    <code>gpt-6-astra</code> through Codex CLI 0.157.1. Every model ran at high
+    reasoning effort, from 26 to 27 September 2026 (UTC).</li>
+    <li><strong>Probe.</strong> Each model did each task 5 times with the rule
+    removed from the file. A rule followed in 5 of 5 runs is <em>likely
+    redundant</em> for that model: a direction, not advice to remove it.</li>
+    <li><strong>Contrast.</strong> Where a model fell short of 5 of 5, it did the
+    task 20 times without the rule and 20 times with it. The rule is
+    <em>necessary</em> when the 95% bootstrap interval of the difference stays above
+    zero; otherwise it is <em>inconclusive</em>. Calling a rule
+    <em>redundant</em> would need 20 of 20 runs without it, and no likely redundant
+    rule has had those runs yet.</li>
+  </ul>
+
+  <h3>Results</h3>
+
+  <div class="table-scroll" role="region" aria-labelledby="necessity-caption" tabindex="0">
+  <table>
+    <caption id="necessity-caption">Verdicts for the 17 rules, per model</caption>
+    <thead>
+      <tr><th scope="col">Model</th><th scope="col">Necessary</th><th scope="col">Inconclusive</th><th scope="col">Likely redundant</th><th scope="col">Below 5 of 5, not contrasted</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Haiku 4.5</th><td>13</td><td>0</td><td>4</td><td>0</td></tr>
+      <tr><th scope="row">Sonnet 5</th><td>10</td><td>0</td><td>7</td><td>0</td></tr>
+      <tr><th scope="row">Opus 5.5</th><td>10</td><td>1</td><td>6</td><td>0</td></tr>
+      <tr><th scope="row">Fable 5.1</th><td>Not run</td><td>Not run</td><td>5</td><td>12</td></tr>
+      <tr><th scope="row">Luna</th><td>Not run</td><td>Not run</td><td>3</td><td>14</td></tr>
+      <tr><th scope="row">Terra</th><td>Not run</td><td>Not run</td><td>2</td><td>15</td></tr>
+      <tr><th scope="row">Sol</th><td>Not run</td><td>Not run</td><td>4</td><td>13</td></tr>
+      <tr><th scope="row">Astra</th><td>Not run</td><td>Not run</td><td>6</td><td>11</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>The contrast ran on Haiku 4.5, Sonnet 5 and Opus 5.5 only. Fable 5.1 and the
+  four Codex models have probe results only. One of Astra's 85 probe runs failed
+  before starting work and is not counted.</p>
+
+  <ul>
+    <li>With the rule in the file, every tested rule was followed in 20 of 20 runs,
+    on all three contrast models.</li>
+    <li>Six rules were necessary on all three contrast models, and no model
+    followed them without the rule in any of 510 runs: naming tests
+    <code>*.spec.js</code>, snake_case file names, updating <code>docs/api.md</code>,
+    adding a changelog entry, a port number, and a timestamp unit. These are
+    arbitrary conventions, duties in another file, and facts the repository does not
+    show.</li>
+    <li>Two rules were likely redundant on all eight models: using
+    <code>const</code> or <code>let</code> instead of <code>var</code>, and adding a
+    function to the existing file instead of a new one.</li>
+    <li>The rest depends on the model, not on its size. Without the rule, Haiku 4.5
+    added no unrequested Markdown file in 5 of 5 runs; Opus 5.5 added one in 20 of
+    20. Sonnet 5 and Opus 5.5 used the project's own error class in 5 of 5 runs, even
+    next to a file that did not; Haiku 4.5 used it in 4 to 6 of 20. Conventions that
+    the repository shows reached Haiku 4.5 in at most 6 of 20 runs.</li>
+  </ul>
+
+  <h3>What these results do not show</h3>
+
+  <ul>
+    <li>Each rule was tested on one task. A model that follows a convention here may
+    not on a rarer task, where the rule decides.</li>
+    <li>No rule is labelled redundant, so nothing here supports removing a rule. A
+    rule followed in 5 of 5 runs can still fail often.</li>
+    <li>Whether an unneeded rule makes other rules less likely to be followed was not
+    measured; one-rule fixtures cannot show it.</li>
+    <li>Four fixtures show the convention in the repository. Results for those rules
+    hold only while a repository keeps showing it.</li>
+    <li>Results hold for these model identifiers, at high effort, on these dates. A
+    model update can change them. The Codex runs had the account's apps and plugins
+    available; their effect was not measured.</li>
+    <li>The study's harness and run records are not part of this repository.</li>
+  </ul>
+
+  <h3>Where this is going</h3>
+
+  <p>The aim is to tell a file's owner, for the models that read the file, which
+  rules those models already follow unprompted and which ones they still need. A
+  rule is only a candidate for removal when every model that reads the file,
+  including small models used for subagents, follows it without being told.
+  Disregard does not do this yet: today it reviews wording only.</p>
+
   <p class="promise"><a href="/">Back to Disregard</a> · <a href="https://github.com/V-Songbird/disregard">Source</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
 </main>
 </body>
