@@ -644,7 +644,27 @@ async function unitHints(page) {
         await page.fill("#file-name", "docs/CLAUDE.md");
         // A refactoring prompt just under the size limit goes over it with the path-rules option, so the rule check
         // panel leaves with it and returns when the option is off. JSON escapes each quote, which makes 40 rows enough.
-        await analyze(page, Array.from({ length: 40 }, (_, i) => `- Quote module${i} as ${"\"x\" ".repeat(339)}in logs.`).join("\n"));
+        // Two paddings measured on fresh pages, each with its own request pacing, size the third so the limit falls
+        // halfway through the path-rules paragraph.
+        const quoted = (repeat) => Array.from({ length: 40 }, (_, i) => `- Quote module${i} as ${"\"x\" ".repeat(repeat)}in logs.`).join("\n");
+        const exportLength = (target) => target.evaluate(() => document.querySelector("#file-export .prompt-text")?.value.length ?? null);
+        const measure = async (repeat) => {
+          const probe = await page.context().newPage(); probe.on("pageerror", (error) => report.pageErrors.push(error.message));
+          await probe.goto(url); await analyze(probe, quoted(repeat));
+          const plain = await exportLength(probe);
+          await probe.check("#file-path-rules");
+          const withRules = await exportLength(probe);
+          await probe.close();
+          return { plain, withRules };
+        };
+        const low = await measure(100), high = await measure(200), limit = await page.evaluate(() => window.DisregardPrompt.MAX_PROMPT_CHARS);
+        const rulesLength = low.withRules - low.plain, perRepeat = (high.plain - low.plain) / 100;
+        const repeat = 200 + Math.round((limit - rulesLength / 2 - high.plain) / perRepeat);
+        await analyze(page, quoted(repeat));
+        const sized = await exportLength(page);
+        const sizing = { repeat, sized, limit, rulesLength };
+        check("the size scenario pads the rows so the refactoring prompt is under the limit and the path-rules paragraph takes it over",
+          { ...sizing, under: sized < limit, over: sized + rulesLength > limit }, { ...sizing, under: true, over: true });
         const promptState = () => page.evaluate(() => ["#file-export", "#file-necessity"].map((host) => {
           const text = document.querySelector(host + " .prompt-text");
           // Without a prompt, the panel's only line is the reason it failed, if any.
