@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How scoring works — Disregard</title>
-<meta name="description" content="What Disregard checks, how to interpret its factors, and what still needs your agent's contextual review.">
+<meta name="description" content="What Disregard checks, how to interpret its factors, what still needs your agent's contextual review, and a study of which rules each model still needs.">
 <link rel="canonical" href="https://disregard.dev/research">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disregard">
 <meta property="og:url" content="https://disregard.dev/research">
 <meta property="og:title" content="How scoring works — Disregard">
-<meta property="og:description" content="What Disregard checks, how to interpret its factors, and what still needs your agent's contextual review.">
+<meta property="og:description" content="What Disregard checks, how to interpret its factors, what still needs your agent's contextual review, and a study of which rules each model still needs.">
 <meta property="og:image" content="https://disregard.dev/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -174,10 +174,11 @@
     <li>Two rules were likely redundant on all eight models: using
     <code>const</code> or <code>let</code> instead of <code>var</code>, and adding a
     function to the existing file instead of a new one.</li>
-    <li>The rest depends on the model, not on its size. Without the rule, Haiku 4.5
-    added no unrequested Markdown file in 5 of 5 runs; Opus 5.5 added one in 20 of
-    20. Sonnet 5 and Opus 5.5 used the project's own error class in 5 of 5 runs, even
-    next to a file that did not; Haiku 4.5 used it in 4 to 6 of 20. Conventions that
+    <li>For the other rules, a larger model is not always better. Without the rule,
+    Haiku 4.5 added no unrequested Markdown file in 5 of 5 runs; Opus 5.5 added one
+    in 20 of 20. Sonnet 5 and Opus 5.5 threw the project's own error class in 5 of 5
+    runs, even when a neighbouring file threw a plain <code>Error</code>; Haiku 4.5
+    threw it in 4 to 6 of 20. Conventions that
     the repository shows reached Haiku 4.5 in at most 6 of 20 runs.</li>
   </ul>
 

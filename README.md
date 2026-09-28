@@ -86,10 +86,10 @@ Fable 5.1 and the four Codex models have only the 5-run results.
 
 - With the rule in the file, every tested rule was followed in 20 of 20 runs.
 - Six rules were needed on all three tested models, and no model followed them unprompted: arbitrary naming conventions, duties in another file, and facts the repository does not show.
-- The rest depends on the model, not on its size.
+- For the other rules, a larger model is not always better. Without the rule, Haiku 4.5 added no unrequested Markdown file in 5 of 5 runs, and Opus 5.5 added one in 20 of 20.
 - No rule was shown redundant, so the results do not support removing any rule.
 
-The [research page](public/research.html#rule-necessity) lists the models, per-model counts, method and limits.
+The [research page](https://disregard.dev/research#rule-necessity) lists the models, per-model counts, method and limits.
 Disregard does not use these results yet; it reviews wording only.
 
 ## Development
