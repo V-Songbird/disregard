@@ -263,7 +263,7 @@ ${JSON.stringify(packet, null, 2)}`;
       return passed / arm.runs;
     };
     const lifts = Array.from({ length: 10000 }, () => rate(withRule) - rate(without)).sort((a, b) => a - b);
-    const interval = [lifts[249], lifts[9750]];
+    const interval = [lifts[249], lifts[9749]];
     return {
       verdict: interval[0] > 0 ? "necessary" : all(without) ? "redundant" : "inconclusive",
       lift: withRule.passed / withRule.runs - without.passed / without.runs,

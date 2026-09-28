@@ -372,8 +372,9 @@
     // The file name and the path-rules option only shape the prompt, so changing either rebuilds it and nothing else.
     const exportedPanel = () => promptPanel(report, t(), true, { pathRules: pathRules.checked });
     // Only beside a refactoring prompt, which fails for the same reports, so a failure is worded once.
+    // A cached prompt script older than the builder shows nothing here rather than the refactoring prompt's wording.
     function necessityPanel() {
-      if (!exported.querySelector(".copy-prompt")) return el("div");
+      if (!exported.querySelector(".copy-prompt") || typeof window.DisregardPrompt.buildNecessityPrompt !== "function") return el("div");
       const strings = t(), panel = promptPanel(report, { ...strings, ...strings.necessity }, true, undefined, "buildNecessityPrompt");
       if (panel.hasChildNodes()) panel.prepend(el("h2", null, strings.necessity.title));
       return panel;
