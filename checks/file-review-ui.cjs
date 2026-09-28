@@ -628,6 +628,20 @@ async function unitHints(page) {
         await page.fill("#file-name", "docs/CLAUDE.md");
         check("the file name field in the result changes the prompt label and keeps the review", [label(windowsPrompt), label(await copyText(page)),
           await page.locator("#file-report").isVisible(), requests.length - beforeName], ["AGENTS.md", "docs/CLAUDE.md", true, 0]);
+        // The path-rules option changes only the refactoring prompt, so the rule check panel and its open preview stay as they are.
+        // The file name labels both prompts, so changing it rebuilds both.
+        const prompts = () => page.evaluate(() => ["#file-export", "#file-necessity"].map((host) => document.querySelector(host + " .prompt-text").value));
+        await page.locator("#file-necessity .prompt-preview").evaluate((node) => { node.open = true; window.necessityPanel = node.closest(".prompt-panel"); });
+        const beforeToggle = await prompts();
+        await page.check("#file-path-rules");
+        const toggled = await prompts();
+        await page.uncheck("#file-path-rules");
+        check("the path-rules option leaves the rule check panel and its open preview in place", [toggled[0] !== beforeToggle[0], toggled[1] === beforeToggle[1],
+          await page.evaluate(() => { const panel = document.querySelector("#file-necessity .prompt-panel"); return panel === window.necessityPanel && panel.querySelector(".prompt-preview").open; })],
+          [true, true, true]);
+        await page.fill("#file-name", "docs/AGENTS.md");
+        check("the file name labels both prompts", (await prompts()).map(label), ["docs/AGENTS.md", "docs/AGENTS.md"]);
+        await page.fill("#file-name", "docs/CLAUDE.md");
         await page.locator("#file-upload").setInputFiles({name:"broken.md",mimeType:"text/markdown",buffer:Buffer.from([255,10,45,32,85,115,101,32,99,97,99,104,101,46])});
         check("invalid UTF-8 upload rejected without replacement", await page.locator("#file-error").isVisible());
         requests = [];

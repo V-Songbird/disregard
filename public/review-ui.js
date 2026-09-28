@@ -380,16 +380,19 @@
       if (panel.hasChildNodes()) panel.prepend(el("h2", null, strings.necessity.title));
       return panel;
     }
-    function rebuild() {
+    // Both prompts carry the file name. Only the refactoring prompt reads the path-rules option, so that option
+    // rebuilds the rule check panel only when the refactoring prompt appears or fails with it.
+    function rebuild(both) {
       if (busy || !report) return;
       report.sourceName = name.value.trim() || "AGENTS.md";
+      const had = Boolean(exported.querySelector(".copy-prompt"));
       const open = [exported, necessity].map((host) => host.querySelector(".prompt-preview")?.open);
       exported.replaceChildren(exportedPanel());
-      necessity.replaceChildren(necessityPanel());
-      [exported, necessity].forEach((host, i) => { if (open[i]) host.querySelector(".prompt-preview").open = true; });
+      if (both || had !== Boolean(exported.querySelector(".copy-prompt"))) necessity.replaceChildren(necessityPanel());
+      [exported, necessity].forEach((host, i) => { if (open[i]) host.querySelector(".prompt-preview")?.setAttribute("open", ""); });
     }
-    name.addEventListener("input", rebuild);
-    pathRules.addEventListener("change", rebuild);
+    name.addEventListener("input", () => rebuild(true));
+    pathRules.addEventListener("change", () => rebuild(false));
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {
       if (busy || !files.length) return;
