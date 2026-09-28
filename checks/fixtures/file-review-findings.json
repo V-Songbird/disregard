@@ -5,7 +5,7 @@
   "checkPromptExport": true,
   "sourceHashes": {
     "public/i18n.js": "b0d35e07cb0abc182d9d984b919fd6cdb8ea28a9896359c3174eb3c889862d26",
-    "public/refactor-prompt.js": "2215b516d8c36f1bbfe65e02c26df7eb48867ff187d6dfa7e315200c14ceb92f"
+    "public/refactor-prompt.js": "3dcd2026c09c954b2b8249b69ed206033a554104763627e6b0c1fb8440aabf8d"
   },
   "cases": [
     {

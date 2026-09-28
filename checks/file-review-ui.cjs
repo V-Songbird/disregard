@@ -468,6 +468,15 @@ async function unitHints(page) {
           rowsHidden: [...document.querySelectorAll(".instruction-unit")].every((unit) => !unit.checkVisibility()),
           primary: document.getElementById("file-create").getClientRects().length };
       }), { focused: true, heading: true, ordered: true, closed: true, label: true, inside: true, rowsHidden: true, primary: 0 });
+      // The rule check prompt follows the details, under its own heading, with its own Copy control and preview.
+      check(prefix + " the rule check prompt follows the details with its own wording", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file.necessity, panel = document.querySelector("#file-necessity .prompt-panel");
+        return { heading: panel.querySelector("h2").textContent === t.title, copy: panel.querySelector(".copy-prompt").textContent === t.copy,
+          hint: panel.querySelector(".hint").textContent === t.promptUse, summary: panel.querySelector("summary").textContent === t.showPrompt,
+          label: panel.querySelector(".prompt-text").getAttribute("aria-label") === t.prompt,
+          prompt: panel.querySelector(".prompt-text").value.startsWith("Disregard rule necessity check prompt"),
+          after: Boolean(document.getElementById("file-details").compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING) };
+      }), { heading: true, copy: true, hint: true, summary: true, label: true, prompt: true, after: true });
       check(prefix + " the summary line counts every excerpt as scored", await page.textContent("#file-summary"), summaryLines[locale].all);
       // Checked again unchanged, the file sends nothing, and the rows below read the same.
       const beforeAgain = requests.length; await page.fill("#file-source", ""); await analyze(page, summaryDoc);
@@ -791,7 +800,7 @@ async function unitHints(page) {
             { progress: pauseLine + "at " + readyAt + ".", label: "Score 1 remaining excerpt", hidden: false, unavailable: "true", describedBy: "file-progress" });
           // Neither a pointer nor a key press on the held control sends anything.
           await held.locator("#file-start").click({ force: true }); await held.focus("#file-start"); await held.keyboard.press("Enter");
-          await held.locator(".copy-prompt").click();
+          await held.locator("#file-export .copy-prompt").click();
           check(`with ${name}, the wait sends nothing and leaves the prompt, the text box and the mode switch free`, await held.evaluate(() => ({
             copied: Boolean(window.copiedPrompt), editable: !document.getElementById("file-source").readOnly,
             running: !document.getElementById("file-cancel").hidden,
