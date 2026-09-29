@@ -113,7 +113,7 @@ test("the policy keeps general requirements and asks for an answer the owner can
 });
 
 test("the agent reports repository coverage with evidence and removes nothing for it in the diff", () => {
-  for (const [input, options] of [[report(), {}], [lines(201), { pathRules: true }]]) {
+  for (const [input, options] of [[report(), {}], [lines(201), { pathRules: true }], [report(), { readers: "capable" }]]) {
     const output = buildPrompt(input, english, options);
     const opening = "Check whether the repository already covers each rule";
     assert.equal(output.split(opening).length, 2);
@@ -126,9 +126,12 @@ test("the agent reports repository coverage with evidence and removes nothing fo
     assert.ok(paragraph.includes("Only in prose: you found no such evidence."));
     assert.ok(paragraph.includes("Kept by policy: any rule on safety, destructive or irreversible actions, authorization or approval, or " +
       "secrets and private data, whatever the repository shows."));
+    // Only an owner who says only capable models read the file gets removal proposals for covered rules.
     assert.ok(paragraph.endsWith("Being covered is never a reason to remove or weaken a rule in the diff: the prose can spare the agent " +
-      "a failed run, and other agents that read the file may still need it. You may list removing a covered rule as a proposal for " +
-      "the owner, never for a rule kept by policy."));
+      "a failed run, and other agents that read the file may still need it. " + (options.readers === "capable"
+        ? "You may list removing a covered rule as a proposal for the owner, never for a rule kept by policy."
+        : "Do not propose removing a covered rule: small or cheap models that may read this file can follow a convention " +
+          "only where the files they open show it.")));
     assert.ok(output.includes("Verify coverage and availability before proposing to remove duplicated guidance."));
     assert.ok(!output.includes("before removing duplicated guidance"));
     const list = output.indexOf("the rules you checked against the repository, one line per rule with its mark and evidence, " +
@@ -225,6 +228,42 @@ test("likely_redundant carries its readers into the explanation and evidence", (
   assert.equal(actual.findings[0].title, english.findings.likely_redundant.h);
   assert.equal(actual.findings[0].explanation, english.findings.likely_redundant.d);
   assert.match(output, /never that it can be removed/);
+});
+
+// The owner's reader choice. Not sure, or any unknown value, reads as small models included: no removal advice at all.
+test("the reader choice allows removal proposals only when the owner says only capable models read the file", () => {
+  const input = report(undefined, redundant());
+  const unsure = buildPrompt(input, english);
+  for (const readers of [undefined, "unsure", "", "CAPABLE", "all", 1]) assert.equal(buildPrompt(input, english, { readers }), unsure, String(readers));
+  const keep = "Small or cheap models can need rules that capable models follow unprompted, so keep the rule: do not propose removing " +
+    "or weakening it on this finding, not even as a question.";
+  const unsaid = "The owner has not said which models read this file, so treat it as read by small or cheap models, such as subagents.";
+  const said = "The owner says small or cheap models, such as subagents, may read this file.";
+  const small = buildPrompt(input, english, { readers: "small" });
+  assert.ok(unsure.includes(`${unsaid} ${keep}`) && small.includes(`${said} ${keep}`));
+  assert.equal(small.replace(said, unsaid), unsure);
+  const capable = buildPrompt(input, english, { readers: "capable" });
+  assert.ok(capable.includes("The owner says only capable models read this file, with no small or cheap model or subagent. List the " +
+    "finding for the owner as a question: removing the rule is worth checking only if every model that reads the file is among " +
+    "evidence.readers and follows it without the rule. Never remove or weaken the rule in the diff on this finding alone."));
+  assert.ok(!capable.includes(keep) && !capable.includes("Do not propose removing a covered rule"));
+  for (const output of [unsure, small]) assert.ok(!output.includes("You may list removing a covered rule"));
+  // The packet stays the same; the suggested action is the copy the caller supplies for its choice.
+  assert.deepEqual(packet(capable), packet(unsure));
+  assert.equal(packet(unsure).scored[0].findings[0].suggestedAction, english.findings.likely_redundant.fix);
+  const capableCopy = { ...english, findings: { ...english.findings, likely_redundant: { ...english.findings.likely_redundant, ...english.findings.likely_redundant.capable } } };
+  assert.equal(packet(buildPrompt(input, capableCopy, { readers: "capable" })).scored[0].findings[0].suggestedAction,
+    english.findings.likely_redundant.capable.fix);
+});
+
+test("likely_redundant's default advice keeps the rule in every language; only its capable wording considers removing it", () => {
+  const all = vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../public/i18n.js"), "utf8") + ";window.STRINGS", { window: {} });
+  for (const [locale, strings] of Object.entries(all)) {
+    const copy = strings.findings.likely_redundant;
+    assert.ok(copy.capable && copy.capable.fix !== copy.fix && copy.capable.next !== copy.next, locale);
+  }
+  assert.doesNotMatch(english.findings.likely_redundant.fix + english.findings.likely_redundant.next, /remov/i);
+  assert.match(english.findings.likely_redundant.capable.fix, /Consider removing it only if every model/);
 });
 
 test("likely_redundant must agree with its agent_default answer and name valid readers", () => {

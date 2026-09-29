@@ -43,12 +43,17 @@
   // The findings a row counts and names: a scored excerpt's own, none for background.
   const findings = (unit) => unit.state === "ok" && !background(unit) ? unit.result.findings : [];
 
+  // A finding's capable wording replaces its default only when the reader says only capable models read the file;
+  // the default keeps every rule a small or cheap model may need. The prompt takes the same English copy from here.
+  const forReaders = (strings, readers) => readers !== "capable" ? strings : { ...strings, findings: Object.fromEntries(
+    Object.entries(strings.findings).map(([id, copy]) => [id, copy.capable ? { ...copy, ...copy.capable } : copy])) };
+
   // File mode puts the panel under its own result heading and says where the prompt goes.
   // build names the prompt script's builder; t supplies the panel's wording.
   function promptPanel(report, t, file = false, options, build = "buildPrompt") {
     const panel = el("section", "prompt-panel");
     let prompt;
-    try { prompt = window.DisregardPrompt[build](report, window.STRINGS.en, options); }
+    try { prompt = window.DisregardPrompt[build](report, forReaders(window.STRINGS.en, options?.readers), options); }
     catch (error) { panel.append(el("p", "hint", t[error.code] || t.unavailable)); return panel; }
     if (!prompt) return panel;
     const details = el("details", "prompt-preview");
@@ -151,7 +156,19 @@
     // Off by default, it adds one paragraph to the prompt and sends nothing; it stays shown so a prompt in hand can change.
     const pathRules = el("input"); pathRules.type = "checkbox"; pathRules.id = "file-path-rules";
     const pathRulesText = el("span"), pathRulesLabel = el("label", "unit-filter file-option"); pathRulesLabel.append(pathRules, pathRulesText);
-    form.append(zone, pathRulesLabel, action);
+    // Which models read the file. "Not sure" reads as small models included, so no advice suggests removing a rule
+    // such a model may need; it changes the wording shown and the prompt, and sends nothing.
+    const readersBox = el("fieldset", "file-option file-readers"), readersLegend = el("legend"), readersHint = el("p", "hint");
+    readersHint.id = "file-readers-hint"; readersBox.setAttribute("aria-describedby", readersHint.id);
+    readersBox.append(readersLegend, readersHint);
+    const readerChoices = ["unsure", "small", "capable"].map((value) => {
+      const input = el("input"); input.type = "radio"; input.name = "file-readers"; input.id = "file-readers-" + value;
+      input.value = value; input.checked = value === "unsure";
+      const text = el("span"), choice = el("label", "unit-filter"); choice.append(input, text); readersBox.append(choice);
+      return { input, text };
+    });
+    const readers = () => readerChoices.find((choice) => choice.input.checked).input.value;
+    form.append(zone, pathRulesLabel, readersBox, action);
     const error = el("p", "file-error"); error.id = "file-error"; error.setAttribute("role", "alert");
     // Result: the prompt first, then how much of the file it covers; what was found stays in a closed disclosure.
     const output = el("section", "file-report"); output.id = "file-report";
@@ -209,6 +226,8 @@
       label.textContent = strings.source; hint.textContent = limits ? withLimits(strings.sourceHint) : ""; hint.hidden = !limits;
       choose.textContent = strings.upload; sample.textContent = strings.sample; sample.hidden = busy || !limits || Boolean(sourceText().trim());
       dropHint.textContent = strings.drop; pathRulesText.textContent = strings.pathRules;
+      readersLegend.textContent = strings.readers.legend; readersHint.textContent = strings.readers.hint;
+      for (const choice of readerChoices) choice.text.textContent = strings.readers[choice.input.value];
       nameLabel.textContent = strings.name; nameHint.textContent = strings.nameHint;
       // A report in hand hides the primary action, so pressing it again cannot repeat paid requests;
       // editing the text clears the report and brings it back.
@@ -263,7 +282,7 @@
     }
 
     function renderUnit(unit, row) {
-      const strings = t();
+      const strings = t(), copies = forReaders(getStrings(), readers()).findings;
       row.summary.replaceChildren();
       const location = el("span", "unit-location", unit.startLine === unit.endLine ? fill(strings.line, { line: number(unit.startLine) }) :
         fill(strings.lines, { start: number(unit.startLine), end: number(unit.endLine) }));
@@ -282,7 +301,7 @@
       if (flagged.length) {
         const headlines = el("span", "unit-headlines");
         for (const finding of flagged) {
-          const copy = own(getStrings().findings, finding.id);
+          const copy = own(copies, finding.id);
           // The spaces keep each sentence apart in the summary's accessible name.
           if (copy) headlines.append(el("span", "unit-headline", fill(copy.h, { verb: finding.verb })), " ",
             el("span", "unit-next", copy.next), " ");
@@ -314,7 +333,7 @@
         if (unit.result.findings.length) {
           const findings = el("ul", "findings");
           for (const finding of unit.result.findings) {
-            const card = findingCard(finding);
+            const card = findingCard(finding, own(copies, finding.id));
             if (card) findings.append(card);
           }
           row.content.append(findings);
@@ -371,7 +390,7 @@
     // Pasted text keeps the default name; emptying the field forgets a loaded file's name.
     source.addEventListener("input", () => { uploadedSource = null; if (!source.value) name.value = "AGENTS.md"; invalidate(); });
     // The file name and the path-rules option only shape the prompt, so changing either rebuilds it and nothing else.
-    const exportedPanel = () => promptPanel(report, t(), true, { pathRules: pathRules.checked });
+    const exportedPanel = () => promptPanel(report, t(), true, { pathRules: pathRules.checked, readers: readers() });
     // Only beside a refactoring prompt, which fails for the same reports, so a failure is worded once.
     // A cached prompt script older than the builder shows nothing here rather than the refactoring prompt's wording.
     function necessityPanel() {
@@ -393,6 +412,11 @@
     }
     name.addEventListener("input", () => rebuild(true));
     pathRules.addEventListener("change", () => rebuild(false));
+    // The reader choice rewords the rows' advice and the refactoring prompt; the rule check prompt asks the owner itself.
+    for (const choice of readerChoices) choice.input.addEventListener("change", () => {
+      if (report) for (const unit of report.units) renderUnit(unit, rows.get(unit.id));
+      rebuild(false);
+    });
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {
       if (busy || !files.length) return;

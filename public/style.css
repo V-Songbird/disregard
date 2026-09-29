@@ -133,6 +133,9 @@ button.secondary { color: var(--ink); background: var(--paper); border: 1px soli
 .unit-filter input { flex: none; width: 1.25rem; height: 1.25rem; margin: calc((1.55rem - 1.25rem) / 2) 0 0; accent-color: var(--accent); cursor: pointer; }
 /* Set apart from the intake box and close to the primary action it changes. */
 .file-option { margin: var(--space-4) 0 var(--space-2); }
+/* A group of options with a question for its legend, styled like the field labels. */
+.file-readers { border: 0; padding: 0; min-width: 0; }
+.file-readers legend { padding: 0; font-weight: 600; margin-bottom: var(--space-2); }
 .instruction-unit { border-top: 1px solid var(--line); margin-top: 0; padding: var(--space-1) 0; }
 .instruction-unit > summary { padding: .75rem 0; color: var(--ink); }
 .unit-location { font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--muted); margin-inline-end: var(--space-2); }

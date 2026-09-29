@@ -119,8 +119,13 @@ window.STRINGS = {
       likely_redundant: {
         h: "Some agents may already do this unprompted.",
         d: "A model judged this to be something a capable coding agent does without being told. That judgment agreed with measured behaviour only for the models it was checked against, listed with the measurements. It does not cover Fable. Other models, later versions and cheaper subagents may still need the rule. Rules recognized as duties in other files, chosen conventions, project facts or safety rules do not receive this finding.",
-        fix: "Keep it if any agent that reads this file might need it. Consider removing it only if every model that reads the file is one of those, and check that they follow it without the rule.",
-        next: "Keep it unless every model that reads the file already follows it.",
+        fix: "Keep it: a small or cheap model that reads this file, such as a subagent, may still need it where capable models do not.",
+        next: "Keep it while a small or cheap model may read this file.",
+        // The file review uses these when its reader says only capable models read the file.
+        capable: {
+          fix: "Keep it if any agent that reads this file might need it. Consider removing it only if every model that reads the file is one of those, and check that they follow it without the rule.",
+          next: "Keep it unless every model that reads the file already follows it.",
+        },
       },
     },
     languages: {es: "Spanish", pt: "Portuguese", fr: "French", it: "Italian", de: "German", zh: "Chinese", hi: "Hindi", ar: "Arabic"},
@@ -248,8 +253,12 @@ window.STRINGS = {
       likely_redundant: {
         h: "Algunos agentes quizá ya lo hagan sin que se les pida.",
         d: "Un modelo juzgó que esto es algo que un agente de código capaz hace sin que se lo digan. Ese juicio coincidió con el comportamiento medido solo en los modelos con los que se comprobó, que aparecen junto a las mediciones. No cubre a Fable. Otros modelos, versiones posteriores y subagentes más baratos pueden seguir necesitando la regla. Las reglas que se reconocen como tareas en otros archivos, convenciones elegidas, datos del proyecto o reglas de seguridad no reciben este hallazgo.",
-        fix: "Consérvala si algún agente que lea este archivo podría necesitarla. Plantéate quitarla solo si todos los modelos que leen el archivo son uno de esos, y comprueba que la cumplen sin la regla.",
-        next: "Consérvala salvo que todos los modelos que leen el archivo ya la cumplan.",
+        fix: "Consérvala: un modelo pequeño o económico que lea este archivo, como un subagente, puede seguir necesitándola aunque los modelos capaces no la necesiten.",
+        next: "Consérvala mientras un modelo pequeño o económico pueda leer este archivo.",
+        capable: {
+          fix: "Consérvala si algún agente que lea este archivo podría necesitarla. Plantéate quitarla solo si todos los modelos que leen el archivo son uno de esos, y comprueba que la cumplen sin la regla.",
+          next: "Consérvala salvo que todos los modelos que leen el archivo ya la cumplan.",
+        },
       },
     },
     languages: {es: "español", pt: "portugués", fr: "francés", it: "italiano", de: "alemán", zh: "chino", hi: "hindi", ar: "árabe"},
@@ -377,8 +386,12 @@ window.STRINGS = {
       likely_redundant: {
         h: "有些智能体可能无需提示就会这样做。",
         d: "一个模型判断：能力足够的编程智能体即使没人告知也会这样做。这个判断只在用来核对它的模型上与实测行为一致，这些模型列在测量结果中。它不涵盖 Fable。其他模型、后续版本和更便宜的子智能体可能仍然需要这条规则。被识别为其他文件中的职责、项目选定的约定、项目事实或安全规则的规则，不会得到这一结论。",
-        fix: "只要读取此文件的任何智能体可能需要它，就保留它。只有当读取此文件的每个模型都属于其中之一，并且你确认它们在没有这条规则时也会遵守，才考虑删除。",
-        next: "除非读取此文件的每个模型都已遵守，否则保留它。",
+        fix: "保留它：读取此文件的小型或低成本模型（例如子智能体）可能仍然需要它，即使能力强的模型不需要。",
+        next: "只要小型或低成本模型可能读取此文件，就保留它。",
+        capable: {
+          fix: "只要读取此文件的任何智能体可能需要它，就保留它。只有当读取此文件的每个模型都属于其中之一，并且你确认它们在没有这条规则时也会遵守，才考虑删除。",
+          next: "除非读取此文件的每个模型都已遵守，否则保留它。",
+        },
       },
     },
     languages: {es: "西班牙文", pt: "葡萄牙文", fr: "法文", it: "意大利文", de: "德文", zh: "中文", hi: "印地文", ar: "阿拉伯文"},
@@ -506,8 +519,12 @@ window.STRINGS = {
       likely_redundant: {
         h: "कुछ एजेंट शायद यह बिना कहे पहले से करते हैं।",
         d: "एक मॉडल ने आंका कि सक्षम कोडिंग एजेंट यह बिना बताए करता है। यह आकलन मापे गए व्यवहार से केवल उन मॉडलों पर मेल खाया जिन पर इसे जाँचा गया; वे माप के साथ सूचीबद्ध हैं। यह Fable को शामिल नहीं करता। दूसरे मॉडल, बाद के संस्करण और सस्ते सबएजेंट को अब भी इस नियम की ज़रूरत हो सकती है। जिन नियमों को दूसरी फ़ाइलों में किए जाने वाले काम, चुनी गई परिपाटी, प्रोजेक्ट से जुड़े तथ्य या सुरक्षा नियम के रूप में पहचाना जाता है, उन्हें यह निष्कर्ष नहीं मिलता।",
-        fix: "अगर इस फ़ाइल को पढ़ने वाले किसी भी एजेंट को इसकी ज़रूरत हो सकती है, तो इसे रखें। इसे हटाने पर तभी विचार करें जब फ़ाइल पढ़ने वाला हर मॉडल इन्हीं में से हो, और जाँच लें कि वे नियम के बिना भी इसका पालन करते हैं।",
-        next: "इसे रखें, जब तक फ़ाइल पढ़ने वाला हर मॉडल पहले से इसका पालन न करता हो।",
+        fix: "इसे रखें: इस फ़ाइल को पढ़ने वाले किसी छोटे या सस्ते मॉडल, जैसे सबएजेंट, को इसकी अब भी ज़रूरत हो सकती है, भले ही सक्षम मॉडलों को न हो।",
+        next: "जब तक कोई छोटा या सस्ता मॉडल इस फ़ाइल को पढ़ सकता है, इसे रखें।",
+        capable: {
+          fix: "अगर इस फ़ाइल को पढ़ने वाले किसी भी एजेंट को इसकी ज़रूरत हो सकती है, तो इसे रखें। इसे हटाने पर तभी विचार करें जब फ़ाइल पढ़ने वाला हर मॉडल इन्हीं में से हो, और जाँच लें कि वे नियम के बिना भी इसका पालन करते हैं।",
+          next: "इसे रखें, जब तक फ़ाइल पढ़ने वाला हर मॉडल पहले से इसका पालन न करता हो।",
+        },
       },
     },
     languages: {es: "स्पेनिश", pt: "पुर्तगाली", fr: "फ़्रेंच", it: "इतालवी", de: "जर्मन", zh: "चीनी", hi: "हिन्दी", ar: "अरबी"},
@@ -635,8 +652,12 @@ window.STRINGS = {
       likely_redundant: {
         h: "قد تفعل بعض الوكلاء هذا من تلقاء نفسها.",
         d: "حكم نموذج بأن هذا شيء يفعله وكيل برمجة قادر دون أن يُطلب منه. لم يتفق هذا الحكم مع السلوك المقيس إلا في النماذج التي اختُبر عليها، وهي مدرجة مع القياسات. لا يشمل Fable. قد تظل النماذج الأخرى والإصدارات اللاحقة والوكلاء الفرعيون الأرخص بحاجة إلى القاعدة. القواعد التي يُتعرّف عليها بوصفها مهامَّ في ملفات أخرى أو أعرافًا مختارة أو حقائق عن المشروع أو قواعد سلامة لا تحصل على هذه النتيجة.",
-        fix: "أبقِها إن كان أي وكيل يقرأ هذا الملف قد يحتاج إليها. لا تفكر في حذفها إلا إذا كان كل نموذج يقرأ الملف واحدًا منها، وتحقق من أنها تلتزم بها دون القاعدة.",
-        next: "أبقِها ما لم يكن كل نموذج يقرأ الملف يلتزم بها بالفعل.",
+        fix: "أبقِها: قد يظل نموذج صغير أو منخفض التكلفة يقرأ هذا الملف، مثل وكيل فرعي، بحاجة إليها حتى لو لم تحتج إليها النماذج القادرة.",
+        next: "أبقِها ما دام نموذج صغير أو منخفض التكلفة قد يقرأ هذا الملف.",
+        capable: {
+          fix: "أبقِها إن كان أي وكيل يقرأ هذا الملف قد يحتاج إليها. لا تفكر في حذفها إلا إذا كان كل نموذج يقرأ الملف واحدًا منها، وتحقق من أنها تلتزم بها دون القاعدة.",
+          next: "أبقِها ما لم يكن كل نموذج يقرأ الملف يلتزم بها بالفعل.",
+        },
       },
     },
     languages: {es: "الإسبانية", pt: "البرتغالية", fr: "الفرنسية", it: "الإيطالية", de: "الألمانية", zh: "الصينية", hi: "الهندية", ar: "العربية"},
@@ -764,8 +785,12 @@ window.STRINGS = {
       likely_redundant: {
         h: "Certains agents le font peut-être déjà sans qu’on le leur demande.",
         d: "Un modèle a jugé qu’un agent de code compétent fait cela sans qu’on le lui dise. Ce jugement ne concordait avec le comportement mesuré que pour les modèles sur lesquels il a été vérifié, listés avec les mesures. Il ne couvre pas Fable. D’autres modèles, des versions ultérieures et des sous-agents moins coûteux peuvent encore avoir besoin de la règle. Les règles reconnues comme des tâches dans d’autres fichiers, des conventions choisies, des faits propres au projet ou des règles de sécurité ne reçoivent pas ce constat.",
-        fix: "Conservez-la si un agent qui lit ce fichier pourrait en avoir besoin. N’envisagez de la retirer que si chaque modèle qui lit le fichier fait partie de ceux-là, et vérifiez qu’ils la respectent sans la règle.",
-        next: "Conservez-la, sauf si chaque modèle qui lit le fichier la respecte déjà.",
+        fix: "Conservez-la : un modèle petit ou peu coûteux qui lit ce fichier, comme un sous-agent, peut encore en avoir besoin même si les modèles compétents n’en ont pas besoin.",
+        next: "Conservez-la tant qu’un modèle petit ou peu coûteux peut lire ce fichier.",
+        capable: {
+          fix: "Conservez-la si un agent qui lit ce fichier pourrait en avoir besoin. N’envisagez de la retirer que si chaque modèle qui lit le fichier fait partie de ceux-là, et vérifiez qu’ils la respectent sans la règle.",
+          next: "Conservez-la, sauf si chaque modèle qui lit le fichier la respecte déjà.",
+        },
       },
     },
     languages: {es: "de l’espagnol", pt: "du portugais", fr: "du français", it: "de l’italien", de: "de l’allemand", zh: "du chinois", hi: "du hindi", ar: "de l’arabe"},
