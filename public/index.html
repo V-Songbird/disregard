@@ -232,8 +232,8 @@
   // factor and its number stay behind the "what was measured" disclosure:
   // someone about to rewrite a rule needs the fix, not the arithmetic that
   // found it, and a bare "F8 0.8" is a number they have to interpret for us.
-  function findingCard(f) {
-    const copy = own(t.findings, f.id);
+  // File mode passes the copy for the models its reader says read the file.
+  function findingCard(f, copy = own(t.findings, f.id)) {
     if (!copy) return null;
     const vars = { verb: f.verb };
     const li = el("li", LEAD.has(f.id) ? "finding lead" : "finding");

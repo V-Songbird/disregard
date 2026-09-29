@@ -270,9 +270,10 @@ async function keyboard(page, theme, layout, locale) {
   const sampleFocus = (await colors(page)).focus; focus.push(sampleFocus);
   check("file-sample visible unobscured focus", sampleFocus?.passed && sampleFocus.unobscured);
   await page.fill("#file-source", ["module0", "module1", "module2"].map((name) => "- Use " + name + " for storage.").join("\n"));
-  // From the text box, Tab reaches the file chooser, the path-rules option, then the primary action.
+  // From the text box, Tab reaches the file chooser, the path-rules option, the reader choice's checked
+  // option (one stop for the group), then the primary action.
   await page.locator("#file-source").focus();
-  for (const id of ["file-choose", "file-path-rules", "file-create"]) {
+  for (const id of ["file-choose", "file-path-rules", "file-readers-unsure", "file-create"]) {
     await page.keyboard.press("Tab"); check("tab reaches " + id, await activeId(page) === id);
     const f = (await colors(page)).focus; focus.push(f); check(id + " visible unobscured focus", f?.passed && f.unobscured);
   }
