@@ -23,6 +23,7 @@ Run from the repository root with the pinned Node version.
 | `npx --yes wrangler dev` | Local application server | Downloads Wrangler if needed; analysis can call the paid provider. |
 
 Browser checks require Playwright and installed Microsoft Edge. Their setup, output arguments, and scope are in the development guide.
+Each harness run needs a report path that does not exist yet; with an existing one the harness exits 1 before running, so check the exit code before reading the report.
 
 ## Where things live
 
