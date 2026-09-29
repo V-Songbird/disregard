@@ -66,7 +66,7 @@ async function colors(page) {
       .reduce((n, v, i) => n + v * [0.2126, 0.7152, 0.0722][i], 0);
     const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
     const text = [];
-    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline,#file-crowding strong,#file-length strong")) {
+    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline,.banner > strong")) {
       if (node.hidden || !node.getClientRects().length || node.disabled) continue;
       const style = getComputedStyle(node), background = bg(node), foreground = over(rgba(style.color), background);
       const minimum = parseFloat(style.fontSize) >= 24 || (parseFloat(style.fontSize) >= 18.6667 && parseInt(style.fontWeight) >= 700) ? 3 : 4.5;
