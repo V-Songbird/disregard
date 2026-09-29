@@ -66,7 +66,7 @@ async function colors(page) {
       .reduce((n, v, i) => n + v * [0.2126, 0.7152, 0.0722][i], 0);
     const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
     const text = [];
-    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline,#file-crowding strong")) {
+    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline,#file-crowding strong,#file-length strong")) {
       if (node.hidden || !node.getClientRects().length || node.disabled) continue;
       const style = getComputedStyle(node), background = bg(node), foreground = over(rgba(style.color), background);
       const minimum = parseFloat(style.fontSize) >= 24 || (parseFloat(style.fontSize) >= 18.6667 && parseInt(style.fontWeight) >= 700) ? 3 : 4.5;
@@ -355,6 +355,25 @@ async function keyboard(page, theme, layout, locale) {
             const screenshot = target.replace(/\.json$/, "-" + theme + "-file-crowding.png");
             await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
+          // The length note a file over 200 lines shows: its title, body and guide link are measured.
+          // Blank lines make the length with two new rules, so the view sends two requests and shows no crowding note.
+          await page.fill("#file-source", "- Tag each release.\n" + "\n".repeat(200) + "- Sign each tag.\n");
+          await page.click("#file-create");
+          await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+          const lengthNote = await page.evaluate(() => {
+            const n = document.getElementById("file-length"), link = document.getElementById("file-length-guide");
+            return { shown: !n.hidden && n.getClientRects().length > 0, title: n.querySelector("strong")?.textContent.trim().slice(0, 80),
+              body: n.querySelector("p")?.textContent.trim().slice(0, 80), link: link?.href, linkShown: !!link && link.getClientRects().length > 0,
+              crowdingHidden: document.getElementById("file-crowding").hidden };
+          });
+          const longMeasured = await colors(page), longText = longMeasured.text.filter((c) => [lengthNote.title, lengthNote.body].includes(c.text) || c.id === "file-length-guide");
+          report.filePages.push({ theme, layout, locale, view: "length note", note: lengthNote, ...longMeasured,
+            passed: lengthNote.shown && lengthNote.linkShown && lengthNote.crowdingHidden && lengthNote.link === "https://code.claude.com/docs/en/memory#write-effective-instructions" &&
+              longText.length === 3 && longMeasured.text.every((c) => c.passed) && !longMeasured.overflow });
+          if (layout === "desktop" && locale === "en") {
+            const screenshot = target.replace(/\.json$/, "-" + theme + "-file-length.png");
+            await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
+          }
           await page.click("#mode-rule");
         }
         const measured = await colors(page);
@@ -373,7 +392,7 @@ async function keyboard(page, theme, layout, locale) {
     release(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));
     report.mockRequests = requests; Object.assign(report, site.audit());
-    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 48 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
+    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 60 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, pages: report.pages.length, keyboardJourneys: report.keyboard.length, mockRequests: requests,
       providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,
