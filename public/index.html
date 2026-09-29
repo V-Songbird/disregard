@@ -245,7 +245,7 @@
   // Each factor label names its scale; the bounds render through number() like the values.
   const SCALES = { F3: [0, 4], F8: [0, 3], F1: [0, 1], F2: [0, 1], F7: [0, 1] };
 
-  function factorList(factors) {
+  function factorList(factors, findings = []) {
     const box = el("details");
     box.append(el("summary", null, t.measured));
     const dl = el("dl", "factors");
@@ -259,6 +259,18 @@
       const role = own(t.ruleRoles, factors.rule_role.choice) || factors.rule_role.choice;
       dl.append(el("dt", null, t.factors.rule_role),
         el("dd", null, fill(t.confidence, { choice: role, value: number(factors.rule_role.confidence) })));
+    }
+    if (factors.agent_default) {
+      const answer = own(t.agentDefaults, factors.agent_default.choice) || factors.agent_default.choice;
+      dl.append(el("dt", null, t.factors.agent_default),
+        el("dd", null, fill(t.confidence, { choice: answer, value: number(factors.agent_default.confidence) })));
+    }
+    // Model ids carry digits, so they stay here rather than on the finding card.
+    const redundant = findings.find((f) => f.id === "likely_redundant" && Array.isArray(f.readers));
+    if (redundant) {
+      const list = el("dd", null, new Intl.ListFormat(document.documentElement.lang, { type: "conjunction" }).format(redundant.readers));
+      list.dir = "ltr";
+      dl.append(el("dt", null, t.factors.readers), list);
     }
     if (factors.primitive) {
       const name = own(t.primitives, factors.primitive.choice) || factors.primitive.choice;
@@ -297,7 +309,7 @@
       }
       out.append(list);
     }
-    out.append(factorList(body.factors || {}));
+    out.append(factorList(body.factors || {}, body.findings));
     if (view.rule) out.append(promptPanel({
       schemaVersion: 1, sourceName: "Instruction excerpt (source file not provided)", sourceText: view.rule,
       units: [{ id: "rule", startLine: 1, endLine: view.rule.split(/\r\n|\r|\n/).length,

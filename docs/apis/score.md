@@ -88,9 +88,10 @@ consistently mean a better instruction. The interface lists each field under
 | `specificity` | Concrete enough to check | 0–1 | Model judgment that the text is concrete enough to check whether it was followed. |
 | `primitive` | Suggested form | `{ choice, confidence }` | Suggested home: `rule`, `hook`, `skill`, or `subagent`; confidence is 0–1. |
 | `rule_role` | Suggested interpretation | `{ choice, confidence }` | `direct_action`, `artifact_requirement`, `background`, or `unclear`; confidence is 0–1. |
+| `agent_default` | Agent default | `{ choice, confidence }` | Model judgment of whether a capable coding agent would do what the rule asks without being told: `agent_default`, `project_specific`, or `kept_by_policy`; confidence is 0–1. |
 
 F1, F2, and F7 use deterministic local checks. F3, F8, `is_rule`, `specificity`,
-classification, routing, and injection screening use one provider request. Fractional F3 and F8 values represent
+classification, routing, `agent_default`, and injection screening use one provider request. Fractional F3 and F8 values represent
 weighted model judgments, not integer categories.
 
 The current implementation and criteria are in [analyze.js](../../lib/analyze.js),
@@ -100,7 +101,8 @@ The current implementation and criteria are in [analyze.js](../../lib/analyze.js
 ## Findings
 
 Each finding contains `id`, `factor`, and `value`. Routing findings also include
-`choice` and `confidence`; `hedge_dominance` includes the matched `verb`.
+`choice` and `confidence`; `hedge_dominance` includes the matched `verb`;
+`likely_redundant` includes `readers`.
 User-facing descriptions belong to the interface, not the API response.
 
 | ID | What to inspect |
@@ -114,6 +116,7 @@ User-facing descriptions belong to the interface, not the API response.
 | `stall_risk` | Whether a prohibition needs an allowed alternative or stop condition. |
 | `hedge_dominance` | Whether softened wording is intentional for the action it qualifies. |
 | `no_concrete_anchor` | Whether the instruction names something a reader could check, or only a quality or goal. |
+| `likely_redundant` | Whether every model that reads the file already does this without the rule. |
 
 Routing is named at confidence 0.8 or greater. Otherwise, an F8 value at or below 1.25
 produces the generic `could_be_a_hook` finding only when `is_rule` is 0.7 or greater;
@@ -123,8 +126,35 @@ F3 below 1.5 produces `no_trigger`.
 concrete marker, and a `specificity` value below 0.5; its `value` is F7.
 An `is_rule` value below 0.5 produces `not_a_rule`, unless the supplemental classifier
 identifies an artifact requirement at confidence 0.8 or greater. `not_a_rule` is then
-the only finding: routing, `no_trigger`, and the local findings judge the shape of a
-rule, so they are not returned for background. `factors` still carries every value.
+the only finding: routing, `no_trigger`, `likely_redundant`, and the local findings judge
+a rule, so they are not returned for background. `factors` still carries every value.
+
+`likely_redundant` requires the `agent_default` choice at confidence 0.8 or greater. Its
+`value` is that confidence. It is never returned for a rule about safety, destructive or
+irreversible actions, authorization or approval, or secrets and private data. Those rules
+are kept by policy. Either the model's `kept_by_policy` answer or a local English word list
+withholds the finding, and the list errs toward withholding.
+
+The finding is also never returned for kinds of rule that the measured models needed, even
+when the model answers `agent_default`:
+
+- duties in another file, such as updating a README, a changelog or other documentation;
+- conventions a project picks among valid options, such as naming, headers, formatting,
+  import order, or one named option chosen over another;
+- the project's own files and helpers, named by path or file name;
+- facts about the project, such as versions, ports, time units or known fixes.
+
+A local English pattern list detects these kinds, and it errs toward withholding. For other
+rules, such as language idioms, the model's answer and its confidence decide.
+
+The finding is a model's prediction about what agents do unprompted, so treat it as advice
+to check, not as removal advice. `readers` lists the model ids whose measured behaviour the
+prediction was compared against: currently `claude-haiku-4-5-20251001`, `claude-sonnet-5`,
+and `claude-opus-5-5`. The finding does not cover Fable. Other models, later versions of
+those models, and cheaper subagents that read the same file may still need the rule. Keep a
+rule unless every model that reads the file is covered. That comparison used a small set of
+rules and only one rule known to be redundant for all three models, so how often the finding
+misses a redundant rule is not measured.
 
 These comparisons also use unrounded provider values. Returned model factors,
 confidence values, and finding values are rounded to two decimal places. Consume

@@ -1,0 +1,38 @@
+{
+  "calibration": {
+    "redundant": [
+      "Declare variables in src/ files with `const`, or `let` when they are reassigned; never use `var`."
+    ],
+    "necessary": [
+      "Start every src/ module with a `// @module <name>` header line, where `<name>` is the file name without `.js`.",
+      "Never throw the built-in `Error` class in src/ files — throw `AppError` from `src/errors.js` instead.",
+      "Never use `console.log` in src/ files — call `log()` from `src/logger.js` instead.",
+      "Write src/ files without statement-ending semicolons; `.prettierrc` sets `semi: false`.",
+      "Never create a new Markdown file unless the task asks for one — put a script's usage help in its `--help` output instead.",
+      "Never name a test file `<name>.test.js` — name it `<name>.spec.js` instead.",
+      "Name new src/ files in snake_case, such as `src/string_utils.js` — never kebab-case or camelCase.",
+      "When you add or change an exported function in src/, list it in `docs/api.md`.",
+      "When you change a file in src/, note the change as a bullet under `## [Unreleased]` in CHANGELOG.md.",
+      "Local servers listen on port 8787, the only port the dev proxy forwards.",
+      "The billing service reads `ts` as Unix time in seconds, not milliseconds.",
+      "Write new src/ functions with Promises (`async`/`await` and `fs/promises`), never Node-style callbacks."
+    ],
+    "model_decides": [
+      "Compare values in src/ files with `===` and `!==`, never `==` or `!=`; write a nullish check as `x === null || x === undefined`."
+    ]
+  },
+  "confident_misses": [
+    { "kind": "distant-file duty", "confidence": 0.83, "rule": "When changing CLI/config behavior, update relevant docs in `README.md` and usage/help text if needed." },
+    { "kind": "distant-file duty", "confidence": 0.96, "rule": "Documentation Expectations:\nUpdate docs when behavior changes user-facing or integrator-facing surfaces:\nRustdoc comments for new public types, methods, traits, and fields." },
+    { "kind": "distant-file duty", "confidence": 0.92, "rule": "Document deprecations clearly" },
+    { "kind": "chosen convention", "confidence": 0.92, "rule": "`SCREAMING_SNAKE_CASE` for constants" },
+    { "kind": "chosen convention", "confidence": 0.96, "rule": "`PascalCase` for types, interfaces, and classes" },
+    { "kind": "chosen convention", "confidence": 0.92, "rule": "Group imports: external packages first, then internal modules" },
+    { "kind": "chosen convention", "confidence": 0.93, "rule": "Formatting:\nKey rules:\nMatching `{ }` in same column (except initializers/lambdas)" },
+    { "kind": "chosen convention", "confidence": 0.85, "rule": "Formatting:\nKey rules:\n`*`/`&` attached to variable name: `int *ptr;`" },
+    { "kind": "chosen convention", "confidence": 0.82, "rule": "Markdown rules of note: bare URLs must be wrapped in `< >`, numbered lists should use `1.` style, fenced code blocks must have a language hint." },
+    { "kind": "chosen convention", "confidence": 0.88, "rule": "When Working with Tests:\nUse `assertThrows()` for exception testing, not `@Test(expected = ...)`" },
+    { "kind": "project fact", "confidence": 0.86, "rule": "Go version: see `go.mod`." },
+    { "kind": "project fact", "confidence": 0.94, "rule": "**Issue**: `@BeforeEachEach` instead of `@BeforeEach`\n**Solution**: Fix with: `sed -i '' 's/@BeforeEachEach/@BeforeEach/g'`" }
+  ]
+}

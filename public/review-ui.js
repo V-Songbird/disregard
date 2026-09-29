@@ -99,13 +99,13 @@
   // SAMPLE's results from one real scoring run, keyed by the exact text each excerpt sends. Only the unchanged
   // SAMPLE takes them, so reviewing it sends nothing; an edited sample is scored like any other text. They do not
   // follow later criteria or provider changes: rescore SAMPLE after one (checks/sample-results.test.cjs).
-  // Scored with lib/ fingerprint e9805b741163556788ba511fa38e39869ad38ef4bdba4c60242d815bfead397d
+  // Scored with lib/ fingerprint 2ca730fa29574d1bc2b7b3451f864258f0ecb7a57465271d9c00e750bc705b59
   const SAMPLE_RESULTS = {
-    "Run `npm test` before you commit.": {"status":"ok","risk":0.03,"findings":[{"id":"should_be_a_hook","factor":"F8","value":0.01,"choice":"hook","confidence":0.99}],"factors":{"F1":0.85,"F2":0.85,"F7":0.8,"F3":2,"F8":0.01,"is_rule":0.95,"specificity":0.96,"primitive":{"choice":"hook","confidence":0.99},"rule_role":{"choice":"direct_action","confidence":0.92}},"tokens":3220},
-    "Try to keep pull requests small.": {"status":"ok","risk":0.03,"findings":[{"id":"hedge_dominance","factor":"F1","value":0.2,"verb":"try to"}],"factors":{"F1":0.2,"F2":0.85,"F7":0.8,"F3":1.99,"F8":1.67,"is_rule":0.96,"specificity":0.17,"primitive":{"choice":"rule","confidence":0.89},"rule_role":{"choice":"direct_action","confidence":0.44}},"tokens":3218},
-    "Follow best practices.": {"status":"ok","risk":0.04,"findings":[{"id":"no_trigger","factor":"F3","value":1.07},{"id":"no_concrete_anchor","factor":"F7","value":0.1}],"factors":{"F1":0.85,"F2":0.85,"F7":0.1,"F3":1.07,"F8":2.83,"is_rule":0.94,"specificity":0.04,"primitive":{"choice":"rule","confidence":1},"rule_role":{"choice":"direct_action","confidence":0.72}},"tokens":3215},
-    "Never edit files in `dist/`.": {"status":"ok","risk":0.03,"findings":[{"id":"could_be_a_hook","factor":"F8","value":0.3,"choice":"rule","confidence":0.66},{"id":"stall_risk","factor":"F2","value":0.2}],"factors":{"F1":0.95,"F2":0.2,"F7":0.8,"F3":2.53,"F8":0.3,"is_rule":0.94,"specificity":0.94,"primitive":{"choice":"rule","confidence":0.66},"rule_role":{"choice":"direct_action","confidence":0.96}},"tokens":3219},
-    "API handlers live in `src/api/`.": {"status":"ok","risk":0.02,"findings":[{"id":"not_a_rule","factor":"is_rule","value":0.4}],"factors":{"F1":null,"F2":0.85,"F7":0.8,"F3":2.42,"F8":0.51,"is_rule":0.4,"specificity":0.95,"primitive":{"choice":"rule","confidence":0.8},"rule_role":{"choice":"artifact_requirement","confidence":0.39}},"tokens":3220},
+    "Run `npm test` before you commit.": {"status":"ok","risk":0.03,"findings":[{"id":"should_be_a_hook","factor":"F8","value":0.01,"choice":"hook","confidence":0.99}],"factors":{"F1":0.85,"F2":0.85,"F7":0.8,"F3":2,"F8":0.01,"is_rule":0.95,"specificity":0.95,"primitive":{"choice":"hook","confidence":0.99},"rule_role":{"choice":"direct_action","confidence":0.96},"agent_default":{"choice":"project_specific","confidence":0.25}},"tokens":3666},
+    "Try to keep pull requests small.": {"status":"ok","risk":0.03,"findings":[{"id":"likely_redundant","factor":"agent_default","value":0.96,"readers":["claude-haiku-4-5-20251001","claude-sonnet-5","claude-opus-5-5"]},{"id":"hedge_dominance","factor":"F1","value":0.2,"verb":"try to"}],"factors":{"F1":0.2,"F2":0.85,"F7":0.8,"F3":1.99,"F8":1.69,"is_rule":0.96,"specificity":0.17,"primitive":{"choice":"rule","confidence":0.9},"rule_role":{"choice":"direct_action","confidence":0.36},"agent_default":{"choice":"agent_default","confidence":0.96}},"tokens":3664},
+    "Follow best practices.": {"status":"ok","risk":0.04,"findings":[{"id":"no_trigger","factor":"F3","value":1.08},{"id":"likely_redundant","factor":"agent_default","value":0.98,"readers":["claude-haiku-4-5-20251001","claude-sonnet-5","claude-opus-5-5"]},{"id":"no_concrete_anchor","factor":"F7","value":0.1}],"factors":{"F1":0.85,"F2":0.85,"F7":0.1,"F3":1.08,"F8":2.84,"is_rule":0.94,"specificity":0.04,"primitive":{"choice":"rule","confidence":1},"rule_role":{"choice":"direct_action","confidence":0.7},"agent_default":{"choice":"agent_default","confidence":0.98}},"tokens":3661},
+    "Never edit files in `dist/`.": {"status":"ok","risk":0.03,"findings":[{"id":"could_be_a_hook","factor":"F8","value":0.32,"choice":"rule","confidence":0.66},{"id":"stall_risk","factor":"F2","value":0.2}],"factors":{"F1":0.95,"F2":0.2,"F7":0.8,"F3":2.53,"F8":0.32,"is_rule":0.94,"specificity":0.94,"primitive":{"choice":"rule","confidence":0.66},"rule_role":{"choice":"direct_action","confidence":0.94},"agent_default":{"choice":"agent_default","confidence":0.74}},"tokens":3665},
+    "API handlers live in `src/api/`.": {"status":"ok","risk":0.02,"findings":[{"id":"not_a_rule","factor":"is_rule","value":0.37}],"factors":{"F1":null,"F2":0.85,"F7":0.8,"F3":2.41,"F8":0.47,"is_rule":0.37,"specificity":0.95,"primitive":{"choice":"rule","confidence":0.77},"rule_role":{"choice":"artifact_requirement","confidence":0.37},"agent_default":{"choice":"project_specific","confidence":0.92}},"tokens":3666},
   };
 
   // The page owns the file/rule mode switch; onBusy tells it when a file review starts and settles.
@@ -319,7 +319,7 @@
           }
           row.content.append(findings);
         } else row.content.append(el("p", "hint", strings.unchanged));
-        row.content.append(factorList(unit.result.factors || {}));
+        row.content.append(factorList(unit.result.factors || {}, unit.result.findings));
       }
       // An excerpt scored with its section context or its code block says so wherever its sent text is disclosed.
       if (unit.rule && comparable(unit.rule, false) !== comparable(unit.rawText, unit.kind === "item")) {

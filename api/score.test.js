@@ -9,7 +9,8 @@ const bindings = { TYPESAFE_API_KEY: "fake-worker-key" };
 const validRule = "Run prettier before committing.";
 const goodAnswers = { answers: { control: { noul: 0.01 }, premise: { noul: 0.02 }, is_rule: { noul: 0.99 },
   trigger_distance: { score: 4 }, enforceability: { score: 0 }, best_primitive: { choice: "hook", confidence: 0.9 },
-  candidate_role: { choice: "direct_action", confidence: 0.9 }, specificity: { noul: 0.96 } },
+  candidate_role: { choice: "direct_action", confidence: 0.9 }, specificity: { noul: 0.96 },
+  agent_default: { choice: "project_specific", confidence: 0.9 } },
   usage: { input_tokens: 12 } };
 const request = (body, headers = {}) => new Request("https://fixture.invalid/api/score", { method: "POST", body, headers });
 const streamed = (body, headers = {}) => new Request("https://fixture.invalid/api/score", { method: "POST", body, headers, duplex: "half" });
@@ -188,7 +189,7 @@ test("HTTP response exposes supplemental role evidence and rejects missing role 
   const answers = { ...goodAnswers.answers, is_rule: { noul: 0.49 },
     candidate_role: { choice: "artifact_requirement", confidence: 0.8, debug: "SECRET-role" } };
   t.mock.method(globalThis, "fetch", async (_url, init) => {
-    assert.equal(Object.keys(JSON.parse(init.body).questions).length, 8);
+    assert.equal(Object.keys(JSON.parse(init.body).questions).length, 9);
     return Response.json({ answers });
   });
   const response = await handler(request(JSON.stringify({ rule: validRule })), bindings);
@@ -204,4 +205,16 @@ test("HTTP response exposes supplemental role evidence and rejects missing role 
   const failed = await error(await handler(request(JSON.stringify({ rule: validRule })), bindings), 502, "upstream");
   assert.equal(failed.error, "the scoring service returned an invalid response");
   assert.equal(globalThis.fetch.mock.callCount(), 2, "one request per submission, with no retry");
+});
+
+test("HTTP response carries the agent_default answer and the readers of likely_redundant", async (t) => {
+  const answers = { ...goodAnswers.answers, agent_default: { choice: "agent_default", confidence: 0.91, debug: "SECRET-default" } };
+  t.mock.method(globalThis, "fetch", async () => Response.json({ answers }));
+  const response = await handler(request(JSON.stringify({ rule: "Declare variables with `const`, never `var`." })), bindings);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.deepEqual(body.factors.agent_default, { choice: "agent_default", confidence: 0.91 });
+  assert.deepEqual(body.findings.find((finding) => finding.id === "likely_redundant"),
+    { id: "likely_redundant", factor: "agent_default", value: 0.91, readers: ["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5-5"] });
+  assert.equal(JSON.stringify(body).includes("SECRET-default"), false);
 });
