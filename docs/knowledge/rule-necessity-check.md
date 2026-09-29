@@ -45,6 +45,8 @@ The [research page](https://disregard.dev/research#rule-necessity) shows these d
 3. Paste the prompt into your agent, in the repository that holds the file.
 4. Answer your agent's questions: which models read the file, the reasoning effort, the spend cap per run, the total ceiling, the permission mode, and which rules to check.
    Name every model that reads the file, including cheaper models that run subagents.
+   If you answered **Which models read this file?** with anything other than **Not sure**, the prompt states that answer as yours.
+   Your agent then asks only for the exact model ids.
 5. Read the plan. For each rule it shows the task, the grader and the result of testing that grader.
    The agent starts no run until you approve the plan and its ceiling.
 

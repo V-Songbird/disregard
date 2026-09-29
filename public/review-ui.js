@@ -408,7 +408,7 @@
     // A cached prompt script older than the builder shows nothing here rather than the refactoring prompt's wording.
     function necessityPanel() {
       if (!exported.querySelector(".copy-prompt") || typeof window.DisregardPrompt.buildNecessityPrompt !== "function") return el("div");
-      const strings = t(), panel = promptPanel(report, { ...strings, ...strings.necessity }, true, undefined, "buildNecessityPrompt");
+      const strings = t(), panel = promptPanel(report, { ...strings, ...strings.necessity }, true, { readers: readers() }, "buildNecessityPrompt");
       if (panel.hasChildNodes()) panel.prepend(el("h2", null, strings.necessity.title));
       return panel;
     }
@@ -425,11 +425,10 @@
     }
     name.addEventListener("input", () => rebuild(true));
     pathRules.addEventListener("change", () => rebuild(false));
-    // The reader choice rewords the rows' advice, the refactoring prompt and the crowding note; the rule check prompt
-    // asks the owner itself.
+    // The reader choice rewords the rows' advice, the crowding note and both prompts.
     for (const choice of readerChoices) choice.input.addEventListener("change", () => {
       if (report) for (const unit of report.units) renderUnit(unit, rows.get(unit.id));
-      rebuild(false); controls();
+      rebuild(true); controls();
     });
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {

@@ -340,24 +340,31 @@ async function unitHints(page) {
           choices: radios.map((radio) => [radio.value, radio.checked, radio.labels[0].textContent === t.file.readers[radio.value]]),
           next: row.querySelector("summary .unit-next").textContent === t.findings.likely_redundant.next ? "default" :
             row.querySelector("summary .unit-next").textContent === t.findings.likely_redundant.capable.next ? "capable" : "other",
-          prompt: document.querySelector("#file-export .prompt-text").value };
+          prompt: document.querySelector("#file-export .prompt-text").value,
+          necessity: document.querySelector("#file-necessity .prompt-text").value };
       });
+      // The rule check prompt asks which models read the file only while the choice is Not sure.
+      const asksReaders = (view) => view.necessity.includes("- which agents and exact model ids read this file");
       const readersUnsure = await readersView();
       check(prefix + " the reader choice is a labeled group with Not sure checked and the default advice",
         [readersUnsure.legend, readersUnsure.described, readersUnsure.choices, readersUnsure.next,
-          readersUnsure.prompt.includes("The owner has not said which models read this file")],
-        [true, true, [["unsure", true, true], ["small", false, true], ["capable", false, true]], "default", true]);
+          readersUnsure.prompt.includes("The owner has not said which models read this file"), asksReaders(readersUnsure)],
+        [true, true, [["unsure", true, true], ["small", false, true], ["capable", false, true]], "default", true, true]);
       await page.check("#file-readers-capable");
       const readersCapable = await readersView();
-      check(prefix + " choosing only capable models rewords the advice and the prompt and sends nothing",
+      check(prefix + " choosing only capable models rewords the advice and both prompts and sends nothing",
         [readersCapable.next, readersCapable.prompt.includes("The owner says only capable models read this file"),
-          readersCapable.prompt.includes("Consider removing it only if every model"), requests.length], ["capable", true, true, 0]);
+          readersCapable.prompt.includes("Consider removing it only if every model"), asksReaders(readersCapable),
+          readersCapable.necessity.includes("which models read it: only capable models"), requests.length], ["capable", true, true, false, true, 0]);
       await page.check("#file-readers-small");
       const readersSmall = await readersView();
-      check(prefix + " choosing small models keeps the default advice", [readersSmall.next,
-        readersSmall.prompt.includes("The owner says small or cheap models, such as subagents, may read this file.")], ["default", true]);
+      check(prefix + " choosing small models keeps the default advice and states the choice in the rule check prompt", [readersSmall.next,
+        readersSmall.prompt.includes("The owner says small or cheap models, such as subagents, may read this file."), asksReaders(readersSmall),
+        readersSmall.necessity.includes("which models read it: small or cheap models")], ["default", true, false, true]);
       await page.check("#file-readers-unsure");
-      check(prefix + " choosing Not sure again restores the prompt", (await readersView()).prompt, readersUnsure.prompt);
+      const readersAgain = await readersView();
+      check(prefix + " choosing Not sure again restores both prompts", [readersAgain.prompt, readersAgain.necessity],
+        [readersUnsure.prompt, readersUnsure.necessity]);
       await page.fill("#file-source", (await page.inputValue("#file-source")).replace("best practices", "the style guide"));
       await page.click("#file-create"); await settled(page);
       check(prefix + " an edited sample is scored", [requests.length, requests.some((entry) => entry.rule === "Follow the style guide.")], [5, true]);
