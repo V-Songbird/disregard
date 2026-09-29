@@ -579,6 +579,28 @@ test("the necessity prompt has the owner approve and pay for runs in scratch cop
   assert.ok(output.indexOf("Start no run until") < output.indexOf("Step 2, the runs, only after that approval."));
 });
 
+// The file page's reader choice: an answer is stated as the owner's, so the prompt asks only for the model ids.
+test("the necessity prompt states the owner's reader choice and asks again only when it is not sure", () => {
+  const input = reviewedFile();
+  const ask = "- which agents and exact model ids read this file, including cheaper models that run subagents. Pin full model ids, not aliases.";
+  const unsure = buildNecessityPrompt(input, english, { readers: "unsure" });
+  assert.equal(unsure, buildNecessityPrompt(input, english));
+  assert.ok(unsure.includes(ask));
+  for (const readers of [undefined, "", "CAPABLE", "all", "toString", 1]) assert.equal(buildNecessityPrompt(input, english, { readers }), unsure, String(readers));
+  const capable = buildNecessityPrompt(input, english, { readers: "capable" });
+  assert.ok(capable.includes("- the exact model ids of the agents that read this file. The owner has already said which models read it: " +
+    "only capable models, with no small or cheap model or subagent. Take that as the owner's answer and ask only for the exact model ids. Pin full model ids, not aliases."));
+  const small = buildNecessityPrompt(input, english, { readers: "small" });
+  assert.ok(small.includes("- the exact model ids of the agents that read this file. The owner has already said which models read it: " +
+    "small or cheap models, such as subagents, may read it. Take that as the owner's answer and ask only for the exact model ids, " +
+    "including those of the cheaper models that run subagents. Pin full model ids, not aliases."));
+  for (const output of [capable, small]) {
+    assert.ok(!output.includes(ask));
+    assert.ok(output.includes("A rule can be removed only when it is redundant for every model that reads the file."));
+    assert.equal(output.replace(/\n- the exact model ids[^\n]*/, ""), unsure.replace(/\n- which agents[^\n]*/, ""));
+  }
+});
+
 // The script the prompt embeds, run as the owner's agent would run it, on synthetic counts.
 test("the embedded verdict script decides with the research page's thresholds", (t) => {
   const output = buildNecessityPrompt(reviewedFile(), english);

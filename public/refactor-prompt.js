@@ -309,10 +309,16 @@ console.log(JSON.stringify({ model, without: withoutArg, with: withArg ?? null, 
 
   /** Build an English prompt that has the owner's agent measure, in the owner's repository and with the
    * owner's models and money, which scored rules it follows without them. Validates the report as
-   * buildPrompt does and returns null when no unit was scored. Nothing here runs a model. */
-  function buildNecessityPrompt(report, englishStrings) {
+   * buildPrompt does and returns null when no unit was scored. Nothing here runs a model.
+   * options.readers is the owner's answer on which models read the file, as for buildPrompt: with "capable" or
+   * "small" the prompt states it and asks only for the exact model ids; anything else asks which models read it. */
+  function buildNecessityPrompt(report, englishStrings, options = {}) {
     const units = collect(report, englishStrings);
     if (!units) return null;
+    const answered = options.readers === "capable" ? "only capable models, with no small or cheap model or subagent"
+      : options.readers === "small" ? "small or cheap models, such as subagents, may read it" : null;
+    const readersQuestion = answered ? `the exact model ids of the agents that read this file. The owner has already said which models read it: ${answered}. Take that as the owner's answer and ask only for the exact model ids${options.readers === "small" ? ", including those of the cheaper models that run subagents" : ""}.`
+      : "which agents and exact model ids read this file, including cheaper models that run subagents.";
     const packet = {
       templateVersion: TEMPLATE_VERSION,
       source: units.source,
@@ -337,7 +343,7 @@ Step 1, the plan, runs no model. Read the current instruction file and the repos
 Before any run, test each grader by hand: in one scratch copy make a change that follows the rule, in another a change that breaks it, and confirm the grader passes the first and fails the second.
 
 Then ask the owner:
-- which agents and exact model ids read this file, including cheaper models that run subagents. Pin full model ids, not aliases. A rule can be removed only when it is redundant for every model that reads the file.
+- ${readersQuestion} Pin full model ids, not aliases. A rule can be removed only when it is redundant for every model that reads the file.
 - the reasoning effort, the spend cap per run, the total ceiling, and the permission mode the runs may use. A scratch copy isolates the repository, not the machine: runs execute commands with the owner's permissions.
 - which candidate rules to check.
 Show the plan: for each rule its quoted text and source lines, task, grader and grader test result; for each model its command; the run count and the worst-case spend. Start no run until the owner approves the plan and its ceiling.
