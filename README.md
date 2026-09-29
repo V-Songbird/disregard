@@ -70,6 +70,11 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
   A file review starts at most 55 requests a minute and says when it waits.
 - A file longer than 200 lines gets a note citing the Claude Code guide's target of under 200 lines per instruction file.
   Its prompt then lets the agent propose path-scoped rules or skills as a question for the owner.
+- A file with 30 or more rules gets a note: a small model may neglect duties in other files, such as docs.
+  Excerpts that are skipped or read as background do not count as rules.
+  The note stays hidden with **Only capable models, such as Sonnet or Opus**.
+  In tests, Claude Haiku 4.5 skipped such duties more often with 30 rules it already followed, but not measurably with 10.
+  Claude Sonnet 5 and Claude Opus 5.5 kept them. The page cannot tell which rules are such duties.
 - Each scored excerpt is limited to 2000 characters, counted as JavaScript string units.
 - An excerpt that depends only on a conditional heading or an introducing paragraph is scored with that section context stated first.
   A list item is scored together with the items nested under it, and a numbered list as one procedure.
