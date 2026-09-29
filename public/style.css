@@ -114,7 +114,7 @@ button:not([disabled], [aria-disabled="true"]):hover { filter: brightness(.88); 
 .drop-zone button:disabled { opacity: .65; cursor: default; }
 #file-export:not(:empty) + #file-progress:not(:empty) { margin-top: var(--space-3); }
 .file-action .hint { margin: var(--space-2) 0 0; }
-.file-name { margin-top: var(--space-4); }
+.file-name { margin: var(--space-4) 0; }
 .file-name label { font-size: .9rem; }
 .file-name input { width: 100%; max-width: 24rem; padding: .55rem .7rem; font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--muted); border-radius: .3rem; }
 .file-summary { font-weight: 600; margin: var(--space-3) 0 0; }
