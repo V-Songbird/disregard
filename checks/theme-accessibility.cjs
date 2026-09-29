@@ -66,7 +66,7 @@ async function colors(page) {
       .reduce((n, v, i) => n + v * [0.2126, 0.7152, 0.0722][i], 0);
     const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
     const text = [];
-    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline")) {
+    for (const node of document.querySelectorAll("h1,h2,p,label,button,select,textarea,a,summary,dt,dd,.count,.unit-state,.unit-headline,#file-crowding strong")) {
       if (node.hidden || !node.getClientRects().length || node.disabled) continue;
       const style = getComputedStyle(node), background = bg(node), foreground = over(rgba(style.color), background);
       const minimum = parseFloat(style.fontSize) >= 24 || (parseFloat(style.fontSize) >= 18.6667 && parseInt(style.fontWeight) >= 700) ? 3 : 4.5;
@@ -338,6 +338,23 @@ async function keyboard(page, theme, layout, locale) {
             const screenshot = target.replace(/\.json$/, "-" + theme + "-file-rows.png");
             await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
           }
+          // The crowding note a file of 30 scored rules shows under the default reader choice: its title and body are measured.
+          // The rules differ from the keyboard journey's, which a repeat check would otherwise not send again.
+          await page.fill("#file-source", Array.from({ length: 30 }, (_, i) => "- Name queue" + i + " after its topic.").join("\n"));
+          await page.click("#file-create");
+          await page.waitForFunction(() => document.getElementById("file-cancel").hidden);
+          const note = await page.evaluate(() => {
+            const n = document.getElementById("file-crowding");
+            return { readers: document.querySelector("input[name=file-readers]:checked")?.value, shown: !n.hidden && n.getClientRects().length > 0,
+              title: n.querySelector("strong")?.textContent.trim().slice(0, 80), body: n.querySelector("p")?.textContent.trim().slice(0, 80) };
+          });
+          const crowdedMeasured = await colors(page), noteText = crowdedMeasured.text.filter((c) => [note.title, note.body].includes(c.text));
+          report.filePages.push({ theme, layout, locale, view: "crowding note", note, ...crowdedMeasured,
+            passed: note.readers === "unsure" && note.shown && noteText.length === 2 && crowdedMeasured.text.every((c) => c.passed) && !crowdedMeasured.overflow });
+          if (layout === "desktop" && locale === "en") {
+            const screenshot = target.replace(/\.json$/, "-" + theme + "-file-crowding.png");
+            await page.screenshot({ path: screenshot, fullPage: true }); report.screenshots.push(path.relative(root, screenshot).replaceAll("\\", "/"));
+          }
           await page.click("#mode-rule");
         }
         const measured = await colors(page);
@@ -356,7 +373,7 @@ async function keyboard(page, theme, layout, locale) {
     release(); if (browser) await browser.close();
     server.closeAllConnections(); await new Promise((resolve) => server.close(resolve));
     report.mockRequests = requests; Object.assign(report, site.audit());
-    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 36 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
+    report.passed = !report.fatal && !report.pageErrors.length && report.pages.length === 30 && report.pages.every((p) => p.passed) && report.filePages.length === 48 && report.filePages.every(p => p.passed) && report.keyboard.every((k) => k.passed) && report.networkClean;
     fs.writeFileSync(target, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
     console.log(JSON.stringify({ passed: report.passed, pages: report.pages.length, keyboardJourneys: report.keyboard.length, mockRequests: requests,
       providerRequests: report.providerRequests, unknownRequests: report.unknownRequests,
