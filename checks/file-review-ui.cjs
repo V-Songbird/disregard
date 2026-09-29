@@ -41,8 +41,13 @@ const filterLabels = {
   ar: { label: "إظهار المقاطع التي فيها ملاحظات فقط", showing: "المقاطع المعروضة: 2 من 5" },
   fr: { label: "Afficher uniquement les extraits avec des points à examiner", showing: "Extraits affichés\u00a0: 2 sur 5" },
 };
+// The excerpts the rule check packet reads as background, which checks/refactor-prompt.test.cjs also checks.
+const parity = require("./fixtures/background-parity.json").cases;
+const parityDoc = parity.map((entry) => "- " + entry.rule).join("\n");
 let mode = "ok", requests = [], active = 0, maxActive = 0, waiting = [], windowCount = 0, retryAfter = null;
 function result(rule) {
+  const fixed = parity.find((entry) => entry.rule === rule);
+  if (fixed) return fixed.body;
   const hedge = rule.includes("try to"), vague = rule.includes("quality"), background = rule.includes("is stored in");
   const findings = background ? [{ id: "not_a_rule", factor: "is_rule", value: 0.3 }] : [
     ...(hedge ? [{ id: "hedge_dominance", factor: "F1", value: 0.2, verb: "try to" }] : []),
@@ -224,6 +229,12 @@ async function create(page, text = sample) {
   await page.fill("#file-source", text); await page.click("#file-create");
 }
 async function analyze(page, text = sample) { await create(page, text); await settled(page); }
+// Scores the parity fixture and says, per row, whether the page labels it background.
+async function backgroundRows(page) {
+  await analyze(page, parityDoc);
+  return page.evaluate(() => [...document.querySelectorAll(".instruction-unit .unit-state")]
+    .map((label) => label.textContent === STRINGS.en.file.states.background));
+}
 // Rows sit in the closed "See what was found" disclosure; opening it shows them.
 async function openDetails(page) {
   if (!await page.locator("#file-details").evaluate((node) => node.open)) await page.click("#file-details > summary");
@@ -468,6 +479,15 @@ async function unitHints(page) {
           rowsHidden: [...document.querySelectorAll(".instruction-unit")].every((unit) => !unit.checkVisibility()),
           primary: document.getElementById("file-create").getClientRects().length };
       }), { focused: true, heading: true, ordered: true, closed: true, label: true, inside: true, rowsHidden: true, primary: 0 });
+      // The rule check prompt follows the details, under its own heading, with its own Copy control and preview.
+      check(prefix + " the rule check prompt follows the details with its own wording", await page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file.necessity, panel = document.querySelector("#file-necessity .prompt-panel");
+        return { heading: panel.querySelector("h2").textContent === t.title, copy: panel.querySelector(".copy-prompt").textContent === t.copy,
+          hint: panel.querySelector(".hint").textContent === t.promptUse, summary: panel.querySelector("summary").textContent === t.showPrompt,
+          label: panel.querySelector(".prompt-text").getAttribute("aria-label") === t.prompt,
+          prompt: panel.querySelector(".prompt-text").value.startsWith("Disregard rule necessity check prompt"),
+          after: Boolean(document.getElementById("file-details").compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING) };
+      }), { heading: true, copy: true, hint: true, summary: true, label: true, prompt: true, after: true });
       check(prefix + " the summary line counts every excerpt as scored", await page.textContent("#file-summary"), summaryLines[locale].all);
       // Checked again unchanged, the file sends nothing, and the rows below read the same.
       const beforeAgain = requests.length; await page.fill("#file-source", ""); await analyze(page, summaryDoc);
@@ -608,6 +628,57 @@ async function unitHints(page) {
         await page.fill("#file-name", "docs/CLAUDE.md");
         check("the file name field in the result changes the prompt label and keeps the review", [label(windowsPrompt), label(await copyText(page)),
           await page.locator("#file-report").isVisible(), requests.length - beforeName], ["AGENTS.md", "docs/CLAUDE.md", true, 0]);
+        // The path-rules option changes only the refactoring prompt, so the rule check panel and its open preview stay as they are.
+        // The file name labels both prompts, so changing it rebuilds both.
+        const prompts = () => page.evaluate(() => ["#file-export", "#file-necessity"].map((host) => document.querySelector(host + " .prompt-text").value));
+        await page.locator("#file-necessity .prompt-preview").evaluate((node) => { node.open = true; window.necessityPanel = node.closest(".prompt-panel"); });
+        const beforeToggle = await prompts();
+        await page.check("#file-path-rules");
+        const toggled = await prompts();
+        await page.uncheck("#file-path-rules");
+        check("the path-rules option leaves the rule check panel and its open preview in place", [toggled[0] !== beforeToggle[0], toggled[1] === beforeToggle[1],
+          await page.evaluate(() => { const panel = document.querySelector("#file-necessity .prompt-panel"); return panel === window.necessityPanel && panel.querySelector(".prompt-preview").open; })],
+          [true, true, true]);
+        await page.fill("#file-name", "docs/AGENTS.md");
+        check("the file name labels both prompts", (await prompts()).map(label), ["docs/AGENTS.md", "docs/AGENTS.md"]);
+        await page.fill("#file-name", "docs/CLAUDE.md");
+        // A refactoring prompt just under the size limit goes over it with the path-rules option, so the rule check
+        // panel leaves with it and returns when the option is off. JSON escapes each quote, which makes 40 rows enough.
+        // Two paddings measured on fresh pages, each with its own request pacing, size the third so the limit falls
+        // halfway through the path-rules paragraph.
+        const quoted = (repeat) => Array.from({ length: 40 }, (_, i) => `- Quote module${i} as ${"\"x\" ".repeat(repeat)}in logs.`).join("\n");
+        const exportLength = (target) => target.evaluate(() => document.querySelector("#file-export .prompt-text")?.value.length ?? null);
+        const measure = async (repeat) => {
+          const probe = await page.context().newPage(); probe.on("pageerror", (error) => report.pageErrors.push(error.message));
+          await probe.goto(url); await analyze(probe, quoted(repeat));
+          const plain = await exportLength(probe);
+          await probe.check("#file-path-rules");
+          const withRules = await exportLength(probe);
+          await probe.close();
+          return { plain, withRules };
+        };
+        const low = await measure(100), high = await measure(200), limit = await page.evaluate(() => window.DisregardPrompt.MAX_PROMPT_CHARS);
+        const rulesLength = low.withRules - low.plain, perRepeat = (high.plain - low.plain) / 100;
+        const repeat = 200 + Math.round((limit - rulesLength / 2 - high.plain) / perRepeat);
+        await analyze(page, quoted(repeat));
+        const sized = await exportLength(page);
+        const sizing = { repeat, sized, limit, rulesLength };
+        check("the size scenario pads the rows so the refactoring prompt is under the limit and the path-rules paragraph takes it over",
+          { ...sizing, under: sized < limit, over: sized + rulesLength > limit }, { ...sizing, under: true, over: true });
+        const promptState = () => page.evaluate(() => ["#file-export", "#file-necessity"].map((host) => {
+          const text = document.querySelector(host + " .prompt-text");
+          // Without a prompt, the panel's only line is the reason it failed, if any.
+          return text ? { size: text.value.length < window.DisregardPrompt.MAX_PROMPT_CHARS, hint: null }
+            : { size: null, hint: document.querySelector(host + " .prompt-panel > .hint")?.textContent ?? null };
+        }));
+        const nearLimit = await promptState();
+        await page.check("#file-path-rules");
+        const pastLimit = await promptState();
+        await page.uncheck("#file-path-rules");
+        check("the path-rules option that pushes the refactoring prompt over the limit removes the rule check prompt until it is off",
+          [nearLimit, pastLimit, await promptState()], [[{ size: true, hint: null }, { size: true, hint: null }],
+            [{ size: null, hint: "This prompt is too large to copy as one report. Review a smaller section; do not repeat scoring just to retry copying." }, { size: null, hint: null }],
+            [{ size: true, hint: null }, { size: true, hint: null }]]);
         await page.locator("#file-upload").setInputFiles({name:"broken.md",mimeType:"text/markdown",buffer:Buffer.from([255,10,45,32,85,115,101,32,99,97,99,104,101,46])});
         check("invalid UTF-8 upload rejected without replacement", await page.locator("#file-error").isVisible());
         requests = [];
@@ -791,7 +862,7 @@ async function unitHints(page) {
             { progress: pauseLine + "at " + readyAt + ".", label: "Score 1 remaining excerpt", hidden: false, unavailable: "true", describedBy: "file-progress" });
           // Neither a pointer nor a key press on the held control sends anything.
           await held.locator("#file-start").click({ force: true }); await held.focus("#file-start"); await held.keyboard.press("Enter");
-          await held.locator(".copy-prompt").click();
+          await held.locator("#file-export .copy-prompt").click();
           check(`with ${name}, the wait sends nothing and leaves the prompt, the text box and the mode switch free`, await held.evaluate(() => ({
             copied: Boolean(window.copiedPrompt), editable: !document.getElementById("file-source").readOnly,
             running: !document.getElementById("file-cancel").hidden,
@@ -919,13 +990,25 @@ async function unitHints(page) {
         await new Promise((resolve) => setTimeout(resolve, 300));
         check("held results ask before closing the tab", { asked: closing, closed: page.isClosed() }, { asked: ["beforeunload"], closed: false });
 
-        // The prompt script fails to load: results and findings stay, the prompt panel says only the
-        // prompt is unavailable, and a retry sends only the excerpt that has no result.
+        // The page and the rule check packet read the parity fixture's excerpts as background alike.
+        const expectedBackground = parity.map((entry) => entry.background);
+        const parityContext = await browser.newContext({ locale: "en-US" });
+        site.watch(parityContext, url);
+        const parityPage = await parityContext.newPage(); parityPage.on("pageerror", (error) => report.pageErrors.push(error.message));
+        await parityPage.goto(url); mode = "ok";
+        check("the page shows as background the parity fixture's background excerpts", await backgroundRows(parityPage), expectedBackground);
+        check("the rule check packet reads as background the same excerpts", JSON.parse((await parityPage.inputValue("#file-necessity .prompt-text"))
+          .split("quoted data):\n")[1]).excerpts.map((excerpt) => excerpt.readAsBackground === true), expectedBackground);
+        await parityContext.close();
+
+        // The prompt script fails to load: results and findings stay, background rows keep their label, the prompt
+        // panel says only the prompt is unavailable, and a retry sends only the excerpt that has no result.
         const blockedContext = await browser.newContext({ locale: "en-US" });
         site.watch(blockedContext, url);
         await blockedContext.route("**/refactor-prompt.js", (route) => route.abort());
         const blocked = await blockedContext.newPage(); blocked.on("pageerror", (error) => report.pageErrors.push(error.message));
         await blocked.goto(url);
+        check("blocked prompt script still shows the parity fixture's background excerpts", await backgroundRows(blocked), expectedBackground);
         requests = []; mode = "partial";
         await analyze(blocked, "- Always try to use functional components.\n- Use module1 for storage.\n- Keep functions short.");
         const firstRun = requests.length;

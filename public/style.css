@@ -159,3 +159,9 @@ button.secondary { color: var(--ink); background: var(--paper); border: 1px soli
   .file-report .row > button, .file-action > button { width: 100%; }
   dl.factors { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
 }
+.table-scroll { overflow-x: auto; margin: var(--space-3) 0; }
+.table-scroll table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+.table-scroll caption { text-align: start; font-weight: 600; margin-bottom: var(--space-2); }
+.table-scroll th, .table-scroll td { padding: var(--space-1) var(--space-2); border-bottom: 1px solid var(--line); text-align: start; vertical-align: top; }
+.table-scroll thead th { color: var(--muted); font-weight: 600; }
+@media (max-width: 480px) { .table-scroll table { font-size: .8rem; } .table-scroll th, .table-scroll td { padding: var(--space-1); } }

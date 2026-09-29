@@ -37,16 +37,18 @@
     (result.factors === undefined || (result.factors !== null && typeof result.factors === "object"));
   // An excerpt whose only finding is not_a_rule reads as background. It is counted and labeled apart
   // from findings: a line the repository cannot show, such as where something lives, can guide an agent.
+  // readAsBackground in refactor-prompt.js repeats this test; checks/fixtures/background-parity.json keeps them equal.
   const background = (unit) => unit.state === "ok" && unit.result.findings.length > 0 &&
     unit.result.findings.every((finding) => finding.id === "not_a_rule");
   // The findings a row counts and names: a scored excerpt's own, none for background.
   const findings = (unit) => unit.state === "ok" && !background(unit) ? unit.result.findings : [];
 
   // File mode puts the panel under its own result heading and says where the prompt goes.
-  function promptPanel(report, t, file = false, options) {
+  // build names the prompt script's builder; t supplies the panel's wording.
+  function promptPanel(report, t, file = false, options, build = "buildPrompt") {
     const panel = el("section", "prompt-panel");
     let prompt;
-    try { prompt = window.DisregardPrompt.buildPrompt(report, window.STRINGS.en, options); }
+    try { prompt = window.DisregardPrompt[build](report, window.STRINGS.en, options); }
     catch (error) { panel.append(el("p", "hint", t[error.code] || t.unavailable)); return panel; }
     if (!prompt) return panel;
     const details = el("details", "prompt-preview");
@@ -176,7 +178,10 @@
     const more = el("details", "file-details"); more.id = "file-details";
     const moreSummary = el("summary");
     more.append(moreSummary, reportHint, coverage, filter, list);
-    output.append(reportTitle, exported, progress, runActions, summaryLine, nameField, lengthNote, more);
+    // An optional second prompt, shown only with the refactoring prompt: the reader's agent measures which
+    // rules it follows without them, in scratch copies of the repository, with runs the reader approves and pays for.
+    const necessity = el("div"); necessity.id = "file-necessity";
+    output.append(reportTitle, exported, progress, runActions, summaryLine, nameField, lengthNote, more, necessity);
     host.append(form, error, output);
 
     const t = () => getStrings().file;
@@ -328,7 +333,7 @@
     function renderReport() {
       const open = new Set([...rows.entries()].filter(([, row]) => row.details.open).map(([id]) => id));
       const focusedId = output.contains(document.activeElement) ? document.activeElement.id : null;
-      rows.clear(); list.replaceChildren(); exported.replaceChildren(); lengthNote.replaceChildren();
+      rows.clear(); list.replaceChildren(); exported.replaceChildren(); necessity.replaceChildren(); lengthNote.replaceChildren();
       // The count and target come from the prompt script, which puts the same count in the prompt.
       const prompt = window.DisregardPrompt, lines = report && prompt ? prompt.lineCount(report.sourceText) : 0;
       lengthNote.hidden = !prompt || lines <= prompt.LINE_TARGET;
@@ -346,7 +351,7 @@
           const row = { details, summary, content }; rows.set(unit.id, row);
           renderUnit(unit, row); list.append(details);
         }
-        if (!busy) exported.append(exportedPanel());
+        if (!busy) { exported.append(exportedPanel()); necessity.append(necessityPanel()); }
       }
       controls();
       if (focusedId) document.getElementById(focusedId)?.focus({ preventScroll: true });
@@ -367,15 +372,27 @@
     source.addEventListener("input", () => { uploadedSource = null; if (!source.value) name.value = "AGENTS.md"; invalidate(); });
     // The file name and the path-rules option only shape the prompt, so changing either rebuilds it and nothing else.
     const exportedPanel = () => promptPanel(report, t(), true, { pathRules: pathRules.checked });
-    function rebuild() {
+    // Only beside a refactoring prompt, which fails for the same reports, so a failure is worded once.
+    // A cached prompt script older than the builder shows nothing here rather than the refactoring prompt's wording.
+    function necessityPanel() {
+      if (!exported.querySelector(".copy-prompt") || typeof window.DisregardPrompt.buildNecessityPrompt !== "function") return el("div");
+      const strings = t(), panel = promptPanel(report, { ...strings, ...strings.necessity }, true, undefined, "buildNecessityPrompt");
+      if (panel.hasChildNodes()) panel.prepend(el("h2", null, strings.necessity.title));
+      return panel;
+    }
+    // Both prompts carry the file name. Only the refactoring prompt reads the path-rules option, so that option
+    // rebuilds the rule check panel only when the refactoring prompt appears or fails with it.
+    function rebuild(both) {
       if (busy || !report) return;
       report.sourceName = name.value.trim() || "AGENTS.md";
-      const open = exported.querySelector(".prompt-preview")?.open;
+      const had = Boolean(exported.querySelector(".copy-prompt"));
+      const open = [exported, necessity].map((host) => host.querySelector(".prompt-preview")?.open);
       exported.replaceChildren(exportedPanel());
-      if (open) exported.querySelector(".prompt-preview").open = true;
+      if (both || had !== Boolean(exported.querySelector(".copy-prompt"))) necessity.replaceChildren(necessityPanel());
+      [exported, necessity].forEach((host, i) => { if (open[i]) host.querySelector(".prompt-preview")?.setAttribute("open", ""); });
     }
-    name.addEventListener("input", rebuild);
-    pathRules.addEventListener("change", rebuild);
+    name.addEventListener("input", () => rebuild(true));
+    pathRules.addEventListener("change", () => rebuild(false));
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {
       if (busy || !files.length) return;
@@ -455,7 +472,7 @@
       if (!queue.length) return;
       let next = 0;
       busy = true; onBusy(busy); stopped = false; message = null;
-      runTotal = queue.length; runDone = 0; exported.replaceChildren(); controls();
+      runTotal = queue.length; runDone = 0; exported.replaceChildren(); necessity.replaceChildren(); controls();
       // The stop control sits below the intake the primary action leaves, so focusing it scrolls it into view.
       cancel.focus();
       async function worker() {
@@ -533,6 +550,7 @@
           // Completed rows stay mounted: inspecting a factor while another
           // request settles must not close its disclosure or steal focus.
           exported.replaceChildren(exportedPanel());
+          necessity.replaceChildren(necessityPanel());
           controls();
           if (document.activeElement === cancel || document.activeElement === document.body) {
             // After the reader's Stop, the heading takes focus so a second press starts nothing; the

@@ -52,6 +52,7 @@ Claude Code loads those files only when it reads a matching file, so rules neede
 The summary line says how many excerpts were scored; your agent reads the rest.
 **See what was found** holds the coverage, each excerpt's findings, and the ranges left unreviewed.
 Each finding in an excerpt shows a short next step.
+After a review, file mode offers an optional [rule check prompt](docs/knowledge/rule-necessity-check.md) that your own agent runs, billed to your account or plan.
 The **One rule** mode also accepts a single instruction.
 
 The key stays on the server. Reading the file and prompt generation run in the browser; scoring sends eligible excerpts through the server to TypeSafe.
@@ -76,6 +77,21 @@ Do not submit secrets or personal data. Read the application's [privacy notice](
 Use `.dev.vars` locally and a Worker secret when hosting; never place a real key in shared configuration.
 The supplied [Worker configuration](wrangler.jsonc) includes required request-limit bindings. They are not a spending cap.
 See the [scoring API reference](docs/apis/score.md) for requests, results, and errors.
+
+## Research: which rules each model needs
+
+A separate study tested 17 rules, one task each, on eight models at high reasoning effort, on 26 and 27 September 2026.
+Each model first did each task 5 times without the rule.
+Where it fell short, Haiku 4.5, Sonnet 5 and Opus 5.5 did the task 20 times without the rule and 20 times with it.
+Fable 5.1 and the four Codex models have only the 5-run results.
+
+- With the rule in the file, every tested rule was followed in 20 of 20 runs.
+- Six rules were needed on all three tested models, and no model followed them unprompted: arbitrary naming conventions, duties in another file, and facts the repository does not show.
+- For the other rules, a larger model is not always better. Without the rule, Haiku 4.5 added no unrequested Markdown file in 5 of 5 runs, and Opus 5.5 added one in 20 of 20.
+- No rule was shown redundant, so the results do not support removing any rule.
+
+The [research page](https://disregard.dev/research#rule-necessity) lists the models, per-model counts, method and limits.
+Disregard does not use these results yet; it reviews wording only.
 
 ## Development
 

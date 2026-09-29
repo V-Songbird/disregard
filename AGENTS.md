@@ -51,3 +51,4 @@ Provider criteria are runtime source in `lib/criteria.js` and `lib/questions.js`
 - **Raw values control thresholds before display rounding.** Consume returned statuses and findings instead of reconstructing decisions from rounded factors.
 - **Browser selectors vary by locale and scenario.** The optional harnesses build some selectors dynamically; follow their fixture tables when tracing a case.
 - **Static HTML pages are served product assets.** `public/research.html`, `privacy.html`, and `terms.html` belong to the application routes.
+- **The file page works without `refactor-prompt.js`.** A rule both `public/review-ui.js` and that script apply is kept in each file and guarded by a parity fixture such as `checks/fixtures/background-parity.json`.
