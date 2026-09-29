@@ -118,7 +118,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "Some agents may already do this unprompted.",
-        d: "A model judged this to be something a capable coding agent does without being told. That judgment agreed with measured behaviour only for the models it was checked against, listed with the measurements. Other models, later versions and cheaper subagents may still need the rule.",
+        d: "A model judged this to be something a capable coding agent does without being told. That judgment agreed with measured behaviour only for the models it was checked against, listed with the measurements. It does not cover Fable. Other models, later versions and cheaper subagents may still need the rule. Rules recognized as duties in other files, chosen conventions, project facts or safety rules do not receive this finding.",
         fix: "Keep it if any agent that reads this file might need it. Consider removing it only if every model that reads the file is one of those, and check that they follow it without the rule.",
         next: "Keep it unless every model that reads the file already follows it.",
       },
@@ -247,7 +247,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "Algunos agentes quizá ya lo hagan sin que se les pida.",
-        d: "Un modelo juzgó que esto es algo que un agente de código capaz hace sin que se lo digan. Ese juicio coincidió con el comportamiento medido solo en los modelos con los que se comprobó, que aparecen junto a las mediciones. Otros modelos, versiones posteriores y subagentes más baratos pueden seguir necesitando la regla.",
+        d: "Un modelo juzgó que esto es algo que un agente de código capaz hace sin que se lo digan. Ese juicio coincidió con el comportamiento medido solo en los modelos con los que se comprobó, que aparecen junto a las mediciones. No cubre a Fable. Otros modelos, versiones posteriores y subagentes más baratos pueden seguir necesitando la regla. Las reglas que se reconocen como tareas en otros archivos, convenciones elegidas, datos del proyecto o reglas de seguridad no reciben este hallazgo.",
         fix: "Consérvala si algún agente que lea este archivo podría necesitarla. Plantéate quitarla solo si todos los modelos que leen el archivo son uno de esos, y comprueba que la cumplen sin la regla.",
         next: "Consérvala salvo que todos los modelos que leen el archivo ya la cumplan.",
       },
@@ -376,7 +376,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "有些智能体可能无需提示就会这样做。",
-        d: "一个模型判断：能力足够的编程智能体即使没人告知也会这样做。这个判断只在用来核对它的模型上与实测行为一致，这些模型列在测量结果中。其他模型、后续版本和更便宜的子智能体可能仍然需要这条规则。",
+        d: "一个模型判断：能力足够的编程智能体即使没人告知也会这样做。这个判断只在用来核对它的模型上与实测行为一致，这些模型列在测量结果中。它不涵盖 Fable。其他模型、后续版本和更便宜的子智能体可能仍然需要这条规则。被识别为其他文件中的职责、项目选定的约定、项目事实或安全规则的规则，不会得到这一结论。",
         fix: "只要读取此文件的任何智能体可能需要它，就保留它。只有当读取此文件的每个模型都属于其中之一，并且你确认它们在没有这条规则时也会遵守，才考虑删除。",
         next: "除非读取此文件的每个模型都已遵守，否则保留它。",
       },
@@ -505,7 +505,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "कुछ एजेंट शायद यह बिना कहे पहले से करते हैं।",
-        d: "एक मॉडल ने आंका कि सक्षम कोडिंग एजेंट यह बिना बताए करता है। यह आकलन मापे गए व्यवहार से केवल उन मॉडलों पर मेल खाया जिन पर इसे जाँचा गया; वे माप के साथ सूचीबद्ध हैं। दूसरे मॉडल, बाद के संस्करण और सस्ते सबएजेंट को अब भी इस नियम की ज़रूरत हो सकती है।",
+        d: "एक मॉडल ने आंका कि सक्षम कोडिंग एजेंट यह बिना बताए करता है। यह आकलन मापे गए व्यवहार से केवल उन मॉडलों पर मेल खाया जिन पर इसे जाँचा गया; वे माप के साथ सूचीबद्ध हैं। यह Fable को शामिल नहीं करता। दूसरे मॉडल, बाद के संस्करण और सस्ते सबएजेंट को अब भी इस नियम की ज़रूरत हो सकती है। जिन नियमों को दूसरी फ़ाइलों में किए जाने वाले काम, चुनी गई परिपाटी, प्रोजेक्ट से जुड़े तथ्य या सुरक्षा नियम के रूप में पहचाना जाता है, उन्हें यह निष्कर्ष नहीं मिलता।",
         fix: "अगर इस फ़ाइल को पढ़ने वाले किसी भी एजेंट को इसकी ज़रूरत हो सकती है, तो इसे रखें। इसे हटाने पर तभी विचार करें जब फ़ाइल पढ़ने वाला हर मॉडल इन्हीं में से हो, और जाँच लें कि वे नियम के बिना भी इसका पालन करते हैं।",
         next: "इसे रखें, जब तक फ़ाइल पढ़ने वाला हर मॉडल पहले से इसका पालन न करता हो।",
       },
@@ -634,7 +634,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "قد تفعل بعض الوكلاء هذا من تلقاء نفسها.",
-        d: "حكم نموذج بأن هذا شيء يفعله وكيل برمجة قادر دون أن يُطلب منه. لم يتفق هذا الحكم مع السلوك المقيس إلا في النماذج التي اختُبر عليها، وهي مدرجة مع القياسات. قد تظل النماذج الأخرى والإصدارات اللاحقة والوكلاء الفرعيون الأرخص بحاجة إلى القاعدة.",
+        d: "حكم نموذج بأن هذا شيء يفعله وكيل برمجة قادر دون أن يُطلب منه. لم يتفق هذا الحكم مع السلوك المقيس إلا في النماذج التي اختُبر عليها، وهي مدرجة مع القياسات. لا يشمل Fable. قد تظل النماذج الأخرى والإصدارات اللاحقة والوكلاء الفرعيون الأرخص بحاجة إلى القاعدة. القواعد التي يُتعرّف عليها بوصفها مهامَّ في ملفات أخرى أو أعرافًا مختارة أو حقائق عن المشروع أو قواعد سلامة لا تحصل على هذه النتيجة.",
         fix: "أبقِها إن كان أي وكيل يقرأ هذا الملف قد يحتاج إليها. لا تفكر في حذفها إلا إذا كان كل نموذج يقرأ الملف واحدًا منها، وتحقق من أنها تلتزم بها دون القاعدة.",
         next: "أبقِها ما لم يكن كل نموذج يقرأ الملف يلتزم بها بالفعل.",
       },
@@ -763,7 +763,7 @@ window.STRINGS = {
       },
       likely_redundant: {
         h: "Certains agents le font peut-être déjà sans qu’on le leur demande.",
-        d: "Un modèle a jugé qu’un agent de code compétent fait cela sans qu’on le lui dise. Ce jugement ne concordait avec le comportement mesuré que pour les modèles sur lesquels il a été vérifié, listés avec les mesures. D’autres modèles, des versions ultérieures et des sous-agents moins coûteux peuvent encore avoir besoin de la règle.",
+        d: "Un modèle a jugé qu’un agent de code compétent fait cela sans qu’on le lui dise. Ce jugement ne concordait avec le comportement mesuré que pour les modèles sur lesquels il a été vérifié, listés avec les mesures. Il ne couvre pas Fable. D’autres modèles, des versions ultérieures et des sous-agents moins coûteux peuvent encore avoir besoin de la règle. Les règles reconnues comme des tâches dans d’autres fichiers, des conventions choisies, des faits propres au projet ou des règles de sécurité ne reçoivent pas ce constat.",
         fix: "Conservez-la si un agent qui lit ce fichier pourrait en avoir besoin. N’envisagez de la retirer que si chaque modèle qui lit le fichier fait partie de ceux-là, et vérifiez qu’ils la respectent sans la règle.",
         next: "Conservez-la, sauf si chaque modèle qui lit le fichier la respecte déjà.",
       },

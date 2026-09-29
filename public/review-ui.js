@@ -99,7 +99,7 @@
   // SAMPLE's results from one real scoring run, keyed by the exact text each excerpt sends. Only the unchanged
   // SAMPLE takes them, so reviewing it sends nothing; an edited sample is scored like any other text. They do not
   // follow later criteria or provider changes: rescore SAMPLE after one (checks/sample-results.test.cjs).
-  // Scored with lib/ fingerprint bc0daceda1a7ea8030de5d6cb16e8ae9b654f95ccccaa24bba2bf9e6ce5262b3
+  // Scored with lib/ fingerprint 2ca730fa29574d1bc2b7b3451f864258f0ecb7a57465271d9c00e750bc705b59
   const SAMPLE_RESULTS = {
     "Run `npm test` before you commit.": {"status":"ok","risk":0.03,"findings":[{"id":"should_be_a_hook","factor":"F8","value":0.01,"choice":"hook","confidence":0.99}],"factors":{"F1":0.85,"F2":0.85,"F7":0.8,"F3":2,"F8":0.01,"is_rule":0.95,"specificity":0.95,"primitive":{"choice":"hook","confidence":0.99},"rule_role":{"choice":"direct_action","confidence":0.96},"agent_default":{"choice":"project_specific","confidence":0.25}},"tokens":3666},
     "Try to keep pull requests small.": {"status":"ok","risk":0.03,"findings":[{"id":"likely_redundant","factor":"agent_default","value":0.96,"readers":["claude-haiku-4-5-20251001","claude-sonnet-5","claude-opus-5-5"]},{"id":"hedge_dominance","factor":"F1","value":0.2,"verb":"try to"}],"factors":{"F1":0.2,"F2":0.85,"F7":0.8,"F3":1.99,"F8":1.69,"is_rule":0.96,"specificity":0.17,"primitive":{"choice":"rule","confidence":0.9},"rule_role":{"choice":"direct_action","confidence":0.36},"agent_default":{"choice":"agent_default","confidence":0.96}},"tokens":3664},

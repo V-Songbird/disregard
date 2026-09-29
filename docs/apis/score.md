@@ -135,13 +135,26 @@ irreversible actions, authorization or approval, or secrets and private data. Th
 are kept by policy. Either the model's `kept_by_policy` answer or a local English word list
 withholds the finding, and the list errs toward withholding.
 
+The finding is also never returned for kinds of rule that the measured models needed, even
+when the model answers `agent_default`:
+
+- duties in another file, such as updating a README, a changelog or other documentation;
+- conventions a project picks among valid options, such as naming, headers, formatting,
+  import order, or one named option chosen over another;
+- the project's own files and helpers, named by path or file name;
+- facts about the project, such as versions, ports, time units or known fixes.
+
+A local English pattern list detects these kinds, and it errs toward withholding. For other
+rules, such as language idioms, the model's answer and its confidence decide.
+
 The finding is a model's prediction about what agents do unprompted, so treat it as advice
 to check, not as removal advice. `readers` lists the model ids whose measured behaviour the
 prediction was compared against: currently `claude-haiku-4-5-20251001`, `claude-sonnet-5`,
-and `claude-opus-5-5`. Other models, later versions of those models, and cheaper subagents
-that read the same file may still need the rule. Keep a rule unless every model that reads
-the file is covered. That comparison used a small set of rules and only two known redundant
-ones, so how often the finding misses a redundant rule is not measured.
+and `claude-opus-5-5`. The finding does not cover Fable. Other models, later versions of
+those models, and cheaper subagents that read the same file may still need the rule. Keep a
+rule unless every model that reads the file is covered. That comparison used a small set of
+rules and only one rule known to be redundant for all three models, so how often the finding
+misses a redundant rule is not measured.
 
 These comparisons also use unrounded provider values. Returned model factors,
 confidence values, and finding values are rounded to two decimal places. Consume

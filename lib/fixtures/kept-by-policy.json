@@ -16,10 +16,7 @@
   ],
   "open": [
     "Declare variables in src/ files with `const`, or `let` when they are reassigned; never use `var`.",
-    "Add new string helpers to the existing `src/text.js`; never create a separate file for a single helper.",
     "Compare values in src/ files with `===` and `!==`, never `==` or `!=`.",
-    "Name new src/ files in snake_case, such as `src/string_utils.js`.",
-    "Write new src/ functions with Promises (`async`/`await`), never Node-style callbacks.",
     "Prefer early returns over nested conditionals.",
     "Keep functions short and focused.",
     "Use descriptive variable names."
