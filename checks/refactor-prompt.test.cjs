@@ -235,7 +235,7 @@ test("the reader choice allows removal proposals only when the owner says only c
   const input = report(undefined, redundant());
   const unsure = buildPrompt(input, english);
   for (const readers of [undefined, "unsure", "", "CAPABLE", "all", 1]) assert.equal(buildPrompt(input, english, { readers }), unsure, String(readers));
-  const keep = "Small models needed many rules that capable models follow unprompted, so keep the rule: do not propose removing " +
+  const keep = "Small or cheap models can need rules that capable models follow unprompted, so keep the rule: do not propose removing " +
     "or weakening it on this finding, not even as a question.";
   const unsaid = "The owner has not said which models read this file, so treat it as read by small or cheap models, such as subagents.";
   const said = "The owner says small or cheap models, such as subagents, may read this file.";
