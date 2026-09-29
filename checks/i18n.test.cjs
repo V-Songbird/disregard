@@ -111,8 +111,8 @@ for (const code of fileLocales.filter((code) => code !== "en")) {
 }
 
 // No translation value types a number. Limits, counts and scale ranges are placeholders that the
-// page fills through its number formatter; only names such as UTF-8 may carry digits.
-const NAMES_WITH_DIGITS = ["UTF-8"];
+// page fills through its number formatter; only names such as UTF-8 or a model name may carry digits.
+const NAMES_WITH_DIGITS = ["UTF-8", "Claude Haiku 4.5", "Claude Sonnet 5", "Claude Opus 5.5"];
 const values = (value, prefix = "") => typeof value === "string" ? [[prefix, value]] : value !== null && typeof value === "object"
   ? Object.entries(value).flatMap(([key, child]) => values(child, prefix ? prefix + "." + key : key)) : [];
 test("public/i18n.js and public/file-i18n.js type no numbers outside placeholders", () => {

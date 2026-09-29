@@ -484,15 +484,36 @@ async function unitHints(page) {
       mode = "empty-unavailable"; await analyze(page, longDoc(200));
       const at200 = await page.locator("#file-length").isHidden();
       await analyze(page, longDoc(201)); mode = "status";
-      check(prefix + " only a file over 200 lines shows one length note above the excerpts", { at200, ...await page.evaluate(() => {
+      check(prefix + " only a file over 200 lines shows the length note above the excerpts", { at200, ...await page.evaluate(() => {
         const t = STRINGS[document.getElementById("ui-lang").value].file.longFile, note = document.getElementById("file-length");
-        return { notes: document.querySelectorAll("#file-report .banner").length, shown: !note.hidden && note.getClientRects().length > 0,
+        return { notes: document.querySelectorAll("#file-report .banner:not([hidden])").length, shown: !note.hidden && note.getClientRects().length > 0,
           title: note.querySelector("strong").textContent, body: note.querySelector("p").textContent === t.body.replace("{max}", "200") + " " + t.link,
           link: note.querySelector("p > a").href,
           above: Boolean(note.compareDocumentPosition(document.getElementById("file-units")) & Node.DOCUMENT_POSITION_FOLLOWING),
           fits: document.documentElement.scrollWidth <= innerWidth };
-      }) }, { at200: true, notes: 1, shown: true, title: longTitles[locale], body: true,
+      }) }, { at200: true, notes: 2, shown: true, title: longTitles[locale], body: true,
         link: "https://code.claude.com/docs/en/memory#write-effective-instructions", above: true, fits: true });
+      // From 30 rules, unless only capable models read the file, one crowding note above the excerpts; at 29, none.
+      // Skipped excerpts are not rules. Changing the reader choice shows or hides it without a request.
+      const crowding = () => page.evaluate(() => {
+        const t = STRINGS[document.getElementById("ui-lang").value].file.crowding, note = document.getElementById("file-crowding");
+        if (note.hidden) return "hidden";
+        const n = document.querySelectorAll(".instruction-unit:not([data-state='skipped'])").length;        const form = t.title[new Intl.PluralRules(document.documentElement.lang).select(n)] ?? t.title.other;
+        return { shown: note.getClientRects().length > 0, title: note.querySelector("strong").textContent === form.replace("{n}", n),
+          body: note.querySelector("p").textContent === t.body.replace("{min}", "30").replace("{none}", "10"),
+          above: Boolean(note.compareDocumentPosition(document.getElementById("file-units")) & Node.DOCUMENT_POSITION_FOLLOWING) };
+      });
+      const shownNote = { shown: true, title: true, body: true, above: true };
+      mode = "empty-unavailable"; await analyze(page, longDoc(29) + "\n| a | b |\n| --- | --- |\n| 1 | 2 |\n");
+      const at29 = await crowding();
+      await analyze(page, longDoc(30)); const at30 = await crowding();
+      const sentBefore = requests.length;
+      await page.check("#file-readers-capable"); const capable = await crowding();
+      await page.check("#file-readers-small"); const small = await crowding();
+      await page.check("#file-readers-unsure"); mode = "status";
+      check(prefix + " a crowding note shows from 30 rules unless only capable models read the file",
+        { at29, at30, capable, small, sent: requests.length - sentBefore },
+        { at29: "hidden", at30: shownNote, capable: "hidden", small: shownNote, sent: 0 });
       // Collapsed rows name what was found: the count and each headline, as text inside the one summary control.
       // A row whose only finding is not_a_rule reads as background and is counted apart from findings.
       mode = "ok"; await analyze(page, summaryDoc);

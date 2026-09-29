@@ -98,6 +98,10 @@
   // starts at most PACE requests in any PACE_WINDOW, so a large file waits instead of being stopped.
   const PACE = 55, PACE_WINDOW = 60000;
   const GUIDE = "https://code.claude.com/docs/en/memory#write-effective-instructions";
+  // With 30 rules it already followed above a duty to update another file (docs, a changelog), Claude Haiku 4.5
+  // did that duty less often; with 10 it did not measurably, and Claude Sonnet 5 and Opus 5.5 kept it at 30.
+  // Counts between were not measured, so the note starts at the measured 30 and names only that kind of duty.
+  const CROWDING_RULES = 30, UNCROWDED_RULES = 10;
   // A short synthetic instruction file for a first review. It stays English, the scoring language.
   const SAMPLE = "# Project instructions\n\n## Commands\n\n- Run `npm test` before you commit.\n- Try to keep pull requests small.\n\n" +
     "## Code\n\n- Follow best practices.\n- Never edit files in `dist/`.\n- API handlers live in `src/api/`.\n";
@@ -174,6 +178,7 @@
     const output = el("section", "file-report"); output.id = "file-report";
     const reportTitle = el("h2"), reportHint = el("p", "hint"), coverage = el("p", "coverage");
     const lengthNote = el("div", "banner"); lengthNote.id = "file-length";
+    const crowdingNote = el("div", "banner"); crowdingNote.id = "file-crowding";
     const progress = el("p", "hint"); progress.id = "file-progress"; progress.setAttribute("role", "status");
     const start = el("button"); start.id = "file-start"; start.type = "button";
     const cancel = el("button", "secondary"); cancel.id = "file-cancel"; cancel.type = "button";
@@ -198,7 +203,7 @@
     // An optional second prompt, shown only with the refactoring prompt: the reader's agent measures which
     // rules it follows without them, in scratch copies of the repository, with runs the reader approves and pays for.
     const necessity = el("div"); necessity.id = "file-necessity";
-    output.append(reportTitle, exported, progress, runActions, summaryLine, nameField, lengthNote, more, necessity);
+    output.append(reportTitle, exported, progress, runActions, summaryLine, nameField, lengthNote, crowdingNote, more, necessity);
     host.append(form, error, output);
 
     const t = () => getStrings().file;
@@ -244,6 +249,14 @@
       cancel.hidden = !busy; cancel.textContent = strings.cancel;
       if (!report) return;
       reportTitle.textContent = strings.promptTitle; moreSummary.textContent = strings.details; reportHint.textContent = strings.previewHint;
+      // Rules are the excerpts not skipped and not read as background, so a scored run can lower the count. A nested
+      // list or procedure counts once. "Not sure" counts as small models included, as in the reader choice.
+      const rules = report.units.filter((unit) => unit.state !== "skipped" && !background(unit)).length;
+      crowdingNote.hidden = readers() === "capable" || rules < CROWDING_RULES;
+      const crowding = crowdingNote.hidden ? [] : [counted(strings.crowding.title, rules),
+        fill(strings.crowding.body, { min: number(CROWDING_RULES), none: number(UNCROWDED_RULES) })];
+      // Rebuilt only when its wording changes, so a selection inside it survives progress updates.
+      if (crowdingNote.textContent !== crowding.join("")) crowdingNote.replaceChildren(...crowding.map((text, i) => el(i ? "p" : "strong", null, text)));
       const summary = model.summarize(report), context = report.units.filter(background).length;
       coverage.textContent = fill(context ? strings.coverage.textContext : strings.coverage.text, { scored: counted(strings.coverage.scored, summary.scored),
         flagged: number(summary.flagged - context), context: counted(strings.coverage.context, context),
@@ -412,10 +425,11 @@
     }
     name.addEventListener("input", () => rebuild(true));
     pathRules.addEventListener("change", () => rebuild(false));
-    // The reader choice rewords the rows' advice and the refactoring prompt; the rule check prompt asks the owner itself.
+    // The reader choice rewords the rows' advice, the refactoring prompt and the crowding note; the rule check prompt
+    // asks the owner itself.
     for (const choice of readerChoices) choice.input.addEventListener("change", () => {
       if (report) for (const unit of report.units) renderUnit(unit, rows.get(unit.id));
-      rebuild(false);
+      rebuild(false); controls();
     });
     // A chosen or dropped file passes the same checks. A wrong one says why and changes nothing else.
     async function load(files) {
